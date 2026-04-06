@@ -1,21 +1,33 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Award, LogIn, LogOut, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 
-
-
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Smooth scroll on home page, navigate + scroll on other pages
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    e.preventDefault();
+    setOpen(false);
+    if (location.pathname === "/") {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/" + hash);
+    }
+  };
 
   const links = [
-    { label: "Award Categories", to: "/#categories" },
-    { label: "How It Works", to: "/#how-it-works" },
-    { label: "Prizes", to: "/#prizes" },
-    { label: "Admin", to: "/admin" },
+    { label: "Award Categories", hash: "#categories" },
+    { label: "How It Works", hash: "#how-it-works" },
+    { label: "Prizes", hash: "#prizes" },
+    { label: "Admin", hash: null, to: "/admin" },
   ];
 
   return (
@@ -36,11 +48,19 @@ const Navbar = () => {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-5 lg:gap-6">
-            {links.map((l) => (
-              <Link key={l.to} to={l.to} className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                {l.label}
-              </Link>
-            ))}
+            {links.map((l) =>
+              l.to ? (
+                <Link key={l.to} to={l.to} className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {l.label}
+                </Link>
+              ) : (
+                <a key={l.hash} href={l.hash!}
+                  onClick={(e) => handleNavClick(e, l.hash!)}
+                  className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground transition-colors cursor-pointer">
+                  {l.label}
+                </a>
+              )
+            )}
             <Link to="/nominate">
               <Button variant="hero" size="sm">Nominate a Teacher</Button>
             </Link>
@@ -85,14 +105,21 @@ const Navbar = () => {
               className="md:hidden overflow-hidden bg-foreground border-b border-primary-foreground/10"
             >
               <div className="container py-3 flex flex-col gap-1 px-3">
-                {links.map((l) => (
-                  <Link key={l.to} to={l.to}
-                    className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground py-2.5 border-b border-primary-foreground/5 last:border-0"
-                    onClick={() => setOpen(false)}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+                {links.map((l) =>
+                  l.to ? (
+                    <Link key={l.to} to={l.to}
+                      className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground py-2.5 border-b border-primary-foreground/5 last:border-0"
+                      onClick={() => setOpen(false)}>
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a key={l.hash} href={l.hash!}
+                      onClick={(e) => handleNavClick(e, l.hash!)}
+                      className="text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground py-2.5 border-b border-primary-foreground/5 last:border-0 cursor-pointer">
+                      {l.label}
+                    </a>
+                  )
+                )}
                 <div className="pt-2 pb-1 flex flex-col gap-2">
                   <Link to="/nominate" onClick={() => setOpen(false)}>
                     <Button variant="hero" className="w-full">Nominate a Teacher</Button>
