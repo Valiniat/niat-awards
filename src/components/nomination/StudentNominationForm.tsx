@@ -24,6 +24,12 @@ const classGroups = [
   { label: "Class 11–12", value: "11-12" },
 ];
 
+const classOptions: Record<string, string[]> = {
+  "5-8":  ["5th Class", "6th Class", "7th Class", "8th Class"],
+  "9-10": ["9th Class", "10th Class"],
+  "11-12":["11th Class", "12th Class"],
+};
+
 const RatingStars = ({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) => (
   <div className="flex items-center justify-between gap-2">
     <span className="text-xs sm:text-sm text-foreground">{label}</span>
@@ -51,6 +57,12 @@ const StudentNominationForm = () => {
   });
 
   const set = (key: string, val: string | number) => setForm((p) => ({ ...p, [key]: val }));
+
+  // Reset studentClass when group changes
+  const handleGroupChange = (val: string) => {
+    setClassGroup(val);
+    set("studentClass", "");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,9 +101,11 @@ const StudentNominationForm = () => {
       <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base">Tell us about the teacher who inspires you</p>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+
+        {/* Step 1: Class group */}
         <div>
-          <Label>What class are you in?</Label>
-          <Select value={classGroup} onValueChange={setClassGroup}>
+          <Label>What class group are you in?</Label>
+          <Select value={classGroup} onValueChange={handleGroupChange}>
             <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select your class group" /></SelectTrigger>
             <SelectContent>
               {classGroups.map((g) => (<SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>))}
@@ -99,16 +113,33 @@ const StudentNominationForm = () => {
           </Select>
         </div>
 
-        <AnimatePresence mode="wait">
+        {/* Step 2: Specific class — appears after group is selected */}
+        <AnimatePresence>
           {classGroup && (
-            <motion.div key={classGroup} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div><Label>Your Name</Label><Input className="mt-1.5" value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required /></div>
-                <div><Label>Class</Label><Input className="mt-1.5" value={form.studentClass} onChange={(e) => set("studentClass", e.target.value)} placeholder="e.g. 7th" required /></div>
-              </div>
+            <motion.div key="class-select" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <Label>Which class are you in?</Label>
+              <Select value={form.studentClass} onValueChange={(v) => set("studentClass", v)}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select your class" /></SelectTrigger>
+                <SelectContent>
+                  {classOptions[classGroup].map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Rest of form — appears after specific class is selected */}
+        <AnimatePresence mode="wait">
+          {classGroup && form.studentClass && (
+            <motion.div key={classGroup + form.studentClass} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-5">
+
+              <div><Label>Your Name</Label><Input className="mt-1.5" value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required /></div>
               <div><Label>School Name</Label><Input className="mt-1.5" value={form.schoolName} onChange={(e) => set("schoolName", e.target.value)} required /></div>
               <div><Label>Phone Number</Label><Input className="mt-1.5" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
               <div><Label>Teacher's Name</Label><Input className="mt-1.5" value={form.teacherName} onChange={(e) => set("teacherName", e.target.value)} required /></div>
+
               <div>
                 <Label>Award Category</Label>
                 <Select value={form.awardCategory} onValueChange={(v) => set("awardCategory", v)}>
@@ -116,6 +147,7 @@ const StudentNominationForm = () => {
                   <SelectContent>{awardCategories.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent>
                 </Select>
               </div>
+
               <div><Label>What's one special thing about this teacher?</Label><Textarea className="mt-1.5" value={form.specialThing} onChange={(e) => set("specialThing", e.target.value)} rows={3} required /></div>
 
               {(classGroup === "9-10" || classGroup === "11-12") && (
