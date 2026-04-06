@@ -10,6 +10,7 @@ import ThankYouPage from "./pages/ThankYouPage.tsx";
 import VotePage from "./pages/VotePage.tsx";
 import AnnouncementsPage from "./pages/AnnouncementsPage.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
+import AdminLoginPage from "./pages/AdminLoginPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/thank-you" element={<ThankYouPage />} />
             <Route path="/vote" element={<VotePage />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
+            <Route path="/admin-login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

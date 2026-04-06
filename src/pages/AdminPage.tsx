@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  Award, Users, Vote, TrendingUp, Download, Search,
+  Award, Users, TrendingUp, Download, Search,
   CheckCircle2, XCircle, Eye, BarChart3, ArrowLeft, Star,
-  Loader2, RefreshCw
+  Loader2, RefreshCw, LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -34,6 +35,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 const AdminPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [nominations, setNominations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -42,13 +44,23 @@ const AdminPage = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
 
-  // Stats derived from real data
+  // Guard — redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAdminLoggedIn()) {
+      navigate("/admin-login");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    adminLogout();
+    navigate("/admin-login");
+  };
+
   const total = nominations.length;
   const pending = nominations.filter(n => n.status === "pending").length;
   const shortlisted = nominations.filter(n => n.status === "shortlisted").length;
   const winners = nominations.filter(n => n.status === "winner").length;
 
-  // Category breakdown
   const categoryCount = nominations.reduce((acc: Record<string, number>, n) => {
     acc[n.award_category] = (acc[n.award_category] || 0) + 1;
     return acc;
@@ -57,8 +69,6 @@ const AdminPage = () => {
   const fetchNominations = async () => {
     setLoading(true);
     try {
-      // Admin bypasses RLS by fetching all — works because anon key + RLS only restricts select to shortlisted
-      // We use service-role-level access via direct query with no filter
       const { data, error } = await supabase
         .from("nominations")
         .select("*")
@@ -72,18 +82,17 @@ const AdminPage = () => {
     }
   };
 
-  useEffect(() => { fetchNominations(); }, []);
+  useEffect(() => {
+    if (isAdminLoggedIn()) fetchNominations();
+  }, []);
 
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id + status);
     try {
-      const { error } = await supabase
-        .from("nominations")
-        .update({ status })
-        .eq("id", id);
+      const { error } = await supabase.from("nominations").update({ status }).eq("id", id);
       if (error) throw error;
       setNominations(prev => prev.map(n => n.id === id ? { ...n, status } : n));
-      toast({ title: `Nomination ${status}!` });
+      toast({ title: `Marked as ${status}!` });
     } catch (err: any) {
       toast({ title: "Update failed", description: err.message, variant: "destructive" });
     } finally {
@@ -102,14 +111,14 @@ const AdminPage = () => {
   });
 
   const categories = ["All", ...Array.from(new Set(nominations.map(n => n.award_category).filter(Boolean)))];
-  const topNominated = [...nominations].sort((a, b) => 0).slice(0, 1)[0];
+  const topNominated = nominations[0];
 
   const exportCSV = () => {
     const rows = [
       ["Type", "Teacher/Applicant", "School", "Category", "Class", "Phone", "Status", "Date"],
       ...filtered.map(n => [
         n.type, n.teacher_name || n.full_name, n.school_name, n.award_category,
-        n.student_class || n.experience || "", n.phone, n.status,
+        n.student_class || (n.experience ? `${n.experience} yrs` : ""), n.phone, n.status,
         new Date(n.created_at).toLocaleDateString("en-IN")
       ])
     ];
@@ -118,6 +127,8 @@ const AdminPage = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "nominations.csv"; a.click();
   };
+
+  if (!isAdminLoggedIn()) return null;
 
   return (
     <div className="min-h-screen bg-gradient-dark">
@@ -142,26 +153,29 @@ const AdminPage = () => {
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
             </Button>
+            <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={handleLogout}>
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="container py-6 sm:py-8 px-3 sm:px-4">
-
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="w-8 h-8 text-secondary animate-spin" />
-            <span className="ml-3 text-primary-foreground/60">Loading real data...</span>
+            <span className="ml-3 text-primary-foreground/60">Loading nominations...</span>
           </div>
         ) : (
           <>
-            {/* Stats Cards — real numbers */}
+            {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {[
-                { label: "Total Nominations", value: total.toLocaleString(), sub: "All submissions", icon: Users, color: "bg-primary" },
-                { label: "Pending Review", value: pending.toLocaleString(), sub: "Needs attention", icon: Eye, color: "bg-secondary" },
-                { label: "Shortlisted", value: shortlisted.toLocaleString(), sub: "Moving forward", icon: CheckCircle2, color: "bg-blue-600" },
-                { label: "Winners", value: winners.toLocaleString(), sub: "Awarded", icon: Award, color: "bg-green-600" },
+                { label: "Total Nominations", value: total, icon: Users, color: "bg-primary" },
+                { label: "Pending Review", value: pending, icon: Eye, color: "bg-secondary" },
+                { label: "Shortlisted", value: shortlisted, icon: CheckCircle2, color: "bg-blue-600" },
+                { label: "Winners", value: winners, icon: Award, color: "bg-green-600" },
               ].map((stat, i) => (
                 <motion.div key={stat.label} custom={i} initial="hidden" animate="visible" variants={fadeUp}
                   className="rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 p-4 sm:p-5">
@@ -171,20 +185,18 @@ const AdminPage = () => {
                     </div>
                     <TrendingUp className="w-3.5 h-3.5 text-green-400" />
                   </div>
-                  <div className="text-xl sm:text-2xl font-bold text-primary-foreground font-heading">{stat.value}</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary-foreground font-heading">{stat.value}</div>
                   <div className="text-[10px] sm:text-xs text-primary-foreground/40 mt-1">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
 
-            {/* Charts row */}
+            {/* Charts */}
             <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              {/* Category breakdown */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                 className="lg:col-span-2 rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 p-5 sm:p-6">
                 <h2 className="font-heading text-base sm:text-lg font-bold text-primary-foreground flex items-center gap-2 mb-5">
-                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-                  Nominations by Category
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />Nominations by Category
                 </h2>
                 {Object.keys(categoryCount).length === 0 ? (
                   <p className="text-primary-foreground/40 text-sm text-center py-8">No nominations yet</p>
@@ -209,12 +221,10 @@ const AdminPage = () => {
                 )}
               </motion.div>
 
-              {/* Summary panel */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
                 className="rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 p-5 sm:p-6 flex flex-col gap-4">
                 <h2 className="font-heading text-base sm:text-lg font-bold text-primary-foreground flex items-center gap-2">
-                  <Award className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-                  Submission Types
+                  <Award className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />Submission Types
                 </h2>
                 {[
                   { label: "Student Nominations", count: nominations.filter(n => n.type === "student").length, color: "bg-primary" },
@@ -228,7 +238,6 @@ const AdminPage = () => {
                     <span className="text-sm sm:text-base font-bold text-primary-foreground">{item.count}</span>
                   </div>
                 ))}
-
                 {topNominated && (
                   <div className="mt-2 p-4 rounded-lg bg-primary-foreground/5 border border-primary-foreground/10">
                     <div className="flex items-center gap-2 mb-2">
@@ -242,7 +251,7 @@ const AdminPage = () => {
               </motion.div>
             </div>
 
-            {/* Nominations Table */}
+            {/* Table */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
               className="rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 overflow-hidden">
               <div className="p-4 sm:p-6 border-b border-primary-foreground/10">
@@ -257,15 +266,11 @@ const AdminPage = () => {
                         className="pl-9 bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/30 text-sm h-9" />
                     </div>
                     <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                      <SelectTrigger className="w-auto min-w-[130px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9">
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger className="w-auto min-w-[130px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>{categories.map(c => <SelectItem key={c} value={c}>{c === "All" ? "All Categories" : c}</SelectItem>)}</SelectContent>
                     </Select>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-auto min-w-[110px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9">
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger className="w-auto min-w-[110px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {["All", "pending", "shortlisted", "winner", "rejected"].map(s => (
                           <SelectItem key={s} value={s}>{s === "All" ? "All Status" : s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
@@ -273,9 +278,7 @@ const AdminPage = () => {
                       </SelectContent>
                     </Select>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-auto min-w-[100px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9">
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger className="w-auto min-w-[100px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="All">All Types</SelectItem>
                         <SelectItem value="student">Student</SelectItem>
@@ -304,9 +307,7 @@ const AdminPage = () => {
                             {n.type}
                           </span>
                         </td>
-                        <td className="px-4 sm:px-5 py-3 text-xs sm:text-sm font-medium text-primary-foreground max-w-[140px] truncate">
-                          {n.teacher_name || n.full_name || "—"}
-                        </td>
+                        <td className="px-4 sm:px-5 py-3 text-xs sm:text-sm font-medium text-primary-foreground max-w-[140px] truncate">{n.teacher_name || n.full_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[130px] truncate">{n.school_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <Badge variant="outline" className="text-[10px] border-primary-foreground/20 text-primary-foreground/60 whitespace-nowrap">
@@ -316,23 +317,18 @@ const AdminPage = () => {
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.student_class || (n.experience ? `${n.experience} yrs` : "—")}</td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.phone || "—"}</td>
                         <td className="px-4 sm:px-5 py-3"><StatusBadge status={n.status} /></td>
-                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">
-                          {new Date(n.created_at).toLocaleDateString("en-IN")}
-                        </td>
+                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">{new Date(n.created_at).toLocaleDateString("en-IN")}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <div className="flex items-center gap-1">
-                            <button onClick={() => updateStatus(n.id, "shortlisted")}
-                              disabled={updating === n.id + "shortlisted" || n.status === "shortlisted"}
+                            <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id + "shortlisted" || n.status === "shortlisted"}
                               className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist">
                               {updating === n.id + "shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => updateStatus(n.id, "winner")}
-                              disabled={updating === n.id + "winner" || n.status === "winner"}
+                            <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id + "winner" || n.status === "winner"}
                               className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Mark Winner">
                               {updating === n.id + "winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => updateStatus(n.id, "rejected")}
-                              disabled={updating === n.id + "rejected" || n.status === "rejected"}
+                            <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id + "rejected" || n.status === "rejected"}
                               className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors disabled:opacity-30" title="Reject">
                               {updating === n.id + "rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
                             </button>
@@ -346,7 +342,7 @@ const AdminPage = () => {
 
               {filtered.length === 0 && !loading && (
                 <div className="py-16 text-center text-primary-foreground/40">
-                  {nominations.length === 0 ? "No nominations submitted yet. Share the site to get started!" : "No nominations match your filters."}
+                  {nominations.length === 0 ? "No nominations yet. Share the site to get started!" : "No nominations match your filters."}
                 </div>
               )}
             </motion.div>
