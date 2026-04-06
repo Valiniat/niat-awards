@@ -26,11 +26,11 @@ const classGroups = [
 
 const RatingStars = ({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) => (
   <div className="flex items-center justify-between gap-2">
-    <span className="text-sm text-foreground">{label}</span>
-    <div className="flex gap-1">
+    <span className="text-xs sm:text-sm text-foreground">{label}</span>
+    <div className="flex gap-0.5 sm:gap-1">
       {[1, 2, 3, 4, 5].map((s) => (
-        <button key={s} type="button" onClick={() => onChange(s)}>
-          <Star className={`w-5 h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-muted-foreground/30"}`} />
+        <button key={s} type="button" onClick={() => onChange(s)} className="p-0.5">
+          <Star className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-muted-foreground/30"}`} />
         </button>
       ))}
     </div>
@@ -85,9 +85,10 @@ const StudentNominationForm = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h2>
-      <p className="text-muted-foreground mb-8">Tell us about the teacher who inspires you</p>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h2>
+      <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base">Tell us about the teacher who inspires you</p>
+
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div>
           <Label>What class are you in?</Label>
           <Select value={classGroup} onValueChange={setClassGroup}>
@@ -97,10 +98,11 @@ const StudentNominationForm = () => {
             </SelectContent>
           </Select>
         </div>
+
         <AnimatePresence mode="wait">
           {classGroup && (
-            <motion.div key={classGroup} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
-              <div className="grid sm:grid-cols-2 gap-4">
+            <motion.div key={classGroup} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div><Label>Your Name</Label><Input className="mt-1.5" value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required /></div>
                 <div><Label>Class</Label><Input className="mt-1.5" value={form.studentClass} onChange={(e) => set("studentClass", e.target.value)} placeholder="e.g. 7th" required /></div>
               </div>
@@ -115,12 +117,14 @@ const StudentNominationForm = () => {
                 </Select>
               </div>
               <div><Label>What's one special thing about this teacher?</Label><Textarea className="mt-1.5" value={form.specialThing} onChange={(e) => set("specialThing", e.target.value)} rows={3} required /></div>
+
               {(classGroup === "9-10" || classGroup === "11-12") && (
                 <>
                   <div><Label>Subject the teacher teaches</Label><Input className="mt-1.5" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
                   <div><Label>How has this teacher impacted you? (2–3 sentences)</Label><Textarea className="mt-1.5" value={form.impactStory} onChange={(e) => set("impactStory", e.target.value)} rows={4} required /></div>
                 </>
               )}
+
               {classGroup === "11-12" && (
                 <>
                   <div>
@@ -134,7 +138,7 @@ const StudentNominationForm = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="bg-card rounded-xl p-5 border border-border/50 space-y-4">
+                  <div className="bg-card rounded-xl p-4 sm:p-5 border border-border/50 space-y-3 sm:space-y-4">
                     <p className="font-heading font-semibold text-foreground text-sm">Rate your teacher</p>
                     <RatingStars label="Care for students" value={form.careRating} onChange={(v) => set("careRating", v)} />
                     <RatingStars label="Teaching clarity" value={form.clarityRating} onChange={(v) => set("clarityRating", v)} />
@@ -143,7 +147,8 @@ const StudentNominationForm = () => {
                   </div>
                 </>
               )}
-              <Button type="submit" variant="hero" size="lg" className="w-full py-6 rounded-xl text-base" disabled={loading}>
+
+              <Button type="submit" variant="hero" size="lg" className="w-full py-5 sm:py-6 rounded-xl text-sm sm:text-base" disabled={loading}>
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Nomination"}
               </Button>
             </motion.div>
