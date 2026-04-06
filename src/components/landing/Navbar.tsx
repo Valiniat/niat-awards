@@ -5,22 +5,7 @@ import { Menu, X, Award, LogIn, LogOut, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 
-const AnnouncementBar = () => (
-  <div className="bg-secondary/90 text-foreground py-2 text-center text-xs sm:text-sm font-medium">
-    <div className="container flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap px-3">
-      <span>🏆</span>
-      <span className="text-center leading-snug">
-        Nominations for Future-Ready Educator Awards 2026 are <strong>now open</strong>
-        <span className="hidden sm:inline"> — Deadline: 31 May 2026</span>
-      </span>
-      <Link to="/nominate">
-        <Button size="sm" variant="hero" className="text-xs px-3 py-1 h-6 sm:h-7 rounded-full ml-1">
-          Nominate Now
-        </Button>
-      </Link>
-    </div>
-  </div>
-);
+
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -35,7 +20,6 @@ const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <AnnouncementBar />
       <nav className="bg-foreground/95 backdrop-blur-lg border-b border-primary-foreground/10">
         <div className="container flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
           <Link to="/" className="flex items-center gap-2">
