@@ -10,9 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
+
+// Admin-only Supabase client — sends secret header so RLS allows full read/write
+const adminSupabase = createClient(
+  "https://hxiflxyduamfjuubdilr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00",
+  { global: { headers: { "x-admin-secret": "niat_admin_2026_secret" } } }
+);
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -89,7 +96,7 @@ const AdminPage = () => {
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id + status);
     try {
-      const { error } = await supabase.from("nominations").update({ status }).eq("id", id);
+      const { error } = await adminSupabase.from("nominations").update({ status }).eq("id", id);
       if (error) throw error;
       setNominations(prev => prev.map(n => n.id === id ? { ...n, status } : n));
       toast({ title: `Marked as ${status}!` });
