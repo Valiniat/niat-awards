@@ -24,11 +24,13 @@ const LoginPage = () => {
       return;
     }
     setLoading(true);
-    const success = await sendOtp(phone);
+    const result = await sendOtp(phone);
     setLoading(false);
-    if (success) {
+    if (result.success) {
       setStep("otp");
-      toast.success("OTP sent! Enter the 6-digit code to verify.");
+      toast.success("OTP sent! Check your SMS.");
+    } else {
+      toast.error(result.error || "Failed to send OTP. Please try again.");
     }
   };
 

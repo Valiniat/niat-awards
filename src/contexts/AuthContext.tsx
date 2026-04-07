@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
+const SUPABASE_URL = "https://hxiflxyduamfjuubdilr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00";
+
 interface User {
   phone: string;
   role: "student" | "teacher" | "admin";
@@ -9,7 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  sendOtp: (phone: string) => Promise<boolean>;
+  sendOtp: (phone: string) => Promise<{ success: boolean; error?: string }>;
   verifyOtp: (otp: string) => Promise<boolean>;
   setUserRole: (role: User["role"]) => void;
   setUserName: (name: string) => void;
@@ -39,19 +42,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     else localStorage.removeItem("niat_user");
   }, [user]);
 
-  const sendOtp = async (phone: string): Promise<boolean> => {
-    setPendingPhone(phone);
-    return true;
+  const sendOtp = async (phone: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPendingPhone(phone);
+        return { success: true };
+      }
+      return { success: false, error: data.error || "Failed to send OTP" };
+    } catch (err: any) {
+      return { success: false, error: "Network error. Please try again." };
+    }
   };
 
   const verifyOtp = async (otp: string): Promise<boolean> => {
-    // Any 6-digit OTP works for demo — no hint shown to user
-    if (otp.length === 6 && pendingPhone) {
-      setUser({ phone: pendingPhone, role: "student" });
-      setPendingPhone(null);
-      return true;
+    if (!pendingPhone) return false;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ phone: pendingPhone, otp }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUser({ phone: pendingPhone, role: "student" });
+        setPendingPhone(null);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
-    return false;
   };
 
   const setUserRole = (role: User["role"]) => { if (user) setUser({ ...user, role }); };
