@@ -134,9 +134,7 @@ const HeroSection = () => {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="w-full max-w-xs sm:max-w-sm rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-sm p-5 sm:p-8 text-center"
               >
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Award className="w-6 h-6 sm:w-8 sm:h-8 text-secondary-foreground" />
-                </div>
+                <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 sm:w-12 sm:h-12 object-contain mx-auto mb-3 sm:mb-4" />
                 <h3 className="font-heading text-lg sm:text-xl font-bold text-primary-foreground mb-2">
                   National Recognition
                 </h3>

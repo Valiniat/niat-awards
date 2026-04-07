@@ -6,9 +6,7 @@ const Footer = () => (
     <div className="container px-4">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary flex items-center justify-center border border-primary-foreground/20">
-            <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
-          </div>
+          <img src="/niat-logo.png" alt="NIAT Logo" className="w-8 h-8 object-contain" />
           <span className="font-heading font-bold text-primary-foreground text-sm sm:text-base">
             NIAT Educator Awards 2026
           </span>

@@ -35,9 +35,7 @@ const Navbar = () => {
       <nav className="bg-foreground/95 backdrop-blur-lg border-b border-primary-foreground/10">
         <div className="container flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary flex items-center justify-center border border-primary-foreground/20 flex-shrink-0">
-              <Award className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
-            </div>
+            <img src="/niat-logo.png" alt="NIAT Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain flex-shrink-0" />
             <div className="block">
               <span className="font-heading font-bold text-xs sm:text-sm text-primary leading-none block">NIAT</span>
               <span className="font-heading text-[9px] sm:text-[10px] text-primary-foreground/60 leading-none">
