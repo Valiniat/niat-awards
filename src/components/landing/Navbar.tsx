@@ -26,7 +26,6 @@ const Navbar = () => {
     { label: "Award Categories", hash: "#categories" },
     { label: "How It Works", hash: "#how-it-works" },
     { label: "Prizes", hash: "#prizes" },
-    { label: "Admin", hash: null, to: "/admin-login" },
   ];
 
   return (
