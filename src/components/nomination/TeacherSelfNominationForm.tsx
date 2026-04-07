@@ -6,10 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+const categoryGuide = [
+  { title: "Student Transformation Award", icon: "⭐", desc: "Teacher who changed a student's life through deep mentorship and personal care.", bg: "bg-primary/5", border: "border-primary/20", color: "text-primary" },
+  { title: "Teaching Innovation Award", icon: "💡", desc: "Teacher who uses creative, tech-driven methods that make learning exciting.", bg: "bg-secondary/5", border: "border-secondary/20", color: "text-secondary" },
+  { title: "Beyond Classroom Impact Award", icon: "🌍", desc: "Teacher who goes beyond the syllabus — community work, life skills, emotional support.", bg: "bg-primary/5", border: "border-primary/20", color: "text-primary" },
+  { title: "Future Readiness Award", icon: "🚀", desc: "Teacher who prepares students for tomorrow's careers with practical, future-focused education.", bg: "bg-secondary/5", border: "border-secondary/20", color: "text-secondary" },
+];
 
 const awardCategories = [
   "Student Transformation Award",
@@ -70,6 +77,71 @@ const TeacherSelfNominationForm = () => {
             <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select category" /></SelectTrigger>
             <SelectContent>{awardCategories.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent>
           </Select>
+
+          <AnimatePresence mode="wait">
+            {!form.awardCategory && (
+              <motion.div
+                key="guide"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3 }}
+                className="mt-3"
+              >
+                <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-1.5">
+                  <span>💬</span> Which category best describes your impact? Tap to select:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {categoryGuide.map((cat, i) => (
+                    <motion.button
+                      key={cat.title}
+                      type="button"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.08 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => set("awardCategory", cat.title)}
+                      className={`text-left p-3 rounded-xl border cursor-pointer transition-shadow hover:shadow-md ${cat.bg} ${cat.border}`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base">{cat.icon}</span>
+                        <span className={`text-xs font-semibold leading-tight ${cat.color}`}>
+                          {cat.title.replace(" Award", "")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-snug">{cat.desc}</p>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {form.awardCategory && (
+              <motion.div
+                key="selected"
+                initial={{ opacity: 0, scale: 0.96, y: 6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className={`mt-3 p-3 rounded-xl border flex items-start gap-3 ${categoryGuide.find(c => c.title === form.awardCategory)?.bg} ${categoryGuide.find(c => c.title === form.awardCategory)?.border}`}
+              >
+                <span className="text-2xl">{categoryGuide.find(c => c.title === form.awardCategory)?.icon}</span>
+                <div>
+                  <p className={`text-xs font-semibold ${categoryGuide.find(c => c.title === form.awardCategory)?.color}`}>
+                    ✓ {form.awardCategory}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                    {categoryGuide.find(c => c.title === form.awardCategory)?.desc}
+                  </p>
+                  <button type="button" onClick={() => set("awardCategory", "")}
+                    className="text-[10px] text-muted-foreground underline mt-1 hover:text-foreground transition-colors">
+                    Change category
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <div><Label>Your Impact Story</Label><Textarea className="mt-1.5" value={form.impactStory} onChange={(e) => set("impactStory", e.target.value)} rows={5} placeholder="Describe how you've made a difference in your students' lives..." required /></div>
         <div>

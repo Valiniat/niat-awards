@@ -18,6 +18,41 @@ const awardCategories = [
   "Future Readiness Award",
 ];
 
+const categoryGuide = [
+  {
+    title: "Student Transformation Award",
+    icon: "⭐",
+    desc: "Teacher who changed a student's life through deep mentorship, care, and personal attention.",
+    bg: "bg-primary/5",
+    border: "border-primary/20",
+    color: "text-primary",
+  },
+  {
+    title: "Teaching Innovation Award",
+    icon: "💡",
+    desc: "Teacher who uses creative, tech-driven, or fresh methods that make learning exciting.",
+    bg: "bg-secondary/5",
+    border: "border-secondary/20",
+    color: "text-secondary",
+  },
+  {
+    title: "Beyond Classroom Impact Award",
+    icon: "🌍",
+    desc: "Teacher who goes beyond the syllabus — community work, life skills, emotional support.",
+    bg: "bg-primary/5",
+    border: "border-primary/20",
+    color: "text-primary",
+  },
+  {
+    title: "Future Readiness Award",
+    icon: "🚀",
+    desc: "Teacher who prepares students for tomorrow's careers with practical, future-focused education.",
+    bg: "bg-secondary/5",
+    border: "border-secondary/20",
+    color: "text-secondary",
+  },
+];
+
 const classGroups = [
   { label: "Class 5–8", value: "5-8" },
   { label: "Class 9–10", value: "9-10" },
@@ -58,7 +93,6 @@ const StudentNominationForm = () => {
 
   const set = (key: string, val: string | number) => setForm((p) => ({ ...p, [key]: val }));
 
-  // Reset studentClass when group changes
   const handleGroupChange = (val: string) => {
     setClassGroup(val);
     set("studentClass", "");
@@ -95,6 +129,8 @@ const StudentNominationForm = () => {
     }
   };
 
+  const selectedCat = categoryGuide.find(c => c.title === form.awardCategory);
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h2>
@@ -102,7 +138,7 @@ const StudentNominationForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
 
-        {/* Step 1: Class group */}
+        {/* Class group */}
         <div>
           <Label>What class group are you in?</Label>
           <Select value={classGroup} onValueChange={handleGroupChange}>
@@ -113,7 +149,7 @@ const StudentNominationForm = () => {
           </Select>
         </div>
 
-        {/* Step 2: Specific class — appears after group is selected */}
+        {/* Specific class */}
         <AnimatePresence>
           {classGroup && (
             <motion.div key="class-select" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
@@ -130,7 +166,7 @@ const StudentNominationForm = () => {
           )}
         </AnimatePresence>
 
-        {/* Rest of form — appears after specific class is selected */}
+        {/* Rest of form */}
         <AnimatePresence mode="wait">
           {classGroup && form.studentClass && (
             <motion.div key={classGroup + form.studentClass} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-5">
@@ -140,12 +176,81 @@ const StudentNominationForm = () => {
               <div><Label>Phone Number</Label><Input className="mt-1.5" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
               <div><Label>Teacher's Name</Label><Input className="mt-1.5" value={form.teacherName} onChange={(e) => set("teacherName", e.target.value)} required /></div>
 
+              {/* ── Award Category with animated guide ── */}
               <div>
                 <Label>Award Category</Label>
                 <Select value={form.awardCategory} onValueChange={(v) => set("awardCategory", v)}>
                   <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select category" /></SelectTrigger>
                   <SelectContent>{awardCategories.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent>
                 </Select>
+
+                <AnimatePresence mode="wait">
+                  {/* Guide cards — shown when nothing selected */}
+                  {!form.awardCategory && (
+                    <motion.div
+                      key="guide"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-3"
+                    >
+                      <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-1.5">
+                        <span>💬</span> Not sure which to pick? Tap a category below:
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {categoryGuide.map((cat, i) => (
+                          <motion.button
+                            key={cat.title}
+                            type="button"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.08, duration: 0.3 }}
+                            whileHover={{ scale: 1.02, y: -2 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => set("awardCategory", cat.title)}
+                            className={`text-left p-3 rounded-xl border cursor-pointer transition-shadow hover:shadow-md ${cat.bg} ${cat.border}`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-base">{cat.icon}</span>
+                              <span className={`text-xs font-semibold leading-tight ${cat.color}`}>
+                                {cat.title.replace(" Award", "")}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-snug">{cat.desc}</p>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Selected category confirmation */}
+                  {form.awardCategory && selectedCat && (
+                    <motion.div
+                      key="selected"
+                      initial={{ opacity: 0, scale: 0.96, y: 6 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.25 }}
+                      className={`mt-3 p-3 rounded-xl border flex items-start gap-3 ${selectedCat.bg} ${selectedCat.border}`}
+                    >
+                      <span className="text-2xl">{selectedCat.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-xs font-semibold ${selectedCat.color} flex items-center gap-1`}>
+                          <span>✓</span> {selectedCat.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{selectedCat.desc}</p>
+                        <button
+                          type="button"
+                          onClick={() => set("awardCategory", "")}
+                          className="text-[10px] text-muted-foreground underline mt-1 hover:text-foreground transition-colors"
+                        >
+                          Change category
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <div><Label>What's one special thing about this teacher?</Label><Textarea className="mt-1.5" value={form.specialThing} onChange={(e) => set("specialThing", e.target.value)} rows={3} required /></div>
