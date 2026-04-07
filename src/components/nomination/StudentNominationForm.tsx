@@ -100,6 +100,14 @@ const StudentNominationForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.awardCategory) {
+      toast({ title: "Please select an award category", variant: "destructive" });
+      return;
+    }
+    if (form.phone.replace(/\D/g, "").length < 10) {
+      toast({ title: "Please enter a valid 10-digit phone number", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase.from("nominations").insert({

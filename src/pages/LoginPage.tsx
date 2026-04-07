@@ -28,7 +28,7 @@ const LoginPage = () => {
     setLoading(false);
     if (success) {
       setStep("otp");
-      toast.success("OTP sent! Use 000000 as the code.");
+      toast.success("OTP sent! Enter the 6-digit code to verify.");
     }
   };
 

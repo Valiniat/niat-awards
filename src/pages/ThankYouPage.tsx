@@ -9,7 +9,7 @@ const ThankYouPage = () => {
   const shareText = encodeURIComponent(
     "I just nominated my favourite teacher for India's Future-Ready Educator Awards 2026 by NIAT! 🏆 Nominate yours too: "
   );
-  const shareUrl = encodeURIComponent(window.location.origin);
+  const shareUrl = encodeURIComponent("https://www.niatawards.in");
 
   return (
     <div className="min-h-screen bg-background">

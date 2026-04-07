@@ -39,6 +39,14 @@ const TeacherSelfNominationForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.awardCategory) {
+      toast({ title: "Please select an award category", variant: "destructive" });
+      return;
+    }
+    if (form.phone.replace(/\D/g, "").length < 10) {
+      toast({ title: "Please enter a valid 10-digit phone number", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase.from("nominations").insert({
@@ -67,6 +75,7 @@ const TeacherSelfNominationForm = () => {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div><Label>Full Name</Label><Input className="mt-1.5" value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required /></div>
         <div><Label>School / College</Label><Input className="mt-1.5" value={form.school} onChange={(e) => set("school", e.target.value)} required /></div>
+        <div><Label>Phone Number</Label><Input className="mt-1.5" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div><Label>Subject</Label><Input className="mt-1.5" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
           <div><Label>Years of Experience</Label><Input className="mt-1.5" type="number" value={form.experience} onChange={(e) => set("experience", e.target.value)} required /></div>

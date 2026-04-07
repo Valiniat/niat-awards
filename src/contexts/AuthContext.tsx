@@ -25,12 +25,12 @@ export const useAuth = () => {
   return ctx;
 };
 
-const MASTER_OTP = "000000";
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("niat_user");
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = localStorage.getItem("niat_user");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
   });
   const [pendingPhone, setPendingPhone] = useState<string | null>(null);
 
@@ -40,13 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const sendOtp = async (phone: string): Promise<boolean> => {
-    // Simulate OTP send
     setPendingPhone(phone);
     return true;
   };
 
   const verifyOtp = async (otp: string): Promise<boolean> => {
-    if (otp === MASTER_OTP && pendingPhone) {
+    // Any 6-digit OTP works for demo — no hint shown to user
+    if (otp.length === 6 && pendingPhone) {
       setUser({ phone: pendingPhone, role: "student" });
       setPendingPhone(null);
       return true;
@@ -54,18 +54,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
 
-  const setUserRole = (role: User["role"]) => {
-    if (user) setUser({ ...user, role });
-  };
-
-  const setUserName = (name: string) => {
-    if (user) setUser({ ...user, name });
-  };
-
-  const logout = () => {
-    setUser(null);
-    setPendingPhone(null);
-  };
+  const setUserRole = (role: User["role"]) => { if (user) setUser({ ...user, role }); };
+  const setUserName = (name: string) => { if (user) setUser({ ...user, name }); };
+  const logout = () => { setUser(null); setPendingPhone(null); };
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, sendOtp, verifyOtp, setUserRole, setUserName, logout, pendingPhone }}>

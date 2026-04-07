@@ -1,22 +1,37 @@
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import Navbar from "@/components/landing/Navbar";
+import Footer from "@/components/landing/Footer";
 
 const NotFound = () => {
   const location = useLocation();
-
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.error("404:", location.pathname);
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
+    <div className="min-h-screen bg-gradient-dark flex flex-col">
+      <Navbar />
+      <div className="flex-1 flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-[120px] font-heading font-bold text-primary-foreground/10 leading-none mb-2">404</div>
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-primary-foreground mb-3">Page not found</h1>
+          <p className="text-primary-foreground/50 mb-8 text-base">The page you're looking for doesn't exist or has been moved.</p>
+          <Link to="/">
+            <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white font-semibold text-sm ring-1 ring-white/10 hover:from-[#A52222] hover:to-[#851717] transition-all">
+              <ArrowLeft className="w-4 h-4" /> Back to Home
+            </button>
+          </Link>
+        </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };
