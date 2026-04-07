@@ -1,24 +1,66 @@
-import { Award } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => (
-  <footer className="py-8 sm:py-12 bg-gradient-dark">
-    <div className="container px-4">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
-        <div className="flex items-center gap-2.5">
-          <img src="/niat-logo.png" alt="NIAT Logo" className="w-8 h-8 object-contain" />
-          <span className="font-heading font-bold text-primary-foreground text-sm sm:text-base">
-            NIAT Educator Awards 2026
-          </span>
+  <footer className="bg-[#0a0a0a] border-t border-white/[0.05]">
+    {/* Top section */}
+    <div className="container px-4 sm:px-6 py-10 sm:py-14">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
+
+        {/* Brand block */}
+        <div className="flex flex-col gap-4 max-w-xs">
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] shadow-lg shadow-[#8B1A1A]/25 ring-1 ring-white/10 flex items-center justify-center flex-shrink-0">
+              <img src="/niat-logo.png" alt="NIAT" className="w-7 h-7 object-contain" />
+            </div>
+            <div className="leading-none">
+              <p className="font-heading font-bold text-[15px] text-white tracking-wide">NIAT</p>
+              <p className="text-[10px] text-white/35 font-medium mt-0.5 tracking-wide">Educator Awards 2026</p>
+            </div>
+          </div>
+          <p className="text-[13px] text-white/30 leading-relaxed">
+            Celebrating India's most impactful teachers. Nominating the educators who build futures, not just scores.
+          </p>
         </div>
-        <div className="flex items-center gap-4 sm:gap-6 text-primary-foreground/40 text-sm">
-          <Link to="/" className="hover:text-primary-foreground/70 transition-colors">Home</Link>
-          <Link to="/nominate" className="hover:text-primary-foreground/70 transition-colors">Nominate</Link>
-          <Link to="/vote" className="hover:text-primary-foreground/70 transition-colors">Vote</Link>
+
+        {/* Links */}
+        <div className="flex gap-12 sm:gap-16">
+          <div>
+            <p className="text-[11px] font-semibold text-white/20 uppercase tracking-widest mb-3">Navigate</p>
+            <div className="flex flex-col gap-2">
+              {[
+                { label: "Home", to: "/" },
+                { label: "Nominate", to: "/nominate" },
+                { label: "Vote", to: "/vote" },
+              ].map(l => (
+                <Link key={l.to} to={l.to}
+                  className="text-[13px] text-white/40 hover:text-white/80 transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold text-white/20 uppercase tracking-widest mb-3">Awards</p>
+            <div className="flex flex-col gap-2">
+              {["Student Transformation", "Teaching Innovation", "Beyond Classroom", "Future Readiness"].map(l => (
+                <span key={l} className="text-[13px] text-white/40">{l}</span>
+              ))}
+            </div>
+          </div>
         </div>
-        <p className="text-primary-foreground/40 text-xs sm:text-sm">
-          © 2026 NxtWave Institute of Advanced Technologies
+      </div>
+    </div>
+
+    {/* Bottom bar */}
+    <div className="border-t border-white/[0.04]">
+      <div className="container px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p className="text-[11px] text-white/20">
+          © 2026 NxtWave Institute of Advanced Technologies. All rights reserved.
         </p>
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-[11px] text-white/20">All systems operational</span>
+        </div>
       </div>
     </div>
   </footer>

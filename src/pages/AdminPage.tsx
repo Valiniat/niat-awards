@@ -146,7 +146,9 @@ const AdminPage = () => {
             <Link to="/" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <img src="/niat-logo.png" alt="NIAT" className="w-8 h-8 object-contain" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] ring-1 ring-white/10 flex items-center justify-center flex-shrink-0">
+              <img src="/niat-logo.png" alt="NIAT" className="w-5 h-5 object-contain" />
+            </div>
             <div>
               <h1 className="font-heading text-base sm:text-lg font-bold text-primary-foreground">Admin Dashboard</h1>
               <p className="text-[10px] sm:text-xs text-primary-foreground/40">Future-Ready Educator Awards 2026</p>
