@@ -1,25 +1,33 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Award, Users, TrendingUp, Download, Search,
   CheckCircle2, XCircle, Eye, BarChart3, ArrowLeft, Star,
-  Loader2, RefreshCw, LogOut
+  Loader2, RefreshCw, LogOut, Pencil, X, Save
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
 
-// Admin-only Supabase client — sends secret header so RLS allows full read/write
 const adminSupabase = createClient(
   "https://hxiflxyduamfjuubdilr.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00",
   { global: { headers: { "x-admin-secret": "niat_admin_2026_secret" } } }
 );
+
+const awardCategories = [
+  "Student Transformation Award",
+  "Teaching Innovation Award",
+  "Beyond Classroom Impact Award",
+  "Future Readiness Award",
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -29,9 +37,9 @@ const fadeUp = {
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
     shortlisted: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    winner:      "bg-green-500/10 text-green-400 border-green-500/20",
-    pending:     "bg-secondary/10 text-secondary border-secondary/20",
-    rejected:    "bg-destructive/10 text-destructive border-destructive/20",
+    winner: "bg-green-500/10 text-green-400 border-green-500/20",
+    pending: "bg-secondary/10 text-secondary border-secondary/20",
+    rejected: "bg-destructive/10 text-destructive border-destructive/20",
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || styles.pending}`}>
@@ -40,6 +48,197 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+// ── Edit Modal ──
+const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: () => void; onSave: (updated: any) => void }) => {
+  const [form, setForm] = useState({ ...nomination });
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
+
+  const set = (key: string, val: string) => setForm((p: any) => ({ ...p, [key]: val }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { error } = await adminSupabase
+        .from("nominations")
+        .update({
+          teacher_name: form.teacher_name,
+          full_name: form.full_name,
+          school_name: form.school_name,
+          award_category: form.award_category,
+          student_name: form.student_name,
+          student_class: form.student_class,
+          phone: form.phone,
+          subject: form.subject,
+          special_thing: form.special_thing,
+          impact_story: form.impact_story,
+          status: form.status,
+          experience: form.experience,
+        })
+        .eq("id", nomination.id);
+
+      if (error) throw error;
+      toast({ title: "✅ Nomination updated successfully!" });
+      onSave(form);
+      onClose();
+    } catch (err: any) {
+      toast({ title: "Update failed", description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)" }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-[#141414] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-[#141414] z-10">
+          <div>
+            <h2 className="font-heading text-lg font-bold text-white">Edit Nomination</h2>
+            <p className="text-xs text-white/40 mt-0.5">Make changes and save</p>
+          </div>
+          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className="p-5 space-y-4">
+
+          {/* Status — most important, at top */}
+          <div className="bg-white/[0.03] rounded-xl p-4 border border-white/10">
+            <Label className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3 block">Application Status</Label>
+            <div className="grid grid-cols-4 gap-2">
+              {["pending", "shortlisted", "winner", "rejected"].map(s => (
+                <button key={s} type="button"
+                  onClick={() => set("status", s)}
+                  className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                    form.status === s
+                      ? s === "pending" ? "bg-secondary/20 border-secondary text-secondary"
+                        : s === "shortlisted" ? "bg-blue-500/20 border-blue-400 text-blue-400"
+                        : s === "winner" ? "bg-green-500/20 border-green-400 text-green-400"
+                        : "bg-red-500/20 border-red-400 text-red-400"
+                      : "bg-white/5 border-white/10 text-white/40 hover:border-white/20"
+                  }`}>
+                  {s === "pending" ? "⏳ Pending" : s === "shortlisted" ? "✅ Shortlist" : s === "winner" ? "🏆 Winner" : "❌ Reject"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Nomination type badge */}
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-semibold px-3 py-1 rounded-full ${nomination.type === "student" ? "bg-primary/20 text-primary-foreground" : "bg-secondary/20 text-secondary"}`}>
+              {nomination.type === "student" ? "👨‍🎓 Student Nomination" : "👩‍🏫 Teacher Self-Nomination"}
+            </span>
+            <span className="text-xs text-white/30">{new Date(nomination.created_at).toLocaleString("en-IN")}</span>
+          </div>
+
+          {/* Teacher / Applicant Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {nomination.type === "student" ? (
+              <>
+                <div>
+                  <Label className="text-white/60 text-xs mb-1.5 block">Teacher's Name</Label>
+                  <Input value={form.teacher_name || ""} onChange={e => set("teacher_name", e.target.value)}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+                </div>
+                <div>
+                  <Label className="text-white/60 text-xs mb-1.5 block">Student's Name</Label>
+                  <Input value={form.student_name || ""} onChange={e => set("student_name", e.target.value)}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+                </div>
+              </>
+            ) : (
+              <div className="sm:col-span-2">
+                <Label className="text-white/60 text-xs mb-1.5 block">Applicant Full Name</Label>
+                <Input value={form.full_name || ""} onChange={e => set("full_name", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+              </div>
+            )}
+            <div>
+              <Label className="text-white/60 text-xs mb-1.5 block">School / College</Label>
+              <Input value={form.school_name || ""} onChange={e => set("school_name", e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+            </div>
+            <div>
+              <Label className="text-white/60 text-xs mb-1.5 block">Phone</Label>
+              <Input value={form.phone || ""} onChange={e => set("phone", e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+            </div>
+            {nomination.type === "student" && (
+              <div>
+                <Label className="text-white/60 text-xs mb-1.5 block">Student Class</Label>
+                <Input value={form.student_class || ""} onChange={e => set("student_class", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+              </div>
+            )}
+            {nomination.type === "teacher" && (
+              <div>
+                <Label className="text-white/60 text-xs mb-1.5 block">Years of Experience</Label>
+                <Input value={form.experience || ""} onChange={e => set("experience", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+              </div>
+            )}
+            <div>
+              <Label className="text-white/60 text-xs mb-1.5 block">Subject</Label>
+              <Input value={form.subject || ""} onChange={e => set("subject", e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
+            </div>
+          </div>
+
+          {/* Award Category */}
+          <div>
+            <Label className="text-white/60 text-xs mb-1.5 block">Award Category</Label>
+            <Select value={form.award_category || ""} onValueChange={v => set("award_category", v)}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {awardCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Story fields */}
+          {form.special_thing !== undefined && (
+            <div>
+              <Label className="text-white/60 text-xs mb-1.5 block">Special Thing About Teacher</Label>
+              <Textarea value={form.special_thing || ""} onChange={e => set("special_thing", e.target.value)} rows={3}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/25 resize-none" />
+            </div>
+          )}
+          {form.impact_story !== undefined && form.impact_story !== null && (
+            <div>
+              <Label className="text-white/60 text-xs mb-1.5 block">Impact Story</Label>
+              <Textarea value={form.impact_story || ""} onChange={e => set("impact_story", e.target.value)} rows={4}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/25 resize-none" />
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between p-5 border-t border-white/10 sticky bottom-0 bg-[#141414]">
+          <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white text-sm font-semibold ring-1 ring-white/10 hover:from-[#A52222] transition-all disabled:opacity-50">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Save Changes
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// ── Main Admin Page ──
 const AdminPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -50,18 +249,11 @@ const AdminPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [editingNom, setEditingNom] = useState<any | null>(null);
 
-  // Guard — redirect to login if not authenticated
-  useEffect(() => {
-    if (!isAdminLoggedIn()) {
-      navigate("/admin-login");
-    }
-  }, []);
+  useEffect(() => { if (!isAdminLoggedIn()) navigate("/admin-login"); }, []);
 
-  const handleLogout = () => {
-    adminLogout();
-    navigate("/admin-login");
-  };
+  const handleLogout = () => { adminLogout(); navigate("/admin-login"); };
 
   const total = nominations.length;
   const pending = nominations.filter(n => n.status === "pending").length;
@@ -76,22 +268,17 @@ const AdminPage = () => {
   const fetchNominations = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("nominations")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await adminSupabase.from("nominations").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       setNominations(data || []);
     } catch (err: any) {
-      toast({ title: "Failed to load nominations", description: err.message, variant: "destructive" });
+      toast({ title: "Failed to load", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (isAdminLoggedIn()) fetchNominations();
-  }, []);
+  useEffect(() => { if (isAdminLoggedIn()) fetchNominations(); }, []);
 
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id + status);
@@ -107,10 +294,15 @@ const AdminPage = () => {
     }
   };
 
+  const handleEditSave = (updated: any) => {
+    setNominations(prev => prev.map(n => n.id === updated.id ? updated : n));
+  };
+
   const filtered = nominations.filter(n => {
     const name = (n.teacher_name || n.full_name || "").toLowerCase();
     const school = (n.school_name || "").toLowerCase();
-    const matchSearch = name.includes(search.toLowerCase()) || school.includes(search.toLowerCase());
+    const studentName = (n.student_name || "").toLowerCase();
+    const matchSearch = name.includes(search.toLowerCase()) || school.includes(search.toLowerCase()) || studentName.includes(search.toLowerCase());
     const matchCategory = categoryFilter === "All" || n.award_category === categoryFilter;
     const matchStatus = statusFilter === "All" || n.status === statusFilter;
     const matchType = typeFilter === "All" || n.type === typeFilter;
@@ -118,16 +310,11 @@ const AdminPage = () => {
   });
 
   const categories = ["All", ...Array.from(new Set(nominations.map(n => n.award_category).filter(Boolean)))];
-  const topNominated = nominations[0];
 
   const exportCSV = () => {
     const rows = [
       ["Type", "Teacher/Applicant", "School", "Category", "Class", "Phone", "Status", "Date"],
-      ...filtered.map(n => [
-        n.type, n.teacher_name || n.full_name, n.school_name, n.award_category,
-        n.student_class || (n.experience ? `${n.experience} yrs` : ""), n.phone, n.status,
-        new Date(n.created_at).toLocaleDateString("en-IN")
-      ])
+      ...filtered.map(n => [n.type, n.teacher_name || n.full_name, n.school_name, n.award_category, n.student_class || (n.experience ? `${n.experience} yrs` : ""), n.phone, n.status, new Date(n.created_at).toLocaleDateString("en-IN")])
     ];
     const csv = rows.map(r => r.map(v => `"${v || ""}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -139,6 +326,17 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-dark">
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingNom && (
+          <EditModal
+            nomination={editingNom}
+            onClose={() => setEditingNom(null)}
+            onSave={handleEditSave}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="border-b border-primary-foreground/10 bg-foreground/50 backdrop-blur-lg sticky top-0 z-30">
         <div className="container flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
@@ -156,16 +354,13 @@ const AdminPage = () => {
           </div>
           <div className="flex items-center gap-2">
             <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={fetchNominations}>
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Refresh</span>
+              <RefreshCw className="w-3.5 h-3.5" /><span className="hidden sm:inline">Refresh</span>
             </Button>
             <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={exportCSV}>
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Export CSV</span>
+              <Download className="w-3.5 h-3.5" /><span className="hidden sm:inline">Export CSV</span>
             </Button>
             <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={handleLogout}>
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className="w-3.5 h-3.5" /><span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
@@ -201,7 +396,7 @@ const AdminPage = () => {
               ))}
             </div>
 
-            {/* Charts */}
+            {/* Category chart */}
             <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                 className="lg:col-span-2 rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 p-5 sm:p-6">
@@ -248,14 +443,14 @@ const AdminPage = () => {
                     <span className="text-sm sm:text-base font-bold text-primary-foreground">{item.count}</span>
                   </div>
                 ))}
-                {topNominated && (
+                {nominations[0] && (
                   <div className="mt-2 p-4 rounded-lg bg-primary-foreground/5 border border-primary-foreground/10">
                     <div className="flex items-center gap-2 mb-2">
                       <Star className="w-4 h-4 text-secondary" />
                       <span className="text-sm font-semibold text-primary-foreground">Latest Submission</span>
                     </div>
-                    <p className="text-sm text-primary-foreground/60">{topNominated.teacher_name || topNominated.full_name || "—"}</p>
-                    <p className="text-xs text-primary-foreground/40">{topNominated.school_name || ""} · {new Date(topNominated.created_at).toLocaleDateString("en-IN")}</p>
+                    <p className="text-sm text-primary-foreground/60">{nominations[0].teacher_name || nominations[0].full_name || "—"}</p>
+                    <p className="text-xs text-primary-foreground/40">{nominations[0].school_name || ""} · {new Date(nominations[0].created_at).toLocaleDateString("en-IN")}</p>
                   </div>
                 )}
               </motion.div>
@@ -272,7 +467,7 @@ const AdminPage = () => {
                   <div className="flex flex-wrap gap-2">
                     <div className="relative flex-1 min-w-[160px]">
                       <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-primary-foreground/30" />
-                      <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}
+                      <Input placeholder="Search teacher, student, school..." value={search} onChange={(e) => setSearch(e.target.value)}
                         className="pl-9 bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/30 text-sm h-9" />
                     </div>
                     <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -303,7 +498,7 @@ const AdminPage = () => {
                 <table className="w-full min-w-[700px]">
                   <thead>
                     <tr className="border-b border-primary-foreground/10">
-                      {["Type", "Teacher / Applicant", "School", "Category", "Class / Exp", "Phone", "Status", "Date", "Actions"].map(h => (
+                      {["Type", "Teacher / Applicant", "Student", "School", "Category", "Phone", "Status", "Date", "Actions"].map(h => (
                         <th key={h} className="text-left text-[10px] sm:text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider px-4 sm:px-5 py-3">{h}</th>
                       ))}
                     </tr>
@@ -317,19 +512,25 @@ const AdminPage = () => {
                             {n.type}
                           </span>
                         </td>
-                        <td className="px-4 sm:px-5 py-3 text-xs sm:text-sm font-medium text-primary-foreground max-w-[140px] truncate">{n.teacher_name || n.full_name || "—"}</td>
-                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[130px] truncate">{n.school_name || "—"}</td>
+                        <td className="px-4 sm:px-5 py-3 text-xs sm:text-sm font-medium text-primary-foreground max-w-[130px] truncate">{n.teacher_name || n.full_name || "—"}</td>
+                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[100px] truncate">{n.student_name || "—"}</td>
+                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[120px] truncate">{n.school_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <Badge variant="outline" className="text-[10px] border-primary-foreground/20 text-primary-foreground/60 whitespace-nowrap">
                             {n.award_category?.replace(" Award", "") || "—"}
                           </Badge>
                         </td>
-                        <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.student_class || (n.experience ? `${n.experience} yrs` : "—")}</td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.phone || "—"}</td>
                         <td className="px-4 sm:px-5 py-3"><StatusBadge status={n.status} /></td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">{new Date(n.created_at).toLocaleDateString("en-IN")}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <div className="flex items-center gap-1">
+                            {/* Edit button */}
+                            <button onClick={() => setEditingNom(n)}
+                              className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit nomination">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            {/* Quick status buttons */}
                             <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id + "shortlisted" || n.status === "shortlisted"}
                               className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist">
                               {updating === n.id + "shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
