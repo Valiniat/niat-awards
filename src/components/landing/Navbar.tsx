@@ -77,7 +77,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-white/30 flex items-center gap-1.5">
-                  <User className="w-3 h-3" />{user?.phone}
+                  <User className="w-3 h-3" />{user?.name || user?.phone}
                 </span>
                 <button onClick={logout}
                   className="text-white/30 hover:text-white/70 transition-colors" title="Logout">
