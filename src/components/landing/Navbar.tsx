@@ -75,13 +75,19 @@ const Navbar = () => {
           {/* ── CTA + Auth ── */}
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-white/30 flex items-center gap-1.5">
-                  <User className="w-3 h-3" />{user?.name || user?.phone}
-                </span>
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 bg-white/8 border border-white/10 rounded-lg px-3 py-1.5">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#9B2020] to-[#7A1515] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[9px] font-bold text-white">{(user?.name || user?.phone || "U")[0].toUpperCase()}</span>
+                  </div>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[12px] font-semibold text-white">{user?.name || "User"}</span>
+                    <span className="text-[10px] text-white/40">{user?.phone}</span>
+                  </div>
+                </div>
                 <button onClick={logout}
-                  className="text-white/30 hover:text-white/70 transition-colors" title="Logout">
-                  <LogOut className="w-4 h-4" />
+                  className="text-white/30 hover:text-white/70 transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Logout">
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
