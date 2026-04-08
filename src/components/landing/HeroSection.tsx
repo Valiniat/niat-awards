@@ -84,7 +84,7 @@ const HeroSection = () => {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
                 <Button variant="hero-outline" size="lg" className="text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 rounded-lg w-full sm:w-auto" onClick={handleApply}>
-                  Apply as Educator
+                  Apply as Teacher
                 </Button>
               </div>
 
