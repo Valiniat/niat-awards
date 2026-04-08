@@ -14,14 +14,12 @@ serve(async (req) => {
   try {
     const { phone } = await req.json();
     const cleaned = phone.replace(/\D/g, "").slice(-10);
-    if (cleaned.length !== 10) {
-      return new Response(JSON.stringify({ error: "Enter a valid 10-digit number" }), { status: 400, headers: cors });
-    }
+    if (cleaned.length !== 10) return new Response(JSON.stringify({ error: "Enter a valid 10-digit number" }), { status: 400, headers: cors });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store OTP in DB
-    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/otp_verifications`, {
+    // Store OTP in DB with 5 min expiry
+    await fetch(`${SUPABASE_URL}/rest/v1/otp_verifications`, {
       method: "POST",
       headers: {
         "apikey": SUPABASE_SERVICE_KEY,
@@ -36,18 +34,14 @@ serve(async (req) => {
       }),
     });
 
-    if (!dbRes.ok) {
-      const dbErr = await dbRes.text();
-      console.error("DB error:", dbErr);
-      return new Response(JSON.stringify({ error: "Database error: " + dbErr }), { status: 500, headers: cors });
-    }
-
-    // Send via Fast2SMS using GET method (more reliable)
+    // Use Quick route (no DLT/website verification needed)
+    const message = `${otp} is your OTP for NIAT Educator Awards 2026. Valid for 5 minutes. Do not share with anyone.`;
     const params = new URLSearchParams({
       authorization: FAST2SMS_API_KEY,
-      variables_values: otp,
-      route: "otp",
+      route: "q",
+      message,
       numbers: cleaned,
+      flash: "0",
     });
 
     const smsRes = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params.toString()}`, {
@@ -56,7 +50,7 @@ serve(async (req) => {
     });
 
     const rawText = await smsRes.text();
-    console.log("Fast2SMS raw response:", rawText);
+    console.log("Fast2SMS response:", rawText);
 
     let smsData: any = {};
     try { smsData = JSON.parse(rawText); } catch { smsData = { return: false, message: [rawText] }; }
