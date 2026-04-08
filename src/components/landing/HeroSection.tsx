@@ -132,16 +132,19 @@ const HeroSection = () => {
               <motion.div
                 animate={{ y: [-4, 4, -4] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="w-full max-w-xs sm:max-w-sm rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-sm p-5 sm:p-8 text-center"
+                className="w-full max-w-xs sm:max-w-sm rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-sm p-6 sm:p-8 text-center"
               >
-                <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 sm:w-12 sm:h-12 object-contain mx-auto mb-3 sm:mb-4" />
+                {/* Logo badge — enlarged and prominent */}
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] ring-2 ring-white/10 shadow-lg shadow-[#8B1A1A]/30 flex items-center justify-center mx-auto mb-4 sm:mb-5">
+                  <img src="/niat-logo.png" alt="NIAT" className="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
+                </div>
                 <h3 className="font-heading text-lg sm:text-xl font-bold text-primary-foreground mb-2">
                   National Recognition
                 </h3>
-                <p className="text-xs sm:text-sm text-primary-foreground/70 mb-3 sm:mb-4 leading-relaxed">
+                <p className="text-xs sm:text-sm text-primary-foreground/75 mb-4 sm:mb-5 leading-relaxed">
                   Winners receive national recognition, a certificate of excellence, and a ₹50,000 prize.
                 </p>
-                <div className="flex items-center justify-center gap-1 mb-1">
+                <div className="flex items-center justify-center gap-1 mb-1.5">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-secondary text-secondary" />
                   ))}
