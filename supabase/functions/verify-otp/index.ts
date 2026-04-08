@@ -1,9 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID")!;
-const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN")!;
-const TWILIO_VERIFY_SID = Deno.env.get("TWILIO_VERIFY_SID")!;
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -16,27 +12,54 @@ serve(async (req) => {
     const { phone, otp } = await req.json();
     if (!phone || !otp) return new Response(JSON.stringify({ error: "Phone and OTP required" }), { status: 400, headers: corsHeaders });
 
-    const formatted = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "").slice(-10)}`;
+    const cleaned = phone.replace(/\D/g, "").slice(-10);
 
-    const response = await fetch(
-      `https://verify.twilio.com/v2/Services/${TWILIO_VERIFY_SID}/VerificationChecks`,
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    // Fetch OTP record
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/otp_verifications?phone=eq.${cleaned}&select=otp,expires_at`,
       {
-        method: "POST",
         headers: {
-          "Authorization": `Basic ${btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`)}`,
-          "Content-Type": "application/x-www-form-urlencoded",
+          "apikey": SUPABASE_SERVICE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_KEY}`,
         },
-        body: new URLSearchParams({ To: formatted, Code: otp }),
       }
     );
 
-    const data = await response.json();
+    const records = await res.json();
 
-    if (!response.ok || data.status !== "approved") {
-      return new Response(JSON.stringify({ success: false, error: "Invalid OTP" }), {
+    if (!records || records.length === 0) {
+      return new Response(JSON.stringify({ success: false, error: "OTP not found. Please request a new one." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
+
+    const record = records[0];
+
+    // Check expiry
+    if (new Date() > new Date(record.expires_at)) {
+      return new Response(JSON.stringify({ success: false, error: "OTP expired. Please request a new one." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // Check OTP match
+    if (record.otp !== otp) {
+      return new Response(JSON.stringify({ success: false, error: "Invalid OTP. Please try again." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // Delete used OTP
+    await fetch(`${SUPABASE_URL}/rest/v1/otp_verifications?phone=eq.${cleaned}`, {
+      method: "DELETE",
+      headers: {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": `Bearer ${SUPABASE_SERVICE_KEY}`,
+      },
+    });
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" }
