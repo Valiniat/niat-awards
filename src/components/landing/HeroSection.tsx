@@ -28,7 +28,7 @@ const CountdownBox = ({ value, label }: { value: number; label: string }) => (
     <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 flex items-center justify-center">
       <span className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-primary-foreground">{String(value).padStart(2, "0")}</span>
     </div>
-    <span className="text-[9px] sm:text-[10px] text-primary-foreground/50 mt-1.5 uppercase tracking-wider">{label}</span>
+    <span className="text-[9px] sm:text-[10px] text-primary-foreground/70 mt-1.5 uppercase tracking-wider">{label}</span>
   </div>
 );
 
@@ -62,7 +62,7 @@ const HeroSection = () => {
 
             {/* Left Column */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-              <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/50 font-medium mb-3 sm:mb-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/70 font-medium mb-3 sm:mb-4">
                 NIAT Presents
               </p>
               <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-primary-foreground leading-[1.1] mb-4 sm:mb-6">
@@ -70,10 +70,10 @@ const HeroSection = () => {
                 <span className="text-secondary">Future-Ready</span>
                 <br />Educator Awards
               </h1>
-              <p className="text-base sm:text-lg text-primary-foreground/60 max-w-lg mb-2 leading-relaxed">
+              <p className="text-base sm:text-lg text-primary-foreground/80 max-w-lg mb-2 leading-relaxed">
                 For the teachers who build futures, not just scores.
               </p>
-              <p className="text-sm sm:text-base text-primary-foreground/40 max-w-lg mb-8 sm:mb-10">
+              <p className="text-sm sm:text-base text-primary-foreground/60 max-w-lg mb-8 sm:mb-10">
                 Nominate the educator who changed your life.
               </p>
 
@@ -92,15 +92,15 @@ const HeroSection = () => {
               <div className="flex items-center gap-4 sm:gap-8 text-primary-foreground flex-wrap">
                 <div className="border-r border-primary-foreground/20 pr-4 sm:pr-8">
                   <div className="text-xl sm:text-2xl font-bold">12,400+</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/50">Nominations</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/70">Nominations</div>
                 </div>
                 <div className="border-r border-primary-foreground/20 pr-4 sm:pr-8">
                   <div className="text-xl sm:text-2xl font-bold">28 States</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/50">Covered</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/70">Covered</div>
                 </div>
                 <div>
                   <div className="text-xl sm:text-2xl font-bold">4 Categories</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/50">Awards</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-foreground/70">Awards</div>
                 </div>
               </div>
             </motion.div>
@@ -114,7 +114,7 @@ const HeroSection = () => {
             >
               {/* Countdown */}
               <div className="text-center w-full">
-                <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-primary-foreground/50 font-semibold mb-3 sm:mb-4">
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-primary-foreground/70 font-semibold mb-3 sm:mb-4">
                   Nominations Close In
                 </p>
                 <div className="flex items-center justify-center gap-1.5 sm:gap-2">
@@ -138,7 +138,7 @@ const HeroSection = () => {
                 <h3 className="font-heading text-lg sm:text-xl font-bold text-primary-foreground mb-2">
                   National Recognition
                 </h3>
-                <p className="text-xs sm:text-sm text-primary-foreground/50 mb-3 sm:mb-4 leading-relaxed">
+                <p className="text-xs sm:text-sm text-primary-foreground/70 mb-3 sm:mb-4 leading-relaxed">
                   Winners receive national recognition, a certificate of excellence, and a ₹50,000 prize.
                 </p>
                 <div className="flex items-center justify-center gap-1 mb-1">
@@ -146,7 +146,7 @@ const HeroSection = () => {
                     <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-secondary text-secondary" />
                   ))}
                 </div>
-                <p className="text-xs text-primary-foreground/40">Rated 4.9/5 by past nominees</p>
+                <p className="text-xs text-primary-foreground/60">Rated 4.9/5 by past nominees</p>
               </motion.div>
 
               {/* Deadline badge */}

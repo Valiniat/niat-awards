@@ -71,7 +71,7 @@ const TeacherSelfNominationForm = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-2">Teacher Self-Nomination</h2>
-      <p className="text-muted-foreground mb-8">Share your story and showcase your impact</p>
+      <p className="text-foreground/60 mb-8">Share your story and showcase your impact</p>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div><Label>Full Name</Label><Input className="mt-1.5" value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required /></div>
         <div><Label>School / College</Label><Input className="mt-1.5" value={form.school} onChange={(e) => set("school", e.target.value)} required /></div>
@@ -97,7 +97,7 @@ const TeacherSelfNominationForm = () => {
                 transition={{ duration: 0.3 }}
                 className="mt-3"
               >
-                <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-1.5">
+                <p className="text-xs text-foreground/60 mb-2 font-medium flex items-center gap-1.5">
                   <span>💬</span> Which category best describes your impact? Tap to select:
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -119,7 +119,7 @@ const TeacherSelfNominationForm = () => {
                           {cat.title.replace(" Award", "")}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-snug">{cat.desc}</p>
+                      <p className="text-xs text-foreground/60 leading-snug">{cat.desc}</p>
                     </motion.button>
                   ))}
                 </div>
@@ -140,11 +140,11 @@ const TeacherSelfNominationForm = () => {
                   <p className={`text-xs font-semibold ${categoryGuide.find(c => c.title === form.awardCategory)?.color}`}>
                     ✓ {form.awardCategory}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                  <p className="text-xs text-foreground/60 mt-0.5 leading-snug">
                     {categoryGuide.find(c => c.title === form.awardCategory)?.desc}
                   </p>
                   <button type="button" onClick={() => set("awardCategory", "")}
-                    className="text-[10px] text-muted-foreground underline mt-1 hover:text-foreground transition-colors">
+                    className="text-[10px] text-foreground/60 underline mt-1 hover:text-foreground transition-colors">
                     Change category
                   </button>
                 </div>
@@ -156,9 +156,9 @@ const TeacherSelfNominationForm = () => {
         <div>
           <Label>Supporting Documents (optional)</Label>
           <div className="mt-1.5 border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors cursor-pointer">
-            <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Click to upload or drag files here</p>
-            <p className="text-xs text-muted-foreground/70 mt-1">PDF, images up to 10MB</p>
+            <Upload className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
+            <p className="text-sm text-foreground/60">Click to upload or drag files here</p>
+            <p className="text-xs text-foreground/60/70 mt-1">PDF, images up to 10MB</p>
           </div>
         </div>
         <Button type="submit" variant="hero" size="lg" className="w-full py-6 rounded-xl text-base" disabled={loading}>

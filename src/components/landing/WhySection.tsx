@@ -2,17 +2,35 @@ import { motion } from "framer-motion";
 import { Heart, Users, Lightbulb } from "lucide-react";
 
 const reasons = [
-  { icon: Heart, title: "Every Teacher Matters", desc: "Millions of teachers work tirelessly, yet remain unrecognized. This initiative changes that — giving voice to students who want to say 'thank you.'" },
-  { icon: Users, title: "Student-Powered Recognition", desc: "Students nominate their favourite teachers. No bureaucracy, no committees — just honest gratitude from those who matter most." },
-  { icon: Lightbulb, title: "Celebrating Innovation", desc: "We honour educators who think differently — using technology, creativity, and compassion to prepare students for a rapidly changing world." },
+  {
+    icon: Heart,
+    title: "Every Teacher Matters",
+    desc: "Millions of teachers work tirelessly, yet remain unrecognized. This initiative changes that, giving voice to students who want to say thank you.",
+  },
+  {
+    icon: Users,
+    title: "Student-Powered Recognition",
+    desc: "Students nominate their favourite teachers. No bureaucracy, no committees, just honest gratitude from those who matter most.",
+  },
+  {
+    icon: Lightbulb,
+    title: "Celebrating Innovation",
+    desc: "We honour educators who think differently, using technology, creativity, and compassion to prepare students for a rapidly changing world.",
+  },
 ];
 
 const WhySection = () => (
   <section className="py-14 sm:py-20 bg-card">
     <div className="container">
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10 sm:mb-14">
-        <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">Why This Exists</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">Because the best teachers don't just teach — they transform lives.</p>
+        <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-6">Why This Exists</h2>
+        <blockquote className="max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg leading-relaxed text-foreground/80 font-medium italic">
+            "Every student who walked into NxtWave carried something with them: the belief that they were capable of more.
+            They did not arrive with that belief on their own. A teacher gave it to them.
+            We are here because of that teacher. It is time they knew."
+          </p>
+        </blockquote>
       </motion.div>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8">
         {reasons.map((r, i) => (
@@ -22,7 +40,7 @@ const WhySection = () => (
               <r.icon className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
             </div>
             <h3 className="font-heading text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3">{r.title}</h3>
-            <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{r.desc}</p>
+            <p className="text-foreground/60 leading-relaxed text-sm sm:text-base">{r.desc}</p>
           </motion.div>
         ))}
       </div>

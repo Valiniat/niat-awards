@@ -62,23 +62,23 @@ const VotePage = () => {
             <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2 sm:mb-3">
               People's Choice Award
             </h1>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto">
+            <p className="text-foreground/65 text-base sm:text-lg max-w-xl mx-auto">
               Support your favourite teacher by casting your vote. Every vote counts!
             </p>
           </motion.div>
 
           <div className="max-w-md mx-auto mb-8 sm:mb-10 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/65" />
             <Input className="pl-10 rounded-xl" placeholder="Search by teacher or school..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-7 h-7 text-primary animate-spin" />
-              <span className="ml-3 text-muted-foreground">Loading shortlisted teachers...</span>
+              <span className="ml-3 text-foreground/65">Loading shortlisted teachers...</span>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-20 text-muted-foreground">
+            <div className="text-center py-20 text-foreground/65">
               {nominations.length === 0
                 ? "Shortlisted teachers will appear here once the panel reviews nominations."
                 : "No teachers match your search."}
@@ -96,15 +96,15 @@ const VotePage = () => {
                       <h3 className="font-heading font-semibold text-foreground text-sm sm:text-base truncate">
                         {n.teacher_name || n.full_name || "—"}
                       </h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">{n.school_name || "—"}</p>
+                      <p className="text-xs sm:text-sm text-foreground/65 truncate">{n.school_name || "—"}</p>
                       <span className="inline-block mt-1 text-[10px] sm:text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">
                         {n.award_category}
                       </span>
                     </div>
                   </div>
-                  {n.special_thing && <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed line-clamp-2">{n.special_thing}</p>}
+                  {n.special_thing && <p className="text-xs sm:text-sm text-foreground/65 mb-3 sm:mb-4 leading-relaxed line-clamp-2">{n.special_thing}</p>}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1 text-xs sm:text-sm text-foreground/65">
                       <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent fill-accent" />
                       {n.status === "winner" ? "Winner 🏆" : "Shortlisted"}
                     </div>

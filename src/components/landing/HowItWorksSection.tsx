@@ -13,7 +13,7 @@ const HowItWorksSection = () => (
     <div className="container">
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10 sm:mb-14">
         <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">How Selection Works</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">A transparent, multi-stage process ensuring only the most deserving educators are recognized.</p>
+        <p className="text-foreground/65 max-w-2xl mx-auto text-base sm:text-lg">A transparent, multi-stage process ensuring only the most deserving educators are recognized.</p>
       </motion.div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {steps.map((s, i) => (
@@ -26,7 +26,7 @@ const HowItWorksSection = () => (
               </div>
             </div>
             <h3 className="font-heading text-sm sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">{s.title}</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{s.desc}</p>
+            <p className="text-foreground/65 text-xs sm:text-sm leading-relaxed">{s.desc}</p>
           </motion.div>
         ))}
       </div>

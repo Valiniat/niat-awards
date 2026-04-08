@@ -51,7 +51,7 @@ const NominatePage = () => {
               {nomType && (
                 <button
                   onClick={() => setNomType(null)}
-                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors"
+                  className="flex items-center gap-1 text-foreground/65 hover:text-foreground text-sm mb-6 transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" /> Back
                 </button>
@@ -65,7 +65,7 @@ const NominatePage = () => {
                   <h1 className="font-heading text-3xl font-bold text-foreground mb-2 text-center">
                     Welcome, {user?.name || "User"}!
                   </h1>
-                  <p className="text-muted-foreground text-center mb-8">
+                  <p className="text-foreground/65 text-center mb-8">
                     Choose your nomination type to continue
                   </p>
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -74,14 +74,14 @@ const NominatePage = () => {
                       className="bg-card rounded-2xl p-6 border border-border/50 text-left hover:border-secondary transition-all"
                     >
                       <h3 className="font-heading text-lg font-semibold text-foreground mb-1">Nominate a Teacher</h3>
-                      <p className="text-muted-foreground text-sm">Recognize an amazing educator</p>
+                      <p className="text-foreground/65 text-sm">Recognize an amazing educator</p>
                     </button>
                     <button
                       onClick={() => setNomType("self")}
                       className="bg-card rounded-2xl p-6 border border-border/50 text-left hover:border-accent transition-all"
                     >
                       <h3 className="font-heading text-lg font-semibold text-foreground mb-1">Apply as Teacher</h3>
-                      <p className="text-muted-foreground text-sm">Showcase your impact</p>
+                      <p className="text-foreground/65 text-sm">Showcase your impact</p>
                     </button>
                   </div>
                 </motion.div>
@@ -89,7 +89,7 @@ const NominatePage = () => {
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-muted-foreground">Please login to continue with your nomination.</p>
+              <p className="text-foreground/65">Please login to continue with your nomination.</p>
             </div>
           )}
         </div>

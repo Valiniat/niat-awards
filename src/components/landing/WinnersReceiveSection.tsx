@@ -22,7 +22,7 @@ const WinnersReceiveSection = () => (
               <p.icon className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 sm:mb-2 text-sm sm:text-base">{p.title}</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm">{p.desc}</p>
+            <p className="text-foreground/65 text-xs sm:text-sm">{p.desc}</p>
           </motion.div>
         ))}
       </div>

@@ -25,10 +25,10 @@ const ThankYouPage = () => {
             <h1 className="font-heading text-3xl font-bold text-foreground mb-3">
               Nomination Submitted! 🎉
             </h1>
-            <p className="text-muted-foreground text-lg mb-2">
+            <p className="text-foreground/65 text-lg mb-2">
               Your nomination has been submitted successfully!
             </p>
-            <p className="text-muted-foreground text-sm mb-8">
+            <p className="text-foreground/65 text-sm mb-8">
               Updates will be sent via WhatsApp to the phone number you provided.
             </p>
 

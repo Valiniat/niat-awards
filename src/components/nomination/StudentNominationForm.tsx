@@ -71,7 +71,7 @@ const RatingStars = ({ value, onChange, label }: { value: number; onChange: (v: 
     <div className="flex gap-0.5 sm:gap-1">
       {[1, 2, 3, 4, 5].map((s) => (
         <button key={s} type="button" onClick={() => onChange(s)} className="p-0.5">
-          <Star className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-muted-foreground/30"}`} />
+          <Star className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-foreground/60/30"}`} />
         </button>
       ))}
     </div>
@@ -142,7 +142,7 @@ const StudentNominationForm = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h2>
-      <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base">Tell us about the teacher who inspires you</p>
+      <p className="text-foreground/60 mb-6 sm:mb-8 text-sm sm:text-base">Tell us about the teacher who inspires you</p>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
 
@@ -203,7 +203,7 @@ const StudentNominationForm = () => {
                       transition={{ duration: 0.3 }}
                       className="mt-3"
                     >
-                      <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-1.5">
+                      <p className="text-xs text-foreground/60 mb-2 font-medium flex items-center gap-1.5">
                         <span>💬</span> Not sure which to pick? Tap a category below:
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -225,7 +225,7 @@ const StudentNominationForm = () => {
                                 {cat.title.replace(" Award", "")}
                               </span>
                             </div>
-                            <p className="text-xs text-muted-foreground leading-snug">{cat.desc}</p>
+                            <p className="text-xs text-foreground/60 leading-snug">{cat.desc}</p>
                           </motion.button>
                         ))}
                       </div>
@@ -247,11 +247,11 @@ const StudentNominationForm = () => {
                         <p className={`text-xs font-semibold ${selectedCat.color} flex items-center gap-1`}>
                           <span>✓</span> {selectedCat.title}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{selectedCat.desc}</p>
+                        <p className="text-xs text-foreground/60 mt-0.5 leading-snug">{selectedCat.desc}</p>
                         <button
                           type="button"
                           onClick={() => set("awardCategory", "")}
-                          className="text-[10px] text-muted-foreground underline mt-1 hover:text-foreground transition-colors"
+                          className="text-[10px] text-foreground/60 underline mt-1 hover:text-foreground transition-colors"
                         >
                           Change category
                         </button>
