@@ -36,11 +36,11 @@ const Navbar = () => {
           {/* ── Logo ── */}
           <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
             {/* Logo badge — crimson pill that frames the shield */}
-            <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] shadow-lg shadow-[#8B1A1A]/30 ring-1 ring-white/10 group-hover:shadow-[#8B1A1A]/50 transition-all duration-300 flex-shrink-0">
+            <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
               <img
                 src="/niat-logo.png"
                 alt="NIAT"
-                className="w-6 h-6 sm:w-7 sm:h-7 object-contain drop-shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-sm"
               />
             </div>
             {/* Wordmark */}

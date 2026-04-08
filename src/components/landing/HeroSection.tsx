@@ -135,9 +135,7 @@ const HeroSection = () => {
                 className="w-full max-w-xs sm:max-w-sm rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-sm p-6 sm:p-8 text-center"
               >
                 {/* Logo badge — enlarged and prominent */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] ring-2 ring-white/10 shadow-lg shadow-[#8B1A1A]/30 flex items-center justify-center mx-auto mb-4 sm:mb-5">
-                  <img src="/niat-logo.png" alt="NIAT" className="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
-                </div>
+                <img src="/niat-logo.png" alt="NIAT" className="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto mb-4 sm:mb-5 drop-shadow-lg" />
                 <h3 className="font-heading text-lg sm:text-xl font-bold text-primary-foreground mb-2">
                   National Recognition
                 </h3>

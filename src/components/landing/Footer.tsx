@@ -9,9 +9,7 @@ const Footer = () => (
         {/* Brand block */}
         <div className="flex flex-col gap-4 max-w-xs">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] shadow-lg shadow-[#8B1A1A]/25 ring-1 ring-white/10 flex items-center justify-center flex-shrink-0">
-              <img src="/niat-logo.png" alt="NIAT" className="w-7 h-7 object-contain" />
-            </div>
+            <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 object-contain flex-shrink-0" />
             <div className="leading-none">
               <p className="font-heading font-bold text-[15px] text-white tracking-wide">NIAT</p>
               <p className="text-[10px] text-white/35 font-medium mt-0.5 tracking-wide">Educator Awards 2026</p>
