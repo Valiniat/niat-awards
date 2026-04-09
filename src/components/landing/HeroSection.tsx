@@ -169,17 +169,7 @@ const HeroSection = () => {
                 </motion.div>
               </motion.div>
 
-              {/* Stats */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-                className="flex items-center gap-0 divide-x divide-white/10">
-                {stats.map((s, i) => (
-                  <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 + i * 0.1 }} className="px-5 first:pl-0">
-                    <div className="text-xl sm:text-2xl font-bold text-white">{s.num}</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/50 mt-0.5">{s.label}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
+
             </div>
 
             {/* ── Right Column ── */}
