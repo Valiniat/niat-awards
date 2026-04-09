@@ -31,8 +31,8 @@ const CountdownBox = ({ value, label, delay }: { value: number; label: string; d
     className="flex flex-col items-center"
   >
     <div className="relative w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20">
-      <div className="absolute inset-0 rounded-xl bg-primary/20 blur-md" />
-      <div className="relative w-full h-full rounded-xl bg-white/5 border border-white/15 flex items-center justify-center backdrop-blur-sm">
+      <div className="absolute inset-0 rounded-xl bg-secondary/30 blur-md" />
+      <div className="relative w-full h-full rounded-xl bg-white/15 border border-white/25 flex items-center justify-center backdrop-blur-sm shadow-lg">
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
@@ -178,20 +178,20 @@ const HeroSection = () => {
               className="flex flex-col items-center gap-6">
 
               {/* Countdown */}
-              <div className="w-full text-center">
+              <div className="w-full">
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-                  className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-semibold mb-4">
+                  className="text-[11px] uppercase tracking-[0.25em] text-secondary font-bold mb-4 text-center">
                   Nominations Close In
                 </motion.p>
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <CountdownBox value={countdown.days} label="Days" delay={0.7} />
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 0.9 }}
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} transition={{ delay: 0.9 }}
                     className="text-3xl text-white font-light mb-5">:</motion.span>
                   <CountdownBox value={countdown.hours} label="Hours" delay={0.8} />
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 1 }}
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} transition={{ delay: 1 }}
                     className="text-3xl text-white font-light mb-5">:</motion.span>
                   <CountdownBox value={countdown.minutes} label="Mins" delay={0.9} />
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 1.1 }}
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} transition={{ delay: 1.1 }}
                     className="text-3xl text-white font-light mb-5">:</motion.span>
                   <CountdownBox value={countdown.seconds} label="Secs" delay={1.0} />
                 </div>
@@ -202,19 +202,22 @@ const HeroSection = () => {
                 animate={{ y: [-6, 6, -6] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 whileHover={{ scale: 1.02 }}
-                className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-7 text-center relative overflow-hidden cursor-pointer"
+                className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-7 text-center relative overflow-hidden cursor-pointer shadow-2xl shadow-black/40"
               >
+                {/* Top accent */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
+
                 {/* Card shimmer effect */}
                 <motion.div
                   animate={{ x: [-200, 400] }}
                   transition={{ duration: 3, repeat: Infinity, repeatDelay: 4, ease: "linear" }}
-                  className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
+                  className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
                 />
                 <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ type: "spring", stiffness: 300 }}>
                   <img src="/niat-logo.png" alt="NIAT" className="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto mb-5 drop-shadow-xl" />
                 </motion.div>
                 <h3 className="font-heading text-xl font-bold text-white mb-2">National Recognition</h3>
-                <p className="text-sm text-white/65 mb-5 leading-relaxed">
+                <p className="text-sm text-white/80 mb-5 leading-relaxed">
                   Winners receive national recognition, a certificate of excellence, and a ₹50,000 prize.
                 </p>
                 <div className="flex items-center justify-center gap-1 mb-2">
@@ -225,14 +228,14 @@ const HeroSection = () => {
                     </motion.div>
                   ))}
                 </div>
-                <p className="text-xs text-white/40">Rated 4.9/5 by past nominees</p>
+                <p className="text-xs text-white/60 font-medium">Rated 4.9/5 by past nominees</p>
               </motion.div>
 
               {/* Deadline badge */}
               <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 cursor-default">
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-secondary/15 border border-secondary/30 cursor-default">
                 <Calendar className="w-4 h-4 text-secondary" />
-                <span className="text-sm text-white/65 font-medium">Nominations open until 31 May 2026</span>
+                <span className="text-sm text-white font-semibold">Nominations open until 31 May 2026</span>
               </motion.div>
             </motion.div>
           </div>
