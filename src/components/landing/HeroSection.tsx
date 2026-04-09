@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight, Calendar, Sparkles, ChevronDown, User, Phone, Loader2 } from "lucide-react";
+import { Star, ArrowRight, Calendar, Sparkles, ChevronDown, User, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 const DEADLINE = new Date("2026-04-30T23:59:59");
@@ -59,8 +57,9 @@ const QuickNominateCard = () => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const nameRef = useRef<HTMLInputElement>(null);
 
-  // If already logged in — show greeting or nominate button directly
+  // Already logged in
   if (isAuthenticated) {
     return (
       <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
@@ -68,13 +67,17 @@ const QuickNominateCard = () => {
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
         <motion.div animate={{ x: [-200, 400] }} transition={{ duration: 3, repeat: Infinity, repeatDelay: 5, ease: "linear" }}
           className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12 pointer-events-none" />
-        <img src="/niat-logo.png" alt="NIAT" className="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-xl" />
-        <h3 className="font-heading text-xl font-bold text-white mb-2">
-          Hey {user?.name || name || "there"}! 👋
+        <div className="w-16 h-16 rounded-full bg-white/15 border-2 border-secondary/50 flex items-center justify-center mx-auto mb-4">
+          <span className="font-heading font-bold text-2xl text-white">
+            {(user?.name || "U").split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2)}
+          </span>
+        </div>
+        <h3 className="font-heading text-xl font-bold text-white mb-1">
+          Hey {user?.name || "there"}! 👋
         </h3>
-        <p className="text-sm text-white/70 mb-5">Ready to nominate your favourite teacher?</p>
+        <p className="text-sm text-white/65 mb-5">Ready to nominate your favourite teacher?</p>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
-          className="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-semibold flex items-center justify-center gap-2">
+          className="w-full py-3 rounded-xl bg-white text-[#6B1212] font-bold text-[14px] flex items-center justify-center gap-2 shadow-md">
           <Star className="w-4 h-4" /> Nominate Now <ArrowRight className="w-4 h-4" />
         </motion.button>
       </motion.div>
@@ -82,13 +85,24 @@ const QuickNominateCard = () => {
   }
 
   const handleSend = async () => {
-    if (!name.trim()) { toast({ title: "Please enter your name", variant: "destructive" }); return; }
-    if (phone.replace(/\D/g, "").length < 10) { toast({ title: "Enter a valid 10-digit number", variant: "destructive" }); return; }
+    if (!name.trim()) {
+      toast({ title: "Please enter your name", variant: "destructive" });
+      nameRef.current?.focus();
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 10) {
+      toast({ title: "Enter a valid 10-digit number", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     const result = await sendOtp(phone);
     setLoading(false);
-    if (result.success) { setStep("otp"); toast({ title: "OTP sent! Check your SMS." }); }
-    else toast({ title: result.error || "Failed to send OTP", variant: "destructive" });
+    if (result.success) {
+      setStep("otp");
+      toast({ title: `OTP sent to +91 ${phone}` });
+    } else {
+      toast({ title: result.error || "Failed to send OTP", variant: "destructive" });
+    }
   };
 
   const handleVerify = async () => {
@@ -99,7 +113,7 @@ const QuickNominateCard = () => {
       if (name.trim()) setUserName(name.trim());
       navigate("/nominate");
     } else {
-      toast({ title: "Invalid OTP", variant: "destructive" });
+      toast({ title: "Invalid OTP. Please try again.", variant: "destructive" });
       setOtp("");
     }
     setLoading(false);
@@ -109,60 +123,97 @@ const QuickNominateCard = () => {
     <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-black/40">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
-      {/* Shimmer */}
       <motion.div animate={{ x: [-200, 400] }} transition={{ duration: 3, repeat: Infinity, repeatDelay: 5, ease: "linear" }}
         className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12 pointer-events-none" />
 
       <div className="p-6 sm:p-7">
-        {/* Logo + title */}
+        {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 object-contain drop-shadow" />
+          <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 object-contain drop-shadow flex-shrink-0" />
           <div>
-            <p className="font-heading font-bold text-white text-sm leading-tight">Nominate Your Teacher</p>
-            <p className="text-[11px] text-white/50">Takes less than 3 minutes</p>
+            <p className="font-heading font-bold text-white text-[15px] leading-tight">Nominate Your Teacher</p>
+            <p className="text-[11px] text-white/50 mt-0.5">
+              {step === "form" ? "Takes less than 3 minutes · Free" : `OTP sent to +91 ${phone}`}
+            </p>
           </div>
         </div>
 
         <AnimatePresence mode="wait">
           {step === "form" ? (
             <motion.div key="form" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} className="space-y-3">
-              {/* Name */}
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name"
-                  className="pl-9 bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+              {/* Name field */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/70 uppercase tracking-wider mb-1.5 block">Your Full Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                  <input
+                    ref={nameRef}
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleSend()}
+                    placeholder="e.g. Rahul Sharma"
+                    className="w-full pl-9 pr-3 h-11 rounded-lg bg-white/8 border border-white/25 text-white placeholder:text-white/35 text-[14px] font-medium focus:outline-none focus:border-secondary/70 focus:bg-white/12 transition-all"
+                  />
+                </div>
               </div>
-              {/* Phone */}
-              <div className="flex gap-2">
-                <div className="flex items-center px-3 rounded-lg bg-white/8 border border-white/20 text-white/70 text-sm font-medium flex-shrink-0">+91</div>
-                <Input value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="10-digit mobile number" type="tel"
-                  onKeyDown={e => e.key === "Enter" && handleSend()}
-                  className="bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+              {/* Phone field */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/70 uppercase tracking-wider mb-1.5 block">Mobile Number</label>
+                <div className="flex gap-2">
+                  <div className="flex items-center px-3 rounded-lg bg-white/8 border border-white/25 text-white/80 text-[13px] font-semibold flex-shrink-0">+91</div>
+                  <input
+                    value={phone}
+                    onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                    onKeyDown={e => e.key === "Enter" && handleSend()}
+                    placeholder="10-digit mobile number"
+                    type="tel"
+                    inputMode="numeric"
+                    className="flex-1 px-3 h-11 rounded-lg bg-white/8 border border-white/25 text-white placeholder:text-white/35 text-[14px] font-medium focus:outline-none focus:border-secondary/70 focus:bg-white/12 transition-all"
+                  />
+                </div>
               </div>
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSend} disabled={loading}
-                className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 disabled:opacity-60">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Star className="w-4 h-4" /> Get OTP & Nominate</>}
+                className="w-full h-11 rounded-lg bg-white text-[#6B1212] font-bold text-[14px] flex items-center justify-center gap-2 shadow-md hover:bg-white/90 transition-all disabled:opacity-60 mt-1">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Star className="w-4 h-4" /> Get OTP &amp; Nominate</>}
               </motion.button>
-              <p className="text-[10px] text-white/35 text-center">Free · No spam · OTP verification</p>
             </motion.div>
           ) : (
             <motion.div key="otp" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} className="space-y-3">
-              <div className="bg-white/8 border border-white/15 rounded-lg px-3 py-2 flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-400"><polyline points="20 6 9 17 4 12"/></svg>
+              {/* Verified info */}
+              <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2.5">
+                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" className="text-green-400"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <p className="text-xs text-white/70">OTP sent to <span className="text-white font-semibold">+91 {phone}</span></p>
-                <button onClick={() => setStep("form")} className="ml-auto text-[10px] text-secondary underline">Change</button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-semibold text-white truncate">Hey {name}!</p>
+                  <p className="text-[11px] text-white/50">OTP sent to +91 {phone}</p>
+                </div>
+                <button onClick={() => { setStep("form"); setOtp(""); }}
+                  className="text-[11px] text-secondary underline flex-shrink-0">Edit</button>
               </div>
-              <Input value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="Enter 6-digit OTP" type="tel" maxLength={6}
-                onKeyDown={e => e.key === "Enter" && handleVerify()}
-                className="bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 text-center text-lg tracking-[0.4em] font-bold focus:border-secondary/60 transition-all" />
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleVerify} disabled={loading || otp.length < 6}
-                className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Verify & Nominate</>}
+              {/* OTP input */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/70 uppercase tracking-wider mb-1.5 block">Enter OTP</label>
+                <input
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  onKeyDown={e => e.key === "Enter" && handleVerify()}
+                  placeholder="· · · · · ·"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoFocus
+                  className="w-full px-3 h-12 rounded-lg bg-white/8 border border-white/25 text-white placeholder:text-white/25 text-xl font-bold tracking-[0.5em] text-center focus:outline-none focus:border-secondary/70 focus:bg-white/12 transition-all"
+                />
+              </div>
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleVerify}
+                disabled={loading || otp.length < 6}
+                className="w-full h-11 rounded-lg bg-white text-[#6B1212] font-bold text-[14px] flex items-center justify-center gap-2 disabled:opacity-50 transition-all">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Verify &amp; Continue</>}
               </motion.button>
+              <button onClick={handleSend} className="w-full text-center text-[12px] text-white/40 hover:text-secondary transition-colors pt-1">
+                Didn't receive OTP? Resend
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

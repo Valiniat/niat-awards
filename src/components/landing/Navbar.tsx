@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X, LogIn, LogOut, User } from "lucide-react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+
+const MAROON = "#6B1212";
+const MAROON_DARK = "#550F0F";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -28,96 +30,88 @@ const Navbar = () => {
     { label: "Prizes", hash: "#prizes" },
   ];
 
+  const initials = (user?.name || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <nav className="bg-[#6B1212]/98 backdrop-blur-xl border-b border-white/10">
+      {/* Full-width solid maroon bar — no transparency, no blur leaking */}
+      <nav style={{ backgroundColor: MAROON }} className="border-b border-black/20 shadow-lg shadow-black/30">
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
-          {/* ── Logo ── */}
-          <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-            {/* Logo badge — crimson pill that frames the shield */}
-            <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
-              <img
-                src="/niat-logo.png"
-                alt="NIAT"
-                className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-sm"
-              />
-            </div>
-            {/* Wordmark */}
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <img src="/niat-logo.png" alt="NIAT" className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow" />
             <div className="flex flex-col justify-center leading-none">
-              <span className="font-heading font-bold text-[13px] sm:text-[14px] tracking-wide text-white group-hover:text-white/90 transition-colors">
-                NIAT
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-white/40 font-medium tracking-wide mt-[1px]">
-                Educator Awards 2026
-              </span>
+              <span className="font-heading font-bold text-[14px] sm:text-[15px] tracking-wide text-white">NIAT</span>
+              <span className="text-[9px] sm:text-[10px] text-white/55 font-medium tracking-wide mt-[1px]">Educator Awards 2026</span>
             </div>
           </Link>
 
-          {/* ── Desktop nav ── */}
-          <div className="hidden md:flex items-center gap-1">
-            {links.map((l) =>
-              l.to ? (
-                <Link key={l.to} to={l.to}
-                  className="text-[13px] font-medium text-white/50 hover:text-white/90 px-3 py-2 rounded-lg hover:bg-white/5 transition-all duration-200">
-                  {l.label}
-                </Link>
-              ) : (
-                <a key={l.hash} href={l.hash!}
-                  onClick={(e) => handleNavClick(e, l.hash!)}
-                  className="text-[13px] font-medium text-white/50 hover:text-white/90 px-3 py-2 rounded-lg hover:bg-white/5 transition-all duration-200 cursor-pointer">
-                  {l.label}
-                </a>
-              )
-            )}
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center gap-0.5">
+            {links.map((l) => (
+              <a key={l.hash} href={l.hash}
+                onClick={(e) => handleNavClick(e, l.hash)}
+                className="text-[13px] font-medium text-white/70 hover:text-white px-3.5 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 cursor-pointer">
+                {l.label}
+              </a>
+            ))}
           </div>
 
-          {/* ── CTA + Auth ── */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Right side — auth + CTA */}
+          <div className="hidden md:flex items-center gap-2.5">
             {isAuthenticated ? (
-              <div className="flex items-center gap-2.5">
-                <div className="flex items-center gap-2 bg-white/8 border border-white/10 rounded-lg px-3 py-1.5">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#9B2020] to-[#7A1515] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[9px] font-bold text-white">{(user?.name || "U")[0].toUpperCase()}</span>
+              <div className="flex items-center gap-2">
+                {/* User pill */}
+                <div className="flex items-center gap-2.5 bg-black/20 border border-white/15 rounded-xl px-3 py-1.5">
+                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[10px] font-bold text-white">{initials}</span>
                   </div>
                   <div className="flex flex-col leading-none">
-                    <span className="text-[12px] font-semibold text-white">{user?.name || "Set Name"}</span>
-                    <span className="text-[10px] text-white/40">{user?.phone}</span>
+                    <span className="text-[12px] font-semibold text-white leading-tight">
+                      {user?.name || "Welcome"}
+                    </span>
+                    <span className="text-[10px] text-white/50 leading-tight">+91 {user?.phone}</span>
                   </div>
                 </div>
-                <button onClick={logout}
-                  className="text-white/30 hover:text-white/70 transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Logout">
+                <button onClick={logout} title="Logout"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-all">
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <Link to="/login">
-                <button className="text-[13px] font-medium text-white/50 hover:text-white/80 flex items-center gap-1.5 transition-colors">
+                <button className="text-[13px] font-medium text-white/65 hover:text-white flex items-center gap-1.5 transition-colors px-2 py-1.5">
                   <LogIn className="w-3.5 h-3.5" /> Login
                 </button>
               </Link>
             )}
             <Link to="/nominate">
-              <button className="text-[13px] font-semibold px-4 py-2 rounded-lg bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white shadow-md shadow-[#8B1A1A]/30 hover:shadow-[#8B1A1A]/50 hover:from-[#A52222] hover:to-[#851717] transition-all duration-200 ring-1 ring-white/10">
+              <button className="text-[13px] font-semibold px-4 py-2 rounded-lg bg-white text-[#6B1212] hover:bg-white/90 transition-all shadow-sm font-bold">
                 Nominate a Teacher
               </button>
             </Link>
           </div>
 
-          {/* ── Mobile hamburger ── */}
-          <div className="flex items-center gap-2 md:hidden">
+          {/* Mobile right */}
+          <div className="flex items-center gap-1.5 md:hidden">
             {isAuthenticated && (
-              <button onClick={logout} className="text-white/40 hover:text-white/70 p-1.5">
-                <LogOut className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5 bg-black/20 border border-white/15 rounded-lg px-2.5 py-1 mr-1">
+                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-white">{initials}</span>
+                </div>
+                <span className="text-[11px] font-semibold text-white max-w-[80px] truncate">
+                  {user?.name || "Hi!"}
+                </span>
+              </div>
             )}
-            <button className="p-2 text-white/60 hover:text-white transition-colors" onClick={() => setOpen(!open)}>
+            <button className="p-2 text-white/80 hover:text-white transition-colors" onClick={() => setOpen(!open)}>
               {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* ── Mobile menu ── */}
+        {/* Mobile menu */}
         <AnimatePresence>
           {open && (
             <motion.div
@@ -125,36 +119,34 @@ const Navbar = () => {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden overflow-hidden bg-[#6B1212] border-t border-white/10"
+              className="md:hidden overflow-hidden border-t border-black/20"
+              style={{ backgroundColor: MAROON_DARK }}
             >
               <div className="container py-3 flex flex-col px-4">
-                {links.map((l) =>
-                  l.to ? (
-                    <Link key={l.to} to={l.to}
-                      className="text-[13px] font-medium text-white/50 hover:text-white py-3 border-b border-white/[0.04] last:border-0 transition-colors"
-                      onClick={() => setOpen(false)}>
-                      {l.label}
-                    </Link>
-                  ) : (
-                    <a key={l.hash} href={l.hash!}
-                      onClick={(e) => handleNavClick(e, l.hash!)}
-                      className="text-[13px] font-medium text-white/50 hover:text-white py-3 border-b border-white/[0.04] last:border-0 transition-colors cursor-pointer">
-                      {l.label}
-                    </a>
-                  )
-                )}
-                <div className="pt-3 pb-1 flex flex-col gap-2">
+                {links.map((l) => (
+                  <a key={l.hash} href={l.hash}
+                    onClick={(e) => handleNavClick(e, l.hash)}
+                    className="text-[14px] font-medium text-white/70 hover:text-white py-3.5 border-b border-white/[0.08] last:border-0 transition-colors cursor-pointer">
+                    {l.label}
+                  </a>
+                ))}
+                <div className="pt-4 pb-2 flex flex-col gap-2.5">
                   <Link to="/nominate" onClick={() => setOpen(false)}>
-                    <button className="w-full text-[13px] font-semibold py-2.5 rounded-lg bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white ring-1 ring-white/10">
+                    <button className="w-full text-[14px] font-bold py-3 rounded-xl bg-white text-[#6B1212]">
                       Nominate a Teacher
                     </button>
                   </Link>
-                  {!isAuthenticated && (
+                  {!isAuthenticated ? (
                     <Link to="/login" onClick={() => setOpen(false)}>
-                      <button className="w-full text-[13px] font-medium py-2.5 rounded-lg border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all">
+                      <button className="w-full text-[14px] font-medium py-3 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition-all">
                         Login
                       </button>
                     </Link>
+                  ) : (
+                    <button onClick={() => { logout(); setOpen(false); }}
+                      className="w-full text-[14px] font-medium py-3 rounded-xl border border-white/20 text-white/80 flex items-center justify-center gap-2">
+                      <LogOut className="w-4 h-4" /> Logout
+                    </button>
                   )}
                 </div>
               </div>
