@@ -121,7 +121,7 @@ const QuickNominateCard = () => {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name"
-                  className="pl-9 bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+                  className="pl-9 bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
               </div>
               {/* Phone */}
               <div className="flex gap-2">
@@ -129,7 +129,7 @@ const QuickNominateCard = () => {
                 <Input value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                   placeholder="10-digit mobile number" type="tel"
                   onKeyDown={e => e.key === "Enter" && handleSend()}
-                  className="bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+                  className="bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
               </div>
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSend} disabled={loading}
                 className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 disabled:opacity-60">
@@ -149,7 +149,7 @@ const QuickNominateCard = () => {
               <Input value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="Enter 6-digit OTP" type="tel" maxLength={6}
                 onKeyDown={e => e.key === "Enter" && handleVerify()}
-                className="bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 text-center text-lg tracking-[0.4em] font-bold focus:border-secondary/60 transition-all" />
+                className="bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 text-center text-lg tracking-[0.4em] font-bold focus:border-secondary/60 transition-all" />
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleVerify} disabled={loading || otp.length < 6}
                 className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Verify & Nominate</>}
