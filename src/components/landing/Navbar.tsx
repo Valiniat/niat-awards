@@ -81,7 +81,7 @@ const Navbar = () => {
                     <span className="text-[9px] font-bold text-white">{(user?.name || user?.phone || "U")[0].toUpperCase()}</span>
                   </div>
                   <div className="flex flex-col leading-none">
-                    <span className="text-[12px] font-semibold text-white">{user?.name || "User"}</span>
+                    <span className="text-[12px] font-semibold text-white">{user?.name || user?.phone}</span>
                     <span className="text-[10px] text-white/40">{user?.phone}</span>
                   </div>
                 </div>

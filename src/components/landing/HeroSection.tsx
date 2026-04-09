@@ -51,7 +51,7 @@ const Particle = ({ delay }: { delay: number }) => (
 
 // ── Quick Nominate Card ──
 const QuickNominateCard = () => {
-  const { isAuthenticated, sendOtp, verifyOtp, setUserName } = useAuth();
+  const { isAuthenticated, user, sendOtp, verifyOtp, setUserName } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<"form" | "otp">("form");
@@ -67,7 +67,7 @@ const QuickNominateCard = () => {
         className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-7 text-center relative overflow-hidden shadow-2xl shadow-black/40">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
         <img src="/niat-logo.png" alt="NIAT" className="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-xl" />
-        <h3 className="font-heading text-xl font-bold text-white mb-2">You're logged in!</h3>
+        <h3 className="font-heading text-xl font-bold text-white mb-2">Hey {user?.name || "there"}! 👋</h3>
         <p className="text-sm text-white/70 mb-5">Ready to nominate your favourite teacher?</p>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
           className="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-semibold flex items-center justify-center gap-2">
