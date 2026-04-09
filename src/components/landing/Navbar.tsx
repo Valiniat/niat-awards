@@ -30,7 +30,7 @@ const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <nav className="bg-[#0f0f0f]/96 backdrop-blur-xl border-b border-white/[0.06]">
+      <nav className="bg-[#6B1212]/98 backdrop-blur-xl border-b border-white/10">
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
           {/* ── Logo ── */}
@@ -125,7 +125,7 @@ const Navbar = () => {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden overflow-hidden bg-[#0f0f0f] border-t border-white/[0.06]"
+              className="md:hidden overflow-hidden bg-[#6B1212] border-t border-white/10"
             >
               <div className="container py-3 flex flex-col px-4">
                 {links.map((l) =>

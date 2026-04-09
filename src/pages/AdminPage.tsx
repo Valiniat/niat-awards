@@ -338,7 +338,7 @@ const AdminPage = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="border-b border-primary-foreground/10 bg-foreground/50 backdrop-blur-lg sticky top-0 z-30">
+      <div className="border-b border-primary-foreground/10 bg-[#6B1212]/95 backdrop-blur-lg sticky top-0 z-30">
         <div className="container flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
           <div className="flex items-center gap-3 sm:gap-4">
             <Link to="/" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">

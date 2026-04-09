@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight, Calendar, Sparkles, ChevronDown } from "lucide-react";
+import { Star, ArrowRight, Calendar, Sparkles, ChevronDown, User, Phone, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import LoginDialog from "@/components/auth/LoginDialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
-const DEADLINE = new Date("2026-05-31T23:59:59");
+const DEADLINE = new Date("2026-04-30T23:59:59");
 
 const useCountdown = () => {
   const [now, setNow] = useState(new Date());
@@ -24,80 +25,149 @@ const useCountdown = () => {
 };
 
 const CountdownBox = ({ value, label, delay }: { value: number; label: string; delay: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.5 }}
-    className="flex flex-col items-center"
-  >
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.5 }}
+    className="flex flex-col items-center">
     <div className="relative w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20">
       <div className="absolute inset-0 rounded-xl bg-secondary/30 blur-md" />
       <div className="relative w-full h-full rounded-xl bg-white/15 border border-white/25 flex items-center justify-center backdrop-blur-sm shadow-lg">
         <AnimatePresence mode="popLayout">
-          <motion.span
-            key={value}
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-white"
-          >
+          <motion.span key={value} initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+            transition={{ duration: 0.2 }} className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
             {String(value).padStart(2, "0")}
           </motion.span>
         </AnimatePresence>
       </div>
     </div>
-    <span className="text-[9px] sm:text-[10px] text-white/50 mt-2 uppercase tracking-widest font-medium">{label}</span>
+    <span className="text-[9px] sm:text-[10px] text-white/60 mt-2 uppercase tracking-widest font-medium">{label}</span>
   </motion.div>
 );
 
-// Particle component
 const Particle = ({ delay }: { delay: number }) => (
-  <motion.div
-    className="absolute w-1 h-1 rounded-full bg-secondary/60"
-    style={{
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-    }}
-    animate={{
-      y: [-20, -60, -20],
-      opacity: [0, 1, 0],
-      scale: [0, 1.5, 0],
-    }}
-    transition={{
-      duration: 3 + Math.random() * 2,
-      delay,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-  />
+  <motion.div className="absolute w-1 h-1 rounded-full bg-secondary/60"
+    style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+    animate={{ y: [-20, -60, -20], opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+    transition={{ duration: 3 + Math.random() * 2, delay, repeat: Infinity, ease: "easeInOut" }} />
 );
+
+// ── Quick Nominate Card ──
+const QuickNominateCard = () => {
+  const { isAuthenticated, sendOtp, verifyOtp, setUserName } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [step, setStep] = useState<"form" | "otp">("form");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // If already logged in just show CTA
+  if (isAuthenticated) {
+    return (
+      <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-7 text-center relative overflow-hidden shadow-2xl shadow-black/40">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
+        <img src="/niat-logo.png" alt="NIAT" className="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-xl" />
+        <h3 className="font-heading text-xl font-bold text-white mb-2">You're logged in!</h3>
+        <p className="text-sm text-white/70 mb-5">Ready to nominate your favourite teacher?</p>
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
+          className="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-semibold flex items-center justify-center gap-2">
+          <Star className="w-4 h-4" /> Nominate Now <ArrowRight className="w-4 h-4" />
+        </motion.button>
+      </motion.div>
+    );
+  }
+
+  const handleSend = async () => {
+    if (!name.trim()) { toast({ title: "Please enter your name", variant: "destructive" }); return; }
+    if (phone.replace(/\D/g, "").length < 10) { toast({ title: "Enter a valid 10-digit number", variant: "destructive" }); return; }
+    setLoading(true);
+    const result = await sendOtp(phone);
+    setLoading(false);
+    if (result.success) { setStep("otp"); toast({ title: "OTP sent! Check your SMS." }); }
+    else toast({ title: result.error || "Failed to send OTP", variant: "destructive" });
+  };
+
+  const handleVerify = async () => {
+    if (otp.length < 6) return;
+    setLoading(true);
+    const ok = await verifyOtp(otp);
+    setLoading(false);
+    if (ok) { setUserName(name.trim()); navigate("/nominate"); }
+    else { toast({ title: "Invalid OTP", variant: "destructive" }); setOtp(""); }
+  };
+
+  return (
+    <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-black/40">
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
+      {/* Shimmer */}
+      <motion.div animate={{ x: [-200, 400] }} transition={{ duration: 3, repeat: Infinity, repeatDelay: 5, ease: "linear" }}
+        className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12 pointer-events-none" />
+
+      <div className="p-6 sm:p-7">
+        {/* Logo + title */}
+        <div className="flex items-center gap-3 mb-5">
+          <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 object-contain drop-shadow" />
+          <div>
+            <p className="font-heading font-bold text-white text-sm leading-tight">Nominate Your Teacher</p>
+            <p className="text-[11px] text-white/50">Takes less than 3 minutes</p>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {step === "form" ? (
+            <motion.div key="form" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} className="space-y-3">
+              {/* Name */}
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name"
+                  className="pl-9 bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+              </div>
+              {/* Phone */}
+              <div className="flex gap-2">
+                <div className="flex items-center px-3 rounded-lg bg-white/8 border border-white/20 text-white/70 text-sm font-medium flex-shrink-0">+91</div>
+                <Input value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="10-digit mobile number" type="tel"
+                  onKeyDown={e => e.key === "Enter" && handleSend()}
+                  className="bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 focus:border-secondary/60 focus:bg-white/12 transition-all" />
+              </div>
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSend} disabled={loading}
+                className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 disabled:opacity-60">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Star className="w-4 h-4" /> Get OTP & Nominate</>}
+              </motion.button>
+              <p className="text-[10px] text-white/35 text-center">Free · No spam · OTP verification</p>
+            </motion.div>
+          ) : (
+            <motion.div key="otp" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} className="space-y-3">
+              <div className="bg-white/8 border border-white/15 rounded-lg px-3 py-2 flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-400"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <p className="text-xs text-white/70">OTP sent to <span className="text-white font-semibold">+91 {phone}</span></p>
+                <button onClick={() => setStep("form")} className="ml-auto text-[10px] text-secondary underline">Change</button>
+              </div>
+              <Input value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="Enter 6-digit OTP" type="tel" maxLength={6}
+                onKeyDown={e => e.key === "Enter" && handleVerify()}
+                className="bg-white/8 border-white/20 text-white placeholder:text-white/35 h-11 text-center text-lg tracking-[0.4em] font-bold focus:border-secondary/60 transition-all" />
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleVerify} disabled={loading || otp.length < 6}
+                className="w-full h-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Verify & Nominate</>}
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
 
 const HeroSection = () => {
   const countdown = useCountdown();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [loginRole, setLoginRole] = useState<"student" | "teacher" | undefined>();
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  const handleNominate = () => {
-    if (isAuthenticated) navigate("/nominate");
-    else { setLoginRole("student"); setLoginOpen(true); }
-  };
-  const handleApply = () => {
-    if (isAuthenticated) navigate("/nominate?type=self");
-    else { setLoginRole("teacher"); setLoginOpen(true); }
-  };
-
-  const stats = [
-    { num: "12,400+", label: "Nominations" },
-    { num: "28", label: "States" },
-    { num: "4", label: "Categories" },
-  ];
 
   return (
     <>
@@ -111,8 +181,7 @@ const HeroSection = () => {
           <motion.div animate={{ x: [-20, 20, -20], y: [-10, 10, -10] }} transition={{ duration: 10, repeat: Infinity }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-secondary/10 rounded-full blur-[80px]" />
         </motion.div>
-
-        {/* Floating particles */}
+        {/* Particles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(12)].map((_, i) => <Particle key={i} delay={i * 0.4} />)}
         </div>
@@ -120,7 +189,7 @@ const HeroSection = () => {
         <motion.div style={{ opacity }} className="container relative z-10 py-12 sm:py-20">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
-            {/* ── Left Column ── */}
+            {/* ── Left ── */}
             <div>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
                 className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-4 py-2 mb-6">
@@ -135,8 +204,7 @@ const HeroSection = () => {
                   <span className="relative inline-block">
                     <span className="text-secondary">Future-Ready</span>
                     <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.6, delay: 0.8 }}
-                      style={{ originX: 0 }}
-                      className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-secondary to-secondary/30 rounded-full" />
+                      style={{ originX: 0 }} className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-secondary to-secondary/30 rounded-full" />
                   </span>
                   <br />Educator Awards
                 </motion.h1>
@@ -151,31 +219,27 @@ const HeroSection = () => {
                 Nominate the educator who changed your life.
               </motion.p>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-                className="flex flex-col sm:flex-row gap-3 mb-12">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-                  <Button variant="hero" size="lg" onClick={handleNominate}
-                    className="text-sm sm:text-base px-7 py-6 rounded-xl w-full sm:w-auto gap-2 shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
-                    <Star className="w-4 h-4" />
-                    Nominate a Teacher
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-                  <Button variant="hero-outline" size="lg" onClick={handleApply}
-                    className="text-sm sm:text-base px-7 py-6 rounded-xl w-full sm:w-auto">
-                    Apply as Teacher
-                  </Button>
-                </motion.div>
+              {/* Timeline pills */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
+                className="flex flex-wrap gap-2 mb-8">
+                {[
+                  { label: "Nominations", date: "Till Apr 30", color: "text-secondary border-secondary/30 bg-secondary/10" },
+                  { label: "Voting Phase", date: "May 1–31", color: "text-blue-400 border-blue-400/30 bg-blue-400/10" },
+                  { label: "Winners", date: "June 1st Week", color: "text-amber-400 border-amber-400/30 bg-amber-400/10" },
+                ].map(t => (
+                  <span key={t.label} className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full border ${t.color}`}>
+                    <span>{t.label}</span>
+                    <span className="opacity-60">·</span>
+                    <span className="opacity-80">{t.date}</span>
+                  </span>
+                ))}
               </motion.div>
-
-
             </div>
 
-            {/* ── Right Column ── */}
+            {/* ── Right ── */}
             <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col items-center gap-6">
+              className="flex flex-col items-center gap-5">
 
               {/* Countdown */}
               <div className="w-full">
@@ -197,45 +261,16 @@ const HeroSection = () => {
                 </div>
               </div>
 
-              {/* Recognition card */}
-              <motion.div
-                animate={{ y: [-6, 6, -6] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                whileHover={{ scale: 1.02 }}
-                className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-7 text-center relative overflow-hidden cursor-pointer shadow-2xl shadow-black/40"
-              >
-                {/* Top accent */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
-
-                {/* Card shimmer effect */}
-                <motion.div
-                  animate={{ x: [-200, 400] }}
-                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 4, ease: "linear" }}
-                  className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
-                />
-                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <img src="/niat-logo.png" alt="NIAT" className="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto mb-5 drop-shadow-xl" />
-                </motion.div>
-                <h3 className="font-heading text-xl font-bold text-white mb-2">National Recognition</h3>
-                <p className="text-sm text-white/80 mb-5 leading-relaxed">
-                  Winners receive national recognition, a certificate of excellence, and a ₹50,000 prize.
-                </p>
-                <div className="flex items-center justify-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 1.2 + i * 0.1, type: "spring" }}>
-                      <Star className="w-5 h-5 fill-secondary text-secondary" />
-                    </motion.div>
-                  ))}
-                </div>
-                <p className="text-xs text-white/60 font-medium">Rated 4.9/5 by past nominees</p>
-              </motion.div>
+              {/* Quick Nominate Card */}
+              <div className="w-full max-w-sm">
+                <QuickNominateCard />
+              </div>
 
               {/* Deadline badge */}
               <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400 }}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-secondary/15 border border-secondary/30 cursor-default">
                 <Calendar className="w-4 h-4 text-secondary" />
-                <span className="text-sm text-white font-semibold">Nominations open until 31 May 2026</span>
+                <span className="text-sm text-white font-semibold">Nominations close 30 April 2026</span>
               </motion.div>
             </motion.div>
           </div>
@@ -250,8 +285,6 @@ const HeroSection = () => {
           </motion.div>
         </motion.div>
       </section>
-
-      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} defaultRole={loginRole} />
     </>
   );
 };

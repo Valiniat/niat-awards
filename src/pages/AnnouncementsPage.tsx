@@ -6,8 +6,8 @@ import { Calendar, CheckCircle, Clock, Trophy } from "lucide-react";
 const timeline = [
   { icon: Calendar, title: "Nominations Open", date: "March 15, 2026", status: "active", desc: "Submit your nominations for deserving teachers." },
   { icon: Clock, title: "Shortlist Announcement", date: "May 1, 2026", status: "upcoming", desc: "Top nominees from each category will be announced." },
-  { icon: CheckCircle, title: "People's Choice Voting", date: "May 15–31, 2026", status: "upcoming", desc: "Public voting opens for shortlisted teachers." },
-  { icon: Trophy, title: "Winners Announced", date: "June 15, 2026", status: "upcoming", desc: "National ceremony with award presentations." },
+  { icon: CheckCircle, title: "People's Choice Voting", date: "May 1–31, 2026", status: "upcoming", desc: "Public voting opens for shortlisted teachers." },
+  { icon: Trophy, title: "Winners Announced", date: "June 1st Week, 2026", status: "upcoming", desc: "National ceremony with award presentations." },
 ];
 
 const AnnouncementsPage = () => (
