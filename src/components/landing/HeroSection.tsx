@@ -60,14 +60,42 @@ const QuickNominateCard = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // If already logged in just show CTA
+  // If already logged in
   if (isAuthenticated) {
+    // If name not set, show a name input first
+    if (!user?.name) {
+      return (
+        <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-6 relative overflow-hidden shadow-2xl shadow-black/40">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
+          <div className="flex items-center gap-3 mb-5">
+            <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 object-contain" />
+            <div>
+              <p className="font-heading font-bold text-white text-sm">One last step!</p>
+              <p className="text-[11px] text-white/50">Tell us your name to continue</p>
+            </div>
+          </div>
+          <div className="relative mb-3">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name"
+              onKeyDown={e => { if (e.key === "Enter" && name.trim()) { setUserName(name.trim()); navigate("/nominate"); }}}
+              className="pl-9 bg-white/5 border-white/30 text-white placeholder:text-white/60 h-11 focus:border-secondary/60 transition-all" />
+          </div>
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            onClick={() => { if (name.trim()) { setUserName(name.trim()); navigate("/nominate"); }}}
+            disabled={!name.trim()}
+            className="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+            <ArrowRight className="w-4 h-4" /> Continue to Nominate
+          </motion.button>
+        </motion.div>
+      );
+    }
     return (
       <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-7 text-center relative overflow-hidden shadow-2xl shadow-black/40">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary/0 via-secondary to-secondary/0" />
         <img src="/niat-logo.png" alt="NIAT" className="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-xl" />
-        <h3 className="font-heading text-xl font-bold text-white mb-2">Hey {user?.name || "there"}! 👋</h3>
+        <h3 className="font-heading text-xl font-bold text-white mb-2">Hey {user.name}! 👋</h3>
         <p className="text-sm text-white/70 mb-5">Ready to nominate your favourite teacher?</p>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
           className="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-semibold flex items-center justify-center gap-2">

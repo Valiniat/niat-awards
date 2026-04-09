@@ -78,10 +78,10 @@ const Navbar = () => {
               <div className="flex items-center gap-2.5">
                 <div className="flex items-center gap-2 bg-white/8 border border-white/10 rounded-lg px-3 py-1.5">
                   <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#9B2020] to-[#7A1515] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[9px] font-bold text-white">{(user?.name || user?.phone || "U")[0].toUpperCase()}</span>
+                    <span className="text-[9px] font-bold text-white">{(user?.name || "U")[0].toUpperCase()}</span>
                   </div>
                   <div className="flex flex-col leading-none">
-                    <span className="text-[12px] font-semibold text-white">{user?.name || user?.phone}</span>
+                    <span className="text-[12px] font-semibold text-white">{user?.name || "Set Name"}</span>
                     <span className="text-[10px] text-white/40">{user?.phone}</span>
                   </div>
                 </div>
