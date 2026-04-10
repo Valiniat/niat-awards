@@ -464,13 +464,32 @@ const AdminPage = () => {
   const fetchNominations = async () => {
     setLoading(true);
     try {
-      const [{ data: noms, error }, { data: voteData }] = await Promise.all([
-        adminSupabase.from("nominations").select("*").order("created_at", { ascending: false }),
-        adminSupabase.from("votes").select("*, nominations(teacher_name, full_name, school_name, award_category)").order("created_at", { ascending: false }),
-      ]);
-      if (error) throw error;
+      // Fetch nominations
+      const { data: noms, error: nomError } = await adminSupabase
+        .from("nominations")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (nomError) throw nomError;
       setNominations(noms || []);
-      setVotes(voteData || []);
+
+      // Fetch votes separately (no join — avoids RLS issues)
+      const { data: voteData, error: voteError } = await adminSupabase
+        .from("votes")
+        .select("id, created_at, nomination_id, voter_phone")
+        .order("created_at", { ascending: false });
+
+      if (!voteError && voteData) {
+        // Enrich votes with nomination data client-side
+        const nomMap: Record<string, any> = {};
+        (noms || []).forEach(n => { nomMap[n.id] = n; });
+        const enriched = voteData.map(v => ({
+          ...v,
+          nominations: nomMap[v.nomination_id] || null,
+        }));
+        setVotes(enriched);
+      } else {
+        setVotes([]);
+      }
     } catch (err: any) {
       toast({ title: "Failed to load", description: err.message, variant: "destructive" });
     } finally {
