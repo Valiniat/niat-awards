@@ -39,15 +39,33 @@ const Navbar = () => {
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
           {/* Logo */}
-          <Link to="/" className="flex flex-row group flex-shrink-0" style={{ alignItems: "center", gap: "8px" }}>
+          <Link to="/" className="group flex-shrink-0" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+            {/* Shield — tight crop removes all phantom padding */}
             <img
-              src="/niat-logo.png"
+              src="/niat-logo-tight.png"
               alt="NIAT"
-              style={{ width: "38px", height: "38px", objectFit: "contain", display: "block", flexShrink: 0 }}
+              style={{ width: "32px", height: "40px", objectFit: "contain", display: "block", flexShrink: 0 }}
             />
-            <div style={{ display: "flex", flexDirection: "column", gap: "3px", justifyContent: "center" }}>
-              <span style={{ fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: "17px", lineHeight: 1, color: "white", letterSpacing: "0.02em" }}>NIAT</span>
-              <span style={{ fontWeight: 500, fontSize: "9.5px", lineHeight: 1, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>Nxtwave of Innovation in Advanced Technologies</span>
+            {/* Wordmark */}
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "4px" }}>
+              <span style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 800,
+                fontSize: "18px",
+                lineHeight: "1",
+                color: "#ffffff",
+                letterSpacing: "0.04em",
+                display: "block"
+              }}>NIAT</span>
+              <span style={{
+                fontWeight: 500,
+                fontSize: "9px",
+                lineHeight: "1",
+                color: "rgba(255,255,255,0.55)",
+                letterSpacing: "0.01em",
+                whiteSpace: "nowrap",
+                display: "block"
+              }}>Nxtwave of Innovation in Advanced Technologies</span>
             </div>
           </Link>
 
