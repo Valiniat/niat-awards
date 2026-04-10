@@ -141,7 +141,7 @@ const AdminLoginPage = () => {
         </motion.div>
 
         <p className="text-center text-primary-foreground/30 text-xs mt-6">
-          © 2026 NxtWave Institute of Advanced Technologies
+          © 2026 Nxtwave of Innovation in Advanced Technologies
         </p>
       </motion.div>
     </div>

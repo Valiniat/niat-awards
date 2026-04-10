@@ -53,7 +53,7 @@ const Footer = () => (
     <div className="border-t border-white/[0.04]">
       <div className="container px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <p className="text-[11px] text-white/20">
-          © 2026 NxtWave Institute of Advanced Technologies. All rights reserved.
+          © 2026 Nxtwave of Innovation in Advanced Technologies. All rights reserved.
         </p>
         <div className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
