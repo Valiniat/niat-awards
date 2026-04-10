@@ -39,11 +39,15 @@ const Navbar = () => {
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-            <img src="/niat-logo.png" alt="NIAT" className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow flex-shrink-0" />
-            <div className="flex flex-col justify-center leading-none gap-[4px]">
-              <span className="font-heading font-bold text-[16px] sm:text-[18px] tracking-wide text-white leading-none">NIAT</span>
-              <span className="text-[9px] sm:text-[10px] text-white/60 font-medium tracking-wide leading-none">Nxtwave of Innovation in Advanced Technologies</span>
+          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <img
+              src="/niat-logo.png"
+              alt="NIAT"
+              className="w-9 h-9 sm:w-10 sm:h-10 object-contain flex-shrink-0 self-center"
+            />
+            <div className="flex flex-col self-center" style={{ gap: "2px" }}>
+              <span className="font-heading font-bold leading-none text-white" style={{ fontSize: "16px" }}>NIAT</span>
+              <span className="font-medium leading-none text-white/60" style={{ fontSize: "9.5px" }}>Nxtwave of Innovation in Advanced Technologies</span>
             </div>
           </Link>
 
