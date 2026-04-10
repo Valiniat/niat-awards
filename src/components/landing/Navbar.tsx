@@ -39,7 +39,7 @@ const Navbar = () => {
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+          <Link to="/" className="flex items-center gap-1.5 group flex-shrink-0">
             <img
               src="/niat-logo.png"
               alt="NIAT"
