@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -639,7 +640,7 @@ const AdminPage = () => {
             <span className="ml-3 text-primary-foreground/60">Loading nominations...</span>
           </div>
         ) : (
-          <React.Fragment>
+          <div>
             {activeTab === "nominations" ? (<>
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -826,7 +827,7 @@ const AdminPage = () => {
             </motion.div>
           </>
           ) : null}
-          </React.Fragment>
+          </div>
         )}
 
         {/* ── VOTES TAB ── */}
