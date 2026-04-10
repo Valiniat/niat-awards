@@ -564,10 +564,16 @@ const AdminPage = () => {
     const a = document.createElement("a"); a.href = url; a.download = "nominations.csv"; a.click();
   };
 
-  if (!isAdminLoggedIn()) return null;
+  if (!isAdminLoggedIn()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#0f0505" }}>
+        <Loader2 className="w-8 h-8 text-secondary animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-dark">
+    <div className="min-h-screen" style={{ background: "hsl(0,0%,8%)" }}>
       {/* Edit Modal */}
       <AnimatePresence>
         {editingNom && (
