@@ -587,7 +587,7 @@ const AdminPage = () => {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8B1A1A] to-[#6B1212] ring-1 ring-white/10 flex items-center justify-center flex-shrink-0">
-              <img src="/niat-logo.png" alt="NIAT" className="w-5 h-5 object-contain" />
+              <img src="/niat-logo-tight.png" alt="NIAT" className="w-5 h-5 object-contain" />
             </div>
             <div>
               <h1 className="font-heading text-base sm:text-lg font-bold text-primary-foreground">Admin Dashboard</h1>
@@ -608,9 +608,9 @@ const AdminPage = () => {
         </div>
       </div>
 
-      {/* Tab switcher */}
+      {/* Tabs */}
       <div className="border-b border-primary-foreground/10 bg-gradient-dark">
-        <div className="container px-3 sm:px-4 flex gap-0">
+        <div className="container px-3 sm:px-4 flex">
           {[
             { id: "nominations", label: "Nominations", icon: Users },
             { id: "votes", label: "Votes & Leaderboard", icon: ThumbsUp },
@@ -633,15 +633,15 @@ const AdminPage = () => {
         </div>
       </div>
 
+      {/* Content */}
       <div className="container py-6 sm:py-8 px-3 sm:px-4">
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="w-8 h-8 text-secondary animate-spin" />
-            <span className="ml-3 text-primary-foreground/60">Loading nominations...</span>
+            <span className="ml-3 text-primary-foreground/60">Loading...</span>
           </div>
-        ) : (
-          <div>
-            {activeTab === "nominations" ? (<>
+        ) : activeTab === "nominations" ? (
+          <>
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {[
@@ -664,7 +664,7 @@ const AdminPage = () => {
               ))}
             </div>
 
-            {/* Category chart */}
+            {/* Category + Type charts */}
             <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                 className="lg:col-span-2 rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 p-5 sm:p-6">
@@ -724,7 +724,7 @@ const AdminPage = () => {
               </motion.div>
             </div>
 
-            {/* Table */}
+            {/* Nominations table */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
               className="rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 overflow-hidden">
               <div className="p-4 sm:p-6 border-b border-primary-foreground/10">
@@ -745,7 +745,7 @@ const AdminPage = () => {
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                       <SelectTrigger className="w-auto min-w-[110px] bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground text-xs h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {["All", "pending", "shortlisted", "winner", "rejected"].map(s => (
+                        {["All","pending","shortlisted","winner","rejected"].map(s => (
                           <SelectItem key={s} value={s}>{s === "All" ? "All Status" : s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
                         ))}
                       </SelectContent>
@@ -761,12 +761,11 @@ const AdminPage = () => {
                   </div>
                 </div>
               </div>
-
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px]">
                   <thead>
                     <tr className="border-b border-primary-foreground/10">
-                      {["Type", "Teacher / Applicant", "Student", "School", "Category", "Phone", "Status", "Date", "Actions"].map(h => (
+                      {["Type","Teacher / Applicant","Student","School","Category","Phone","Status","Date","Actions"].map(h => (
                         <th key={h} className="text-left text-[10px] sm:text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider px-4 sm:px-5 py-3">{h}</th>
                       ))}
                     </tr>
@@ -776,40 +775,33 @@ const AdminPage = () => {
                       <motion.tr key={n.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                         className="border-b border-primary-foreground/5 hover:bg-primary-foreground/5 transition-colors">
                         <td className="px-4 sm:px-5 py-3">
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${n.type === "student" ? "bg-primary/20 text-primary-foreground" : "bg-secondary/20 text-secondary"}`}>
-                            {n.type}
-                          </span>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${n.type === "student" ? "bg-primary/20 text-primary-foreground" : "bg-secondary/20 text-secondary"}`}>{n.type}</span>
                         </td>
                         <td className="px-4 sm:px-5 py-3 text-xs sm:text-sm font-medium text-primary-foreground max-w-[130px] truncate">{n.teacher_name || n.full_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[100px] truncate">{n.student_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60 max-w-[120px] truncate">{n.school_name || "—"}</td>
                         <td className="px-4 sm:px-5 py-3">
-                          <Badge variant="outline" className="text-[10px] border-primary-foreground/20 text-primary-foreground/60 whitespace-nowrap">
-                            {n.award_category?.replace(" Award", "") || "—"}
-                          </Badge>
+                          <Badge variant="outline" className="text-[10px] border-primary-foreground/20 text-primary-foreground/60 whitespace-nowrap">{n.award_category?.replace(" Award","") || "—"}</Badge>
                         </td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.phone || "—"}</td>
                         <td className="px-4 sm:px-5 py-3"><StatusBadge status={n.status} /></td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">{new Date(n.created_at).toLocaleDateString("en-IN")}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <div className="flex items-center gap-1">
-                            {/* Edit button */}
-                            <button onClick={() => setEditingNom(n)}
-                              className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit nomination">
+                            <button onClick={() => setEditingNom(n)} className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit">
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
-                            {/* Quick status buttons */}
-                            <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id + "shortlisted" || n.status === "shortlisted"}
+                            <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id+"shortlisted" || n.status === "shortlisted"}
                               className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist">
-                              {updating === n.id + "shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                              {updating === n.id+"shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id + "winner" || n.status === "winner"}
-                              className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Mark Winner">
-                              {updating === n.id + "winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
+                            <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id+"winner" || n.status === "winner"}
+                              className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Winner">
+                              {updating === n.id+"winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id + "rejected" || n.status === "rejected"}
+                            <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id+"rejected" || n.status === "rejected"}
                               className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors disabled:opacity-30" title="Reject">
-                              {updating === n.id + "rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                              {updating === n.id+"rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
                             </button>
                           </div>
                         </td>
@@ -818,20 +810,14 @@ const AdminPage = () => {
                   </tbody>
                 </table>
               </div>
-
-              {filtered.length === 0 && !loading && (
+              {filtered.length === 0 && (
                 <div className="py-16 text-center text-primary-foreground/40">
                   {nominations.length === 0 ? "No nominations yet. Share the site to get started!" : "No nominations match your filters."}
                 </div>
               )}
             </motion.div>
           </>
-          ) : null}
-          </div>
-        )}
-
-        {/* ── VOTES TAB ── */}
-        {!loading && activeTab === "votes" && (
+        ) : (
           <VotesPanel votes={votes} nominations={nominations} />
         )}
       </div>
