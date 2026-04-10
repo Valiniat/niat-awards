@@ -39,11 +39,11 @@ const Navbar = () => {
         <div className="container flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
-            <img src="/niat-logo.png" alt="NIAT" className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow" />
-            <div className="flex flex-col justify-center leading-none">
-              <span className="font-heading font-bold text-[14px] sm:text-[15px] tracking-wide text-white">NIAT</span>
-              <span className="text-[9px] sm:text-[10px] text-white/55 font-medium tracking-wide mt-[1px]">Educator Awards 2026</span>
+          <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
+            <img src="/niat-logo.png" alt="NIAT" className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow flex-shrink-0" style={{ imageRendering: "crisp-edges" }} />
+            <div className="flex flex-col justify-center leading-none gap-[3px]">
+              <span className="font-heading font-bold text-[15px] sm:text-[16px] tracking-wide text-white leading-none">NIAT</span>
+              <span className="text-[9px] sm:text-[10px] text-white/55 font-medium tracking-wide leading-none">Nxtwave of Innovation in Advanced Technologies</span>
             </div>
           </Link>
 
