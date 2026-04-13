@@ -346,14 +346,7 @@ const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Scroll cue */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5">
-            <span className="text-[10px] uppercase tracking-widest text-white/25">Scroll</span>
-            <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              <ChevronDown className="w-4 h-4 text-white/25" />
-            </motion.div>
-          </motion.div>
+
         </motion.div>
       </section>
     </>
