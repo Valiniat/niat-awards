@@ -41,13 +41,23 @@ const Footer = () => (
     </div>
 
     <div className="border-t border-white/[0.04]">
-      <div className="px-4 sm:px-6 py-4 max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div className="px-4 sm:px-6 py-4 max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-[11px] text-white/20 text-center sm:text-left">
           © 2026 Nxtwave of Innovation in Advanced Technologies. All rights reserved.
         </p>
-        <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-[11px] text-white/20">All systems operational</span>
+        <div className="flex items-center gap-4">
+          <a href="https://www.niatindia.com/privacy-policy" target="_blank" rel="noopener noreferrer"
+            className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
+            Privacy Policy
+          </a>
+          <a href="https://www.niatindia.com/terms-of-use" target="_blank" rel="noopener noreferrer"
+            className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
+            Terms of Use
+          </a>
+          <a href="https://www.niatindia.com/grievance-redressal" target="_blank" rel="noopener noreferrer"
+            className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
+            Grievance
+          </a>
         </div>
       </div>
     </div>

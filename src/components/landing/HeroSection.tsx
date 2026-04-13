@@ -175,7 +175,7 @@ const QuickNominateCard = () => {
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Phone className="w-4 h-4" /> Get OTP &amp; Nominate</>}
               </motion.button>
 
-              <p className="text-center text-[11px] text-white/30 pt-0.5">By continuing you agree to our Terms of Service</p>
+              <p className="text-center text-[11px] text-white/30 pt-0.5">By continuing you agree to our <a href="https://www.niatindia.com/terms-of-use" target="_blank" rel="noopener noreferrer" className="text-white/50 underline">Terms</a> &amp; <a href="https://www.niatindia.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-white/50 underline">Privacy Policy</a></p>
             </motion.div>
           ) : (
             <motion.div key="otp" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
