@@ -46,15 +46,15 @@ const Footer = () => (
           © 2026 Nxtwave of Innovation in Advanced Technologies. All rights reserved.
         </p>
         <div className="flex items-center gap-4">
-          <a href="https://www.niatindia.com/privacy-policy" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.ccbp.in/privacy-policy" target="_blank" rel="noopener noreferrer"
             className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
             Privacy Policy
           </a>
-          <a href="https://www.niatindia.com/terms-of-use" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.ccbp.in/terms-and-conditions" target="_blank" rel="noopener noreferrer"
             className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
             Terms of Use
           </a>
-          <a href="https://www.niatindia.com/grievance-redressal" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.ccbp.in/grievance-redressal" target="_blank" rel="noopener noreferrer"
             className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
             Grievance
           </a>
