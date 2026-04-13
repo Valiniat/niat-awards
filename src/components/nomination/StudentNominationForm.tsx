@@ -91,7 +91,19 @@ const StudentNominationForm = () => {
     careRating: 0, clarityRating: 0, motivationRating: 0, supportRating: 0,
   });
 
-  const set = (key: string, val: string | number) => setForm((p) => ({ ...p, [key]: val }));
+  const set = (key: string, val: string | number) => setForm((p) => {
+    const next = { ...p, [key]: val };
+    try { localStorage.setItem("niat_nomination_draft", JSON.stringify(next)); } catch {}
+    return next;
+  });
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const draft = localStorage.getItem("niat_nomination_draft");
+      if (draft) { const d = JSON.parse(draft); setForm(f => ({ ...f, ...d })); }
+    } catch {}
+  }, []);
 
   const handleGroupChange = (val: string) => {
     setClassGroup(val);
@@ -108,6 +120,10 @@ const StudentNominationForm = () => {
       toast({ title: "Please enter a valid 10-digit phone number", variant: "destructive" });
       return;
     }
+    // Honeypot check — bots fill hidden fields
+    const honeypot = (document.getElementById('_hp_field') as HTMLInputElement)?.value;
+    if (honeypot) { navigate("/thank-you"); return; }
+
     setLoading(true);
     try {
       const { error } = await supabase.from("nominations").insert({
@@ -129,6 +145,7 @@ const StudentNominationForm = () => {
         support_rating: form.supportRating || null,
       });
       if (error) throw error;
+      localStorage.removeItem("niat_nomination_draft");
       navigate("/thank-you");
     } catch (err: any) {
       toast({ title: "Submission failed", description: err.message || "Please try again.", variant: "destructive" });
@@ -141,10 +158,14 @@ const StudentNominationForm = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h2>
+      <h1 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Nominate Your Teacher</h1>
       <p className="text-foreground/60 mb-6 sm:mb-8 text-sm sm:text-base">Tell us about the teacher who inspires you</p>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        {/* Honeypot — hidden from real users, bots fill this */}
+        <input id="_hp_field" name="_honeypot" type="text" defaultValue=""
+          tabIndex={-1} autoComplete="off" aria-hidden="true"
+          style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
 
         {/* Class group */}
         <div>

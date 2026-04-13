@@ -9,7 +9,7 @@ const ThankYouPage = () => {
   const shareUrl = encodeURIComponent("https://www.niatawards.in");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" id="main-content" role="main">
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 py-12 pt-[80px]">
         <div className="w-full max-w-md text-center">

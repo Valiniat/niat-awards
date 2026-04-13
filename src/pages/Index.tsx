@@ -10,6 +10,7 @@ import Footer from "@/components/landing/Footer";
 const Index = () => (
   <div className="min-h-screen">
     <Navbar />
+    <main id="main-content" role="main">
     <HeroSection />
     <WhySection />
     <CategoriesSection />
@@ -17,6 +18,7 @@ const Index = () => (
     <WinnersReceiveSection />
     <FinalCTASection />
     <Footer />
+    </main>
   </div>
 );
 

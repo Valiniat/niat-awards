@@ -85,3 +85,41 @@ body { overflow-x: hidden; }
 
 /* Better touch scrolling */
 * { -webkit-overflow-scrolling: touch; }
+
+/* Skip link */
+.skip-link { position: absolute; transform: translateY(-100%); }
+.skip-link:focus { transform: translateY(0); }
+
+/* Visible focus styles — WCAG 2.1 AA */
+:focus-visible {
+  outline: 2px solid #d97706;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #d97706;
+  outline-offset: 2px;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+.focus\:not-sr-only:focus {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 8px 16px;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}

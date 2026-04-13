@@ -128,7 +128,7 @@ const VotePage = () => {
   ranked.forEach((n, i) => { rankMap[n.id] = i + 1; });
 
   return (
-    <div className="min-h-screen bg-gradient-dark">
+    <div className="min-h-screen bg-gradient-dark" id="main-content" role="main">
       <Navbar />
 
       {/* Hero */}

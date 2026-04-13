@@ -42,7 +42,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex flex-col items-center justify-center px-4 py-8 safe-top safe-bottom">
+    <div className="min-h-screen bg-gradient-dark flex flex-col items-center justify-center px-4 py-8 safe-top safe-bottom" id="main-content" role="main">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-4 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />

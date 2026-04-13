@@ -36,7 +36,7 @@ const NominatePage = () => {
   }, [isAuthenticated, user, nomType]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" id="main-content" role="main">
       <Navbar />
       <div className="pt-[56px]">
         <div className="container max-w-2xl px-4 py-8 sm:py-12">
