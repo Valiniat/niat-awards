@@ -328,7 +328,7 @@ const HeroSection = () => {
 
   return (
     <>
-      <section ref={sectionRef} className="relative min-h-screen flex items-center bg-gradient-dark overflow-hidden pt-[68px]">
+      <section ref={sectionRef} className="relative min-h-screen flex items-center bg-gradient-dark overflow-hidden pt-[56px]">
         {/* Parallax bg glows */}
         <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
           <motion.div animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }} transition={{ duration: 6, repeat: Infinity }}

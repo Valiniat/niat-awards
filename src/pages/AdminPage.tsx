@@ -587,7 +587,7 @@ const AdminPage = () => {
 
       {/* Header */}
       <div className="border-b border-primary-foreground/10 bg-[#6B1212]/95 backdrop-blur-lg sticky top-0 z-30">
-        <div className="container flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
+        <div className="container flex items-center justify-between h-14 px-3 sm:px-4">
           <div className="flex items-center gap-3 sm:gap-4">
             <Link to="/" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">
               <ArrowLeft className="w-5 h-5" />
@@ -619,7 +619,7 @@ const AdminPage = () => {
         <div className="container px-3 sm:px-4 flex">
           {[
             { id: "nominations", label: "Nominations", icon: Users },
-            { id: "votes", label: "Votes & Leaderboard", icon: ThumbsUp },
+            { id: "votes", label: "Votes", icon: ThumbsUp },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all ${
@@ -767,7 +767,7 @@ const AdminPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-3 sm:mx-0">
                 <table className="w-full min-w-[700px]">
                   <thead>
                     <tr className="border-b border-primary-foreground/10">

@@ -36,7 +36,7 @@ const WhySection = () => {
             transition={{ delay: 0.3, duration: 0.8 }}
             className="max-w-3xl mx-auto relative">
             <div className="absolute -left-4 -top-4 text-6xl text-secondary/20 font-serif leading-none">"</div>
-            <p className="text-base sm:text-lg lg:text-xl leading-relaxed text-white/80 font-medium italic px-4">
+            <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-white/80 font-medium italic px-2">
               Every student who walked into NxtWave carried something with them: the belief that they were capable of more.
               They did not arrive with that belief on their own. A teacher gave it to them.
               We are here because of that teacher. It is time they knew.

@@ -73,9 +73,9 @@ const TeacherSelfNominationForm = () => {
       <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-2">Teacher Self-Nomination</h2>
       <p className="text-foreground/60 mb-8">Share your story and showcase your impact</p>
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div><Label>Full Name</Label><Input className="mt-1.5" value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required /></div>
-        <div><Label>School / College</Label><Input className="mt-1.5" value={form.school} onChange={(e) => set("school", e.target.value)} required /></div>
-        <div><Label>Phone Number</Label><Input className="mt-1.5" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
+        <div><Label>Full Name</Label><Input className="mt-1.5 h-12 text-base" value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required /></div>
+        <div><Label>School / College</Label><Input className="mt-1.5 h-12 text-base" value={form.school} onChange={(e) => set("school", e.target.value)} required /></div>
+        <div><Label>Phone Number</Label><Input className="mt-1.5 h-12 text-base" type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div><Label>Subject</Label><Input className="mt-1.5" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
           <div><Label>Years of Experience</Label><Input className="mt-1.5" type="number" value={form.experience} onChange={(e) => set("experience", e.target.value)} required /></div>
@@ -161,7 +161,7 @@ const TeacherSelfNominationForm = () => {
             <p className="text-xs text-foreground/60/70 mt-1">PDF, images up to 10MB</p>
           </div>
         </div>
-        <Button type="submit" variant="hero" size="lg" className="w-full py-6 rounded-xl text-base" disabled={loading}>
+        <Button type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Application"}
         </Button>
       </form>

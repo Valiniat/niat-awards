@@ -179,10 +179,10 @@ const StudentNominationForm = () => {
           {classGroup && form.studentClass && (
             <motion.div key={classGroup + form.studentClass} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-5">
 
-              <div><Label>Your Name</Label><Input className="mt-1.5" value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required /></div>
-              <div><Label>School Name</Label><Input className="mt-1.5" value={form.schoolName} onChange={(e) => set("schoolName", e.target.value)} required /></div>
-              <div><Label>Phone Number</Label><Input className="mt-1.5" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
-              <div><Label>Teacher's Name</Label><Input className="mt-1.5" value={form.teacherName} onChange={(e) => set("teacherName", e.target.value)} required /></div>
+              <div><Label>Your Name</Label><Input className="mt-1.5 h-12 text-base" value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required /></div>
+              <div><Label>School Name</Label><Input className="mt-1.5 h-12 text-base" value={form.schoolName} onChange={(e) => set("schoolName", e.target.value)} required /></div>
+              <div><Label>Phone Number</Label><Input className="mt-1.5 h-12 text-base" type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set("phone", e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="10-digit mobile number" required /></div>
+              <div><Label>Teacher's Name</Label><Input className="mt-1.5 h-12 text-base" value={form.teacherName} onChange={(e) => set("teacherName", e.target.value)} required /></div>
 
               {/* ── Award Category with animated guide ── */}
               <div>
@@ -265,7 +265,7 @@ const StudentNominationForm = () => {
 
               {(classGroup === "9-10" || classGroup === "11-12") && (
                 <>
-                  <div><Label>Subject the teacher teaches</Label><Input className="mt-1.5" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
+                  <div><Label>Subject the teacher teaches</Label><Input className="mt-1.5 h-12 text-base" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
                   <div><Label>How has this teacher impacted you? (2–3 sentences)</Label><Textarea className="mt-1.5" value={form.impactStory} onChange={(e) => set("impactStory", e.target.value)} rows={4} required /></div>
                 </>
               )}
@@ -293,7 +293,7 @@ const StudentNominationForm = () => {
                 </>
               )}
 
-              <Button type="submit" variant="hero" size="lg" className="w-full py-5 sm:py-6 rounded-xl text-sm sm:text-base" disabled={loading}>
+              <Button type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Nomination"}
               </Button>
             </motion.div>

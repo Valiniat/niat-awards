@@ -132,7 +132,7 @@ const VotePage = () => {
       <Navbar />
 
       {/* Hero */}
-      <div className="pt-[68px] relative overflow-hidden">
+      <div className="pt-[56px] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }} transition={{ duration: 7, repeat: Infinity }}
             className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary rounded-full blur-[150px]" />
@@ -170,7 +170,7 @@ const VotePage = () => {
       </div>
 
       {/* Sticky search + filter bar */}
-      <div className="sticky top-[60px] sm:top-[68px] z-20 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-[56px] z-20 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="container px-4 py-3 flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />

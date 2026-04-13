@@ -66,3 +66,22 @@
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-elevated { box-shadow: var(--shadow-elevated); }
 }
+
+/* Safe area for iPhone notch and home indicator */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Better tap highlight on mobile */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Prevent text size adjustment on rotation */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }
+
+/* Prevent horizontal scroll */
+body { overflow-x: hidden; }
+
+/* Better touch scrolling */
+* { -webkit-overflow-scrolling: touch; }
