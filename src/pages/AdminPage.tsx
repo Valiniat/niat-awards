@@ -648,6 +648,25 @@ const AdminPage = () => {
           </div>
         ) : activeTab === "nominations" ? (
           <>
+            {/* Shortlisted → voting banner */}
+            {shortlisted > 0 && (
+              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-blue-500/20 bg-blue-500/8">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white"><span className="text-blue-400">{shortlisted}</span> nomination{shortlisted !== 1 ? "s" : ""} shortlisted</p>
+                    <p className="text-xs text-primary-foreground/40">These are live on the voting page for public votes</p>
+                  </div>
+                </div>
+                <Link to="/vote" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 text-xs font-semibold transition-all">
+                  View voting page ↗
+                </Link>
+              </div>
+            )}
+
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {[
@@ -792,38 +811,45 @@ const AdminPage = () => {
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/60">{n.phone || "—"}</td>
                         <td className="px-4 sm:px-5 py-3"><StatusBadge status={n.status} /></td>
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">{new Date(n.created_at).toLocaleDateString("en-IN")}</td>
-                        <td className="px-4 sm:px-5 py-3">
-                          <div className="flex items-center gap-1">
+                        <td className="px-3 py-3">
+                          <div className="flex flex-wrap items-center gap-1">
                             {/* Edit */}
-                            <button onClick={() => setEditingNom(n)} className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit nomination">
-                              <Pencil className="w-3.5 h-3.5" />
+                            <button onClick={() => setEditingNom(n)}
+                              className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all text-[11px] font-semibold">
+                              <Pencil className="w-3 h-3" /> Edit
                             </button>
-                            {/* Shortlist — show only if not shortlisted/winner */}
+                            {/* Shortlist — adds to voting page */}
                             {n.status !== "shortlisted" && n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id+"shortlisted"}
-                                className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist for voting">
-                                {updating === n.id+"shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                              <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={!!updating}
+                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 transition-all text-[11px] font-semibold disabled:opacity-40"
+                                title="Add to voting page">
+                                {updating === n.id+"shortlisted" ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                Shortlist
                               </button>
                             )}
-                            {/* Revoke shortlist — show only if shortlisted */}
+                            {/* Revoke — removes from voting, back to pending */}
                             {n.status === "shortlisted" && (
-                              <button onClick={() => updateStatus(n.id, "pending")} disabled={updating === n.id+"pending"}
-                                className="p-1.5 rounded-md hover:bg-orange-500/10 text-orange-400 transition-colors disabled:opacity-30" title="Revoke shortlist — move back to pending">
-                                {updating === n.id+"pending" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                              <button onClick={() => updateStatus(n.id, "pending")} disabled={!!updating}
+                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 transition-all text-[11px] font-semibold disabled:opacity-40"
+                                title="Remove from voting page">
+                                {updating === n.id+"pending" ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
+                                Revoke
                               </button>
                             )}
                             {/* Winner */}
                             {n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id+"winner"}
-                                className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Mark as winner">
-                                {updating === n.id+"winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
+                              <button onClick={() => updateStatus(n.id, "winner")} disabled={!!updating}
+                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-green-500/15 hover:bg-green-500/25 text-green-400 transition-all text-[11px] font-semibold disabled:opacity-40">
+                                {updating === n.id+"winner" ? <Loader2 className="w-3 h-3 animate-spin" /> : <Award className="w-3 h-3" />}
+                                Winner
                               </button>
                             )}
-                            {/* Reject — show only if not rejected */}
+                            {/* Reject */}
                             {n.status !== "rejected" && n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id+"rejected"}
-                                className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors disabled:opacity-30" title="Reject">
-                                {updating === n.id+"rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5 text-red-400" />}
+                              <button onClick={() => updateStatus(n.id, "rejected")} disabled={!!updating}
+                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-all text-[11px] font-semibold disabled:opacity-40">
+                                {updating === n.id+"rejected" ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
+                                Reject
                               </button>
                             )}
                           </div>
