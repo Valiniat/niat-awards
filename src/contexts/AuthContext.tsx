@@ -13,7 +13,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   sendOtp: (phone: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOtp: (otp: string) => Promise<boolean>;
+  verifyOtp: (otp: string, name?: string) => Promise<boolean>;
   setUserRole: (role: User["role"]) => void;
   setUserName: (name: string) => void;
   logout: () => void;
@@ -46,42 +46,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON_KEY}` },
         body: JSON.stringify({ phone }),
       });
       const data = await res.json();
-      if (data.success) {
-        setPendingPhone(phone);
-        return { success: true };
-      }
+      if (data.success) { setPendingPhone(phone); return { success: true }; }
       return { success: false, error: data.error || "Failed to send OTP" };
     } catch (err: any) {
       return { success: false, error: "Network error. Please try again." };
     }
   };
 
-  const verifyOtp = async (otp: string): Promise<boolean> => {
+  // name param — set name atomically with user so it's available immediately
+  const verifyOtp = async (otp: string, name?: string): Promise<boolean> => {
     if (!pendingPhone) return false;
+
+    // Master OTP
     if (otp === atob("Nzg5Nzg5")) {
-      setUser({ phone: pendingPhone, role: "student" });
+      setUser({ phone: pendingPhone, role: "student", name: name?.trim() || undefined });
       setPendingPhone(null);
       return true;
     }
+
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON_KEY}` },
         body: JSON.stringify({ phone: pendingPhone, otp }),
       });
       const data = await res.json();
       if (data.success) {
-        setUser({ phone: pendingPhone, role: "student" });
+        // Set name atomically — no separate setUserName call needed
+        setUser({ phone: pendingPhone, role: "student", name: name?.trim() || undefined });
         setPendingPhone(null);
         return true;
       }
@@ -92,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const setUserRole = (role: User["role"]) => { if (user) setUser({ ...user, role }); };
-  const setUserName = (name: string) => { if (user) setUser({ ...user, name }); };
+  const setUserName = (name: string) => { if (user) setUser({ ...user, name: name.trim() }); };
   const logout = () => { setUser(null); setPendingPhone(null); };
 
   return (

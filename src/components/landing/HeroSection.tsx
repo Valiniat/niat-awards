@@ -122,9 +122,8 @@ const QuickNominateCard = () => {
   const handleVerify = async () => {
     if (otp.length < 6) return;
     setLoading(true);
-    const ok = await verifyOtp(otp);
+    const ok = await verifyOtp(otp, name.trim());
     if (ok) {
-      if (name.trim()) setUserName(name.trim());
       navigate("/nominate");
     } else {
       toast({ title: "Invalid OTP. Please try again.", variant: "destructive" });

@@ -53,7 +53,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
   const handleVerifyOtp = async () => {
     if (otp.length < 6) return;
     setLoading(true);
-    const success = await verifyOtp(otp);
+    const success = await verifyOtp(otp, name.trim());
     setLoading(false);
     if (success) {
       toast.success("Verified!");
