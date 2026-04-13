@@ -7,7 +7,10 @@ const Footer = () => (
         {/* Brand */}
         <div className="max-w-xs">
           <div className="flex items-center gap-2 mb-4">
-            <img src="/niat-logo-tight.png" alt="NIAT" style={{ width: "28px", height: "35px", objectFit: "contain" }} />
+            <picture>
+              <source srcSet="/niat-logo-tight.webp" type="image/webp" />
+              <img src="/niat-logo-tight.png" alt="NIAT Awards logo" width="28" height="35" loading="lazy" style={{ width: "28px", height: "35px", objectFit: "contain" }} />
+            </picture>
             <div>
               <p style={{ fontWeight: 800, fontSize: "15px", color: "#fff", lineHeight: 1 }}>NIAT</p>
               <p style={{ fontSize: "8px", color: "rgba(255,255,255,0.4)", lineHeight: 1, marginTop: "3px" }}>Nxtwave of Innovation in Advanced Technologies</p>

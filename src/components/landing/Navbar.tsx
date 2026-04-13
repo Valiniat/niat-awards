@@ -39,7 +39,10 @@ const Navbar = () => {
 
           {/* Logo */}
           <Link to="/" className="flex-shrink-0" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
-            <img src="/niat-logo-tight.png" alt="NIAT" style={{ width: "30px", height: "38px", objectFit: "contain", display: "block", flexShrink: 0 }} />
+            <picture>
+            <source srcSet="/niat-logo-tight.webp" type="image/webp" />
+            <img src="/niat-logo-tight.png" alt="NIAT Awards logo" width="30" height="38" style={{ width: "30px", height: "38px", objectFit: "contain", display: "block", flexShrink: 0 }} fetchPriority="high" />
+          </picture>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "3px" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: "15px", lineHeight: "1", color: "#fff", letterSpacing: "0.04em" }}>NIAT</span>
               <span style={{ fontWeight: 500, fontSize: "8px", lineHeight: "1", color: "rgba(255,255,255,0.55)", whiteSpace: "nowrap" }}>Nxtwave of Innovation in Advanced Technologies</span>

@@ -140,7 +140,7 @@ const QuickNominateCard = () => {
       <div className="p-5 sm:p-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <img src="/niat-logo-tight.png" alt="NIAT" className="w-9 h-11 object-contain flex-shrink-0" />
+          <img src="/niat-logo-tight.webp" alt="NIAT" className="w-9 h-11 object-contain flex-shrink-0" />
           <div>
             <p className="font-heading font-bold text-white text-[16px] leading-tight">Nominate Your Teacher</p>
             <div className="flex items-center gap-1.5 mt-0.5">
