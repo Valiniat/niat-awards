@@ -126,7 +126,7 @@ const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: 
                         : "bg-red-500/20 border-red-400 text-red-400"
                       : "bg-white/5 border-white/10 text-white/40 hover:border-white/20"
                   }`}>
-                  {s === "pending" ? "⏳ Pending" : s === "shortlisted" ? "✅ Shortlist" : s === "winner" ? "🏆 Winner" : "❌ Reject"}
+                  {s === "pending" ? "⏳ Pending" : s === "shortlisted" ? "✅ Shortlisted" : s === "winner" ? "🏆 Winner" : "❌ Reject"}
                 </button>
               ))}
             </div>
@@ -794,21 +794,38 @@ const AdminPage = () => {
                         <td className="px-4 sm:px-5 py-3 text-xs text-primary-foreground/40 whitespace-nowrap">{new Date(n.created_at).toLocaleDateString("en-IN")}</td>
                         <td className="px-4 sm:px-5 py-3">
                           <div className="flex items-center gap-1">
-                            <button onClick={() => setEditingNom(n)} className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit">
+                            {/* Edit */}
+                            <button onClick={() => setEditingNom(n)} className="p-1.5 rounded-md hover:bg-white/10 text-white/40 hover:text-white transition-colors" title="Edit nomination">
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
-                            <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id+"shortlisted" || n.status === "shortlisted"}
-                              className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist">
-                              {updating === n.id+"shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                            </button>
-                            <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id+"winner" || n.status === "winner"}
-                              className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Winner">
-                              {updating === n.id+"winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
-                            </button>
-                            <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id+"rejected" || n.status === "rejected"}
-                              className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors disabled:opacity-30" title="Reject">
-                              {updating === n.id+"rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
-                            </button>
+                            {/* Shortlist — show only if not shortlisted/winner */}
+                            {n.status !== "shortlisted" && n.status !== "winner" && (
+                              <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating === n.id+"shortlisted"}
+                                className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-400 transition-colors disabled:opacity-30" title="Shortlist for voting">
+                                {updating === n.id+"shortlisted" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                            {/* Revoke shortlist — show only if shortlisted */}
+                            {n.status === "shortlisted" && (
+                              <button onClick={() => updateStatus(n.id, "pending")} disabled={updating === n.id+"pending"}
+                                className="p-1.5 rounded-md hover:bg-orange-500/10 text-orange-400 transition-colors disabled:opacity-30" title="Revoke shortlist — move back to pending">
+                                {updating === n.id+"pending" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                            {/* Winner */}
+                            {n.status !== "winner" && (
+                              <button onClick={() => updateStatus(n.id, "winner")} disabled={updating === n.id+"winner"}
+                                className="p-1.5 rounded-md hover:bg-green-500/10 text-green-400 transition-colors disabled:opacity-30" title="Mark as winner">
+                                {updating === n.id+"winner" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Award className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                            {/* Reject — show only if not rejected */}
+                            {n.status !== "rejected" && n.status !== "winner" && (
+                              <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating === n.id+"rejected"}
+                                className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors disabled:opacity-30" title="Reject">
+                                {updating === n.id+"rejected" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5 text-red-400" />}
+                              </button>
+                            )}
                           </div>
                         </td>
                       </motion.tr>
