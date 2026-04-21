@@ -671,6 +671,23 @@ const AdminPage = () => {
         ) : activeTab === "nominations" ? (
           <>
             {/* Shortlisted → voting banner */}
+            {shortlisted === 0 && pending > 0 && (
+              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-amber-500/30 bg-amber-500/8">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <Star className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white"><span className="text-amber-400">{pending}</span> nomination{pending !== 1 ? "s" : ""} awaiting review</p>
+                    <p className="text-xs text-primary-foreground/40">Click <strong className="text-amber-400">Shortlist</strong> on any nomination below to make it appear on the voting page</p>
+                  </div>
+                </div>
+                <Link to="/voteniatteachers" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 text-xs font-semibold transition-all whitespace-nowrap">
+                  Voting page ↗
+                </Link>
+              </div>
+            )}
             {shortlisted > 0 && (
               <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-blue-500/20 bg-blue-500/10">
                 <div className="flex items-center gap-3">
@@ -678,8 +695,8 @@ const AdminPage = () => {
                     <CheckCircle2 className="w-4 h-4 text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white"><span className="text-blue-400">{shortlisted}</span> nomination{shortlisted !== 1 ? "s" : ""} shortlisted</p>
-                    <p className="text-xs text-primary-foreground/40">These are live on the voting page for public votes</p>
+                    <p className="text-sm font-semibold text-white"><span className="text-blue-400">{shortlisted}</span> nomination{shortlisted !== 1 ? "s" : ""} live on voting page</p>
+                    <p className="text-xs text-primary-foreground/40">Public can vote for these teachers now</p>
                   </div>
                 </div>
                 <Link to="/voteniatteachers" target="_blank" rel="noopener noreferrer"

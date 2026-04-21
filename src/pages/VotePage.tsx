@@ -289,15 +289,26 @@ const VotePage = () => {
           </div>
         ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center py-24 gap-3 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-2">
               <Users className="w-8 h-8 text-white/20" />
             </div>
-            <p className="text-white font-semibold text-lg mt-2">
-              {nominations.length === 0 ? "Voting opens soon" : "No results found"}
-            </p>
-            <p className="text-white/35 text-sm max-w-xs">
-              {nominations.length === 0 ? "Shortlisted teachers will appear here once nominations are reviewed." : "Try adjusting your search or filter."}
-            </p>
+            {nominations.length === 0 ? (
+              <>
+                <p className="text-white font-semibold text-lg">No shortlisted teachers yet</p>
+                <p className="text-white/40 text-sm max-w-sm leading-relaxed">
+                  Nominations are being reviewed by the panel. Teachers will appear here once they are shortlisted by the admin.
+                </p>
+                <div className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/10 border border-secondary/20">
+                  <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                  <span className="text-xs text-secondary font-semibold">Review in progress — check back soon</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-white font-semibold text-lg">No results found</p>
+                <p className="text-white/35 text-sm">Try adjusting your search or filter.</p>
+              </>
+            )}
           </motion.div>
         ) : (
           <>
