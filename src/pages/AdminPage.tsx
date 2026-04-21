@@ -369,7 +369,7 @@ const VotesPanel = ({ votes, nominations }: { votes: any[]; nominations: any[] }
               <table className="w-full">
                 <thead className="sticky top-0 bg-[#141414]">
                   <tr className="border-b border-primary-foreground/10">
-                    {["Teacher", "Voter Phone", "Date & Time"].map(h => (
+                    {["Teacher", "Voter Phone", "Voter ID", "Date & Time"].map(h => (
                       <th key={h} className="text-left text-[10px] font-semibold text-primary-foreground/30 uppercase tracking-wider px-4 py-2.5">{h}</th>
                     ))}
                   </tr>
@@ -382,6 +382,7 @@ const VotesPanel = ({ votes, nominations }: { votes: any[]; nominations: any[] }
                       <tr key={v.id || i} className="border-b border-primary-foreground/[0.04] hover:bg-primary-foreground/5 transition-colors">
                         <td className="px-4 py-2.5 text-xs font-medium text-primary-foreground max-w-[120px] truncate">{name}</td>
                         <td className="px-4 py-2.5 text-xs text-primary-foreground/50">{v.voter_phone || "—"}</td>
+                        <td className="px-4 py-2.5 text-xs font-mono text-secondary/70">{v.voter_id || "—"}</td>
                         <td className="px-4 py-2.5 text-xs text-primary-foreground/40 whitespace-nowrap">
                           {v.created_at ? new Date(v.created_at).toLocaleString("en-IN", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }) : "—"}
                         </td>
@@ -477,13 +478,13 @@ const AdminPage = () => {
       if (nomError) throw nomError;
       setNominations(noms || []);
 
-      // Fetch votes separately (no join — avoids RLS issues)
+      // Fetch ALL votes — use adminSupabase which bypasses RLS for reads
       const { data: voteData, error: voteError } = await adminSupabase
         .from("votes")
-        .select("id, created_at, nomination_id, voter_phone")
+        .select("*")
         .order("created_at", { ascending: false });
 
-      if (!voteError && voteData) {
+      if (voteData && voteData.length >= 0) {
         // Enrich votes with nomination data client-side
         const nomMap: Record<string, any> = {};
         (noms || []).forEach(n => { nomMap[n.id] = n; });
@@ -493,7 +494,19 @@ const AdminPage = () => {
         }));
         setVotes(enriched);
       } else {
-        setVotes([]);
+        // If admin fetch fails, try with regular supabase (votes are public-readable)
+        const { supabase: publicSupa } = await import("@/integrations/supabase/client");
+        const { data: publicVotes } = await publicSupa
+          .from("votes")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (publicVotes) {
+          const nomMap: Record<string, any> = {};
+          (noms || []).forEach(n => { nomMap[n.id] = n; });
+          setVotes(publicVotes.map(v => ({ ...v, nominations: nomMap[v.nomination_id] || null })));
+        } else {
+          setVotes([]);
+        }
       }
     } catch (err: any) {
       toast({ title: "Failed to load", description: err.message, variant: "destructive" });
@@ -669,7 +682,7 @@ const AdminPage = () => {
                     <p className="text-xs text-primary-foreground/40">These are live on the voting page for public votes</p>
                   </div>
                 </div>
-                <Link to="/vote" target="_blank" rel="noopener noreferrer"
+                <Link to="/voteniatteachers" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 text-xs font-semibold transition-all">
                   View voting page ↗
                 </Link>
