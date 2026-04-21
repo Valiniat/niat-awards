@@ -32,7 +32,7 @@ const WhySection = () => {
             Our Purpose
           </motion.span>
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8">Why This Exists</h2>
-          <motion.blockquote initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.3, duration: 0.8 }}
             className="max-w-3xl mx-auto">
             <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-white/80 font-medium italic">
@@ -40,7 +40,7 @@ const WhySection = () => {
               They did not arrive with that belief on their own. A teacher gave it to them.
               We are here because of that teacher. It is time they knew.
             </p>
-          </motion.blockquote>
+          </motion.div>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
