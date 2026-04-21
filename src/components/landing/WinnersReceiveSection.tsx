@@ -14,10 +14,10 @@ const WinnersReceiveSection = () => {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-20 sm:py-28 bg-[#060606]" id="prizes" ref={ref}>
+    <section className="py-12 sm:py-16 bg-[#060606]" id="prizes" ref={ref}>
       <div className="container">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          className="text-center mb-14">
+          className="text-center mb-10">
           <motion.span initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.1 }}
             className="inline-block text-xs font-semibold text-amber-400 uppercase tracking-widest bg-amber-400/10 border border-amber-400/20 px-4 py-1.5 rounded-full mb-5">
             Winner Benefits

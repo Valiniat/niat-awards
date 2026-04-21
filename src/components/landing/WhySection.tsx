@@ -16,7 +16,7 @@ const WhySection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-20 sm:py-28 bg-[#0a0a0a] relative overflow-hidden">
+    <section className="py-12 sm:py-16 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.03, 0.06, 0.03] }} transition={{ duration: 8, repeat: Infinity }}
@@ -25,7 +25,7 @@ const WhySection = () => {
 
       <div className="container relative z-10" ref={ref}>
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }} className="text-center mb-16">
+          transition={{ duration: 0.7 }} className="text-center mb-10">
           <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.1 }}
             className="inline-block text-xs font-semibold text-secondary uppercase tracking-widest bg-secondary/10 border border-secondary/20 px-4 py-1.5 rounded-full mb-5">

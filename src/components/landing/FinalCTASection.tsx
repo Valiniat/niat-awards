@@ -8,7 +8,7 @@ const FinalCTASection = () => {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-24 sm:py-36 bg-gradient-dark relative overflow-hidden" ref={ref}>
+    <section className="py-12 sm:py-16 bg-gradient-dark relative overflow-hidden" ref={ref}>
       {/* Animated glows */}
       <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }} transition={{ duration: 6, repeat: Infinity }}
         className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-[120px] pointer-events-none" />
