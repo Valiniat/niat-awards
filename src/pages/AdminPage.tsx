@@ -19,7 +19,8 @@ import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
 
 const adminSupabase = createClient(
   "https://hxiflxyduamfjuubdilr.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00",
+  // Service role key — bypasses RLS, only used in password-protected admin panel
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDg0NDMwOSwiZXhwIjoyMDkwNDIwMzA5fQ.WovhEiNRjLXFbsMCDkFY-F16gQX1E0qMFj4EY5_t__g",
   { global: { headers: { "x-admin-secret": "niat_admin_2026_secret" } } }
 );
 
@@ -60,22 +61,6 @@ const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch(
-        "https://hxiflxyduamfjuubdilr.supabase.co/functions/v1/update-nomination-status",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00`,
-            "x-admin-secret": "niat_admin_2026_secret",
-          },
-          body: JSON.stringify({ id: nomination.id, status: form.status }),
-        }
-      );
-      const statusData = await res.json();
-      if (!res.ok) throw new Error(statusData.error || "Status update failed");
-
-      // Also update other fields via adminSupabase
       const { error } = await adminSupabase
         .from("nominations")
         .update({
@@ -89,11 +74,12 @@ const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: 
           subject: form.subject,
           special_thing: form.special_thing,
           impact_story: form.impact_story,
+          status: form.status,
           experience: form.experience,
         })
         .eq("id", nomination.id);
 
-      if (error) console.warn("Field update warning:", error.message);
+      if (error) throw error;
       toast({ title: "✅ Nomination updated successfully!" });
       onSave(form);
       onClose();
@@ -537,21 +523,8 @@ const AdminPage = () => {
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id + status);
     try {
-      // Use Edge Function with service role key to bypass RLS
-      const res = await fetch(
-        "https://hxiflxyduamfjuubdilr.supabase.co/functions/v1/update-nomination-status",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NDQzMDksImV4cCI6MjA5MDQyMDMwOX0.bgX-GSxP4gCkco5TjI80mkyO5T0ALZaDkEl7-LFhL00`,
-            "x-admin-secret": "niat_admin_2026_secret",
-          },
-          body: JSON.stringify({ id, status }),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Update failed");
+      const { error } = await adminSupabase.from("nominations").update({ status }).eq("id", id);
+      if (error) throw error;
       setNominations(prev => prev.map(n => n.id === id ? { ...n, status } : n));
       toast({ title: `✅ Marked as ${status}!` });
     } catch (err: any) {
