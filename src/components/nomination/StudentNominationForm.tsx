@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,17 +91,36 @@ const StudentNominationForm = () => {
     careRating: 0, clarityRating: 0, motivationRating: 0, supportRating: 0,
   });
 
+  const [searchParams] = useSearchParams();
+
+  // Pre-fill category from URL param (e.g. from CategoriesSection clicks)
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat) {
+      setForm(p => ({ ...p, awardCategory: decodeURIComponent(cat) }));
+    }
+  }, []);
+
   const set = (key: string, val: string | number) => setForm((p) => {
     const next = { ...p, [key]: val };
     try { localStorage.setItem("niat_nomination_draft", JSON.stringify(next)); } catch {}
     return next;
   });
 
-  // Restore draft on mount
+  // Restore draft on mount — preserve current user's phone/name to avoid cross-user leakage
   useEffect(() => {
     try {
       const draft = localStorage.getItem("niat_nomination_draft");
-      if (draft) { const d = JSON.parse(draft); setForm(f => ({ ...f, ...d })); }
+      if (draft) {
+        const d = JSON.parse(draft);
+        setForm(f => ({
+          ...f,
+          ...d,
+          // Always use the currently logged-in user's info, never from draft
+          studentName: user?.name || f.studentName,
+          phone: user?.phone || f.phone,
+        }));
+      }
     } catch {}
   }, []);
 

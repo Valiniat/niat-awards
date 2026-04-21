@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Users, UserCheck, Star, ArrowRight } from "lucide-react";
+import { ChevronLeft, Star, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import LoginDialog from "@/components/auth/LoginDialog";
 import StudentNominationForm from "@/components/nomination/StudentNominationForm";
@@ -29,7 +29,12 @@ const NominatePage = () => {
 
   // Not logged in → open login dialog right away
   useEffect(() => {
-    if (!isAuthenticated) setLoginOpen(true);
+    if (!isAuthenticated) {
+      setLoginOpen(true);
+    } else {
+      // User just logged in — close dialog if still open
+      setLoginOpen(false);
+    }
   }, [isAuthenticated]);
 
   return (

@@ -2,10 +2,11 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ThumbsUp, Share2, Star, Loader2, Trophy, Users, Award, Filter, ChevronDown, CheckCircle2, TrendingUp, BarChart2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const CATEGORIES = ["All", "Student Transformation Award", "Teaching Innovation Award", "Beyond Classroom Impact Award", "Future Readiness Award"];
 
@@ -28,6 +29,19 @@ const VotePage = () => {
   const [sortBy, setSortBy] = useState<"votes" | "recent">("votes");
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  // FIX: close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setShowFilter(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // ── Fetch all data ──
   const fetchData = async () => {
@@ -73,7 +87,12 @@ const VotePage = () => {
   // ── Cast vote ──
   const handleVote = async (nominationId: string, teacherName: string) => {
     if (!isAuthenticated || !user?.phone) {
-      toast({ title: "Login required", description: "Please login to cast your vote.", variant: "destructive" });
+      toast({
+        title: "Login required",
+        description: "Please login to cast your vote.",
+        variant: "destructive",
+      });
+      navigate("/login");
       return;
     }
     if (myVotes.has(nominationId)) {
@@ -189,7 +208,7 @@ const VotePage = () => {
           </button>
 
           {/* Category filter */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0" ref={filterRef}>
             <button onClick={() => setShowFilter(!showFilter)}
               className="flex items-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-white/50 text-xs font-semibold hover:text-white hover:bg-white/8 transition-all">
               <Filter className="w-3.5 h-3.5" />

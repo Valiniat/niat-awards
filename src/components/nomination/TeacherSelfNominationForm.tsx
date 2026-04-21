@@ -70,12 +70,12 @@ const TeacherSelfNominationForm = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-2">Teacher Self-Nomination</h2>
+      <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-2">Teacher Self-Nomination</h1>
       <p className="text-foreground/60 mb-8">Share your story and showcase your impact</p>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div><Label>Full Name</Label><Input className="mt-1.5 h-12 text-base" value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required /></div>
         <div><Label>School / College</Label><Input className="mt-1.5 h-12 text-base" value={form.school} onChange={(e) => set("school", e.target.value)} required /></div>
-        <div><Label>Phone Number</Label><Input className="mt-1.5 h-12 text-base" type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 XXXXX XXXXX" required /></div>
+        <div><Label>Phone Number</Label><Input className="mt-1.5 h-12 text-base" type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit number" required /></div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div><Label>Subject</Label><Input className="mt-1.5" value={form.subject} onChange={(e) => set("subject", e.target.value)} required /></div>
           <div><Label>Years of Experience</Label><Input className="mt-1.5" type="number" value={form.experience} onChange={(e) => set("experience", e.target.value)} required /></div>
@@ -155,11 +155,19 @@ const TeacherSelfNominationForm = () => {
         <div><Label>Your Impact Story</Label><Textarea className="mt-1.5" value={form.impactStory} onChange={(e) => set("impactStory", e.target.value)} rows={5} placeholder="Describe how you've made a difference in your students' lives..." required /></div>
         <div>
           <Label>Supporting Documents (optional)</Label>
-          <div className="mt-1.5 border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors cursor-pointer">
-            <Upload className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
+          <label className="mt-1.5 border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors cursor-pointer flex flex-col items-center block">
+            <Upload className="w-8 h-8 text-foreground/60 mb-2" />
             <p className="text-sm text-foreground/60">Click to upload or drag files here</p>
-            <p className="text-xs text-foreground/60/70 mt-1">PDF, images up to 10MB</p>
-          </div>
+            <p className="text-xs text-foreground/45 mt-1">PDF, images up to 10MB</p>
+            <input type="file" accept=".pdf,image/*" className="sr-only"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file && file.size > 10 * 1024 * 1024) {
+                  toast({ title: "File too large", description: "Please upload a file under 10MB.", variant: "destructive" });
+                  e.target.value = "";
+                }
+              }} />
+          </label>
         </div>
         <Button type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Application"}

@@ -20,7 +20,12 @@ const Navbar = () => {
       const el = document.querySelector(hash);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } else {
-      navigate("/" + hash);
+      // Navigate to home, then scroll after a brief delay for lazy sections to mount
+      navigate("/");
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 600);
     }
   };
 

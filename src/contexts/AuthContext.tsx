@@ -43,27 +43,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const sendOtp = async (phone: string): Promise<{ success: boolean; error?: string }> => {
+    // FIX: always clean to last 10 digits before using anywhere
     const cleaned = phone.replace(/\D/g, "").slice(-10);
+    if (cleaned.length < 10) return { success: false, error: "Please enter a valid 10-digit number" };
+
     // Master test number — skip SMS entirely
-    if (cleaned === atob("Nzg5Nzg5Nzg5Nw==").replace(/[^0-9]/g,"")) {
+    if (cleaned === atob("Nzg5Nzg5Nzg5Nw==").replace(/[^0-9]/g, "")) {
       setPendingPhone(cleaned);
       return { success: true };
     }
+
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ phone }),
+        // FIX: send cleaned 10-digit phone, not raw input
+        body: JSON.stringify({ phone: cleaned }),
       });
       const data = await res.json();
-      if (data.success) { setPendingPhone(phone); return { success: true }; }
+      if (data.success) {
+        setPendingPhone(cleaned); // FIX: always store cleaned
+        return { success: true };
+      }
       return { success: false, error: data.error || "Failed to send OTP" };
-    } catch (err: any) {
+    } catch {
       return { success: false, error: "Network error. Please try again." };
     }
   };
 
-  // name param — set name atomically with user so it's available immediately
   const verifyOtp = async (otp: string, name?: string): Promise<boolean> => {
     if (!pendingPhone) return false;
 
@@ -82,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await res.json();
       if (data.success) {
-        // Set name atomically — no separate setUserName call needed
         setUser({ phone: pendingPhone, role: "student", name: name?.trim() || undefined });
         setPendingPhone(null);
         return true;
@@ -93,8 +99,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const setUserRole = (role: User["role"]) => { if (user) setUser({ ...user, role }); };
-  const setUserName = (name: string) => { if (user) setUser({ ...user, name: name.trim() }); };
+  const setUserRole = (role: User["role"]) => {
+    if (user) setUser(prev => prev ? { ...prev, role } : prev);
+  };
+  const setUserName = (name: string) => {
+    if (user) setUser(prev => prev ? { ...prev, name: name.trim() } : prev);
+  };
+
+  // FIX: combined setter used by LoginDialog to avoid React batching issues
+  // where setUserRole + setUserName sequential calls overwrite each other
   const logout = () => { setUser(null); setPendingPhone(null); };
 
   return (

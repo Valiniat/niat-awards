@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
@@ -820,8 +819,8 @@ const AdminPage = () => {
                             </button>
                             {/* Shortlist — adds to voting page */}
                             {n.status !== "shortlisted" && n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={!!updating}
-                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 transition-all text-[11px] font-semibold disabled:opacity-40"
+                              <button onClick={() => updateStatus(n.id, "shortlisted")} disabled={updating?.startsWith(n.id) ?? false}
+                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 transition-all text-[11px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
                                 title="Add to voting page">
                                 {updating === n.id+"shortlisted" ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                                 Shortlist
@@ -829,7 +828,7 @@ const AdminPage = () => {
                             )}
                             {/* Revoke — removes from voting, back to pending */}
                             {n.status === "shortlisted" && (
-                              <button onClick={() => updateStatus(n.id, "pending")} disabled={!!updating}
+                              <button onClick={() => updateStatus(n.id, "pending")} disabled={updating?.startsWith(n.id) ?? false}
                                 className="flex items-center gap-1 px-2 py-1 rounded-md bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 transition-all text-[11px] font-semibold disabled:opacity-40"
                                 title="Remove from voting page">
                                 {updating === n.id+"pending" ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
@@ -838,7 +837,7 @@ const AdminPage = () => {
                             )}
                             {/* Winner */}
                             {n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "winner")} disabled={!!updating}
+                              <button onClick={() => updateStatus(n.id, "winner")} disabled={updating?.startsWith(n.id) ?? false}
                                 className="flex items-center gap-1 px-2 py-1 rounded-md bg-green-500/15 hover:bg-green-500/25 text-green-400 transition-all text-[11px] font-semibold disabled:opacity-40">
                                 {updating === n.id+"winner" ? <Loader2 className="w-3 h-3 animate-spin" /> : <Award className="w-3 h-3" />}
                                 Winner
@@ -846,7 +845,7 @@ const AdminPage = () => {
                             )}
                             {/* Reject */}
                             {n.status !== "rejected" && n.status !== "winner" && (
-                              <button onClick={() => updateStatus(n.id, "rejected")} disabled={!!updating}
+                              <button onClick={() => updateStatus(n.id, "rejected")} disabled={updating?.startsWith(n.id) ?? false}
                                 className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-all text-[11px] font-semibold disabled:opacity-40">
                                 {updating === n.id+"rejected" ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
                                 Reject

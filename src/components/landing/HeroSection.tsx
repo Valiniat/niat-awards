@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight, Calendar, Sparkles, ChevronDown, User, Phone, Loader2, CheckCircle2 } from "lucide-react";
+import { Star, ArrowRight, Calendar, Sparkles, User, Phone, Loader2, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
