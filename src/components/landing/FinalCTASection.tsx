@@ -44,7 +44,7 @@ const FinalCTASection = () => {
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="inline-block">
             <Link to="/nominate">
-              <button className="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-base sm:text-lg px-10 py-5 rounded-2xl shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-shadow overflow-hidden">
+              <button id="btn-cta-nominate" className="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-base sm:text-lg px-10 py-5 rounded-2xl shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-shadow overflow-hidden">
                 <span className="relative z-10">Nominate Now</span>
                 <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }} className="relative z-10">
                   <ArrowRight className="w-5 h-5" />

@@ -137,7 +137,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
             {step === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <button onClick={() => { setStep("phone"); setOtp(""); }}
+                <button id="btn-dialog-otp-back" onClick={() => { setStep("phone"); setOtp(""); }}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
                   <ChevronLeft className="w-4 h-4" /> Change number
                 </button>
@@ -164,7 +164,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
                     <ArrowRight className="w-4 h-4" />
                   </Button>
 
-                  <button onClick={handleSendOtp}
+                  <button id="btn-dialog-resend-otp" onClick={handleSendOtp}
                     className="w-full text-center text-sm text-muted-foreground hover:text-secondary transition-colors">
                     Didn't receive? Resend OTP
                   </button>
@@ -191,7 +191,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => handleComplete("student")}
+                  <button id="btn-dialog-role-student" onClick={() => handleComplete("student")}
                     className="rounded-xl border border-border bg-card p-5 text-left hover:border-secondary hover:shadow-md transition-all group">
                     <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                       <Users className="w-5 h-5 text-secondary" />
@@ -200,7 +200,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
                     <p className="text-xs text-muted-foreground mt-1">Nominate a teacher</p>
                   </button>
 
-                  <button onClick={() => handleComplete("teacher")}
+                  <button id="btn-dialog-role-teacher" onClick={() => handleComplete("teacher")}
                     className="rounded-xl border border-border bg-card p-5 text-left hover:border-accent hover:shadow-md transition-all group">
                     <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                       <UserCheck className="w-5 h-5 text-accent" />

@@ -341,7 +341,7 @@ const StudentNominationForm = () => {
                 </>
               )}
 
-              <Button type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
+              <Button id="btn-student-form-submit" type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Nomination"}
               </Button>
             </motion.div>

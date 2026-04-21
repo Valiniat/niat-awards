@@ -55,7 +55,7 @@ const NominatePage = () => {
                 </div>
                 <h1 className="font-heading text-2xl font-bold text-foreground mb-3">Verify your number to continue</h1>
                 <p className="text-foreground/55 text-sm mb-8">Quick OTP verification — takes 30 seconds</p>
-                <button onClick={() => setLoginOpen(true)}
+                <button id="btn-nominate-verify" onClick={() => setLoginOpen(true)}
                   className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-white text-sm"
                   style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)" }}>
                   Verify &amp; Nominate <ArrowRight className="w-4 h-4" />
@@ -130,7 +130,7 @@ const NominatePage = () => {
             {/* Logged in — show form */}
             {isAuthenticated && nomType && (
               <motion.div key="form" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                <button onClick={() => setNomType(null)}
+                <button id="btn-nominate-back" onClick={() => setNomType(null)}
                   className="flex items-center gap-1 text-foreground/55 hover:text-foreground text-sm mb-5 transition-colors min-h-[44px]">
                   <ChevronLeft className="w-4 h-4" /> Change selection
                 </button>

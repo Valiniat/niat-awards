@@ -82,7 +82,7 @@ const LoginPage = () => {
                       onKeyDown={e => e.key === "Enter" && handleSendOtp()}
                       className="flex-1 h-12 px-4 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-white/30 text-base focus:outline-none focus:border-secondary/60 transition-all" />
                   </div>
-                  <button onClick={handleSendOtp} disabled={phone.length < 10 || loading}
+                  <button id="btn-login-send-otp" onClick={handleSendOtp} disabled={phone.length < 10 || loading}
                     className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold text-base flex items-center justify-center gap-2 disabled:opacity-50 transition-all">
                     {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Send OTP</>}
                   </button>
@@ -92,7 +92,7 @@ const LoginPage = () => {
 
             {step === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <button onClick={() => { setStep("phone"); setOtp(""); }} className="flex items-center gap-1 text-sm text-white/40 hover:text-white transition-colors mb-4 min-h-[44px]">
+                <button id="btn-login-otp-back" onClick={() => { setStep("phone"); setOtp(""); }} className="flex items-center gap-1 text-sm text-white/40 hover:text-white transition-colors mb-4 min-h-[44px]">
                   <ChevronLeft className="w-4 h-4" /> Change number
                 </button>
                 <div className="flex items-center gap-2 mb-1">
@@ -108,11 +108,11 @@ const LoginPage = () => {
                     value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     onKeyDown={e => e.key === "Enter" && handleVerifyOtp()}
                     className="w-full h-14 px-4 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-white/30 text-2xl font-bold tracking-[0.5em] text-center focus:outline-none focus:border-secondary/60 transition-all" />
-                  <button onClick={handleVerifyOtp} disabled={otp.length < 6 || loading}
+                  <button id="btn-login-verify-otp" onClick={handleVerifyOtp} disabled={otp.length < 6 || loading}
                     className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold text-base flex items-center justify-center gap-2 disabled:opacity-50">
                     {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Verify</>}
                   </button>
-                  <button onClick={handleSendOtp} className="w-full text-center text-sm text-white/30 hover:text-secondary transition-colors min-h-[44px] flex items-center justify-center">
+                  <button id="btn-login-resend-otp" onClick={handleSendOtp} className="w-full text-center text-sm text-white/30 hover:text-secondary transition-colors min-h-[44px] flex items-center justify-center">
                     Didn't receive? Resend OTP
                   </button>
                 </div>
@@ -136,7 +136,7 @@ const LoginPage = () => {
                     onKeyDown={e => e.key === "Enter" && handleComplete()}
                     className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-white/30 text-base font-medium focus:outline-none focus:border-secondary/60 transition-all" />
                   <p className="text-xs text-white/30">This will appear on your nomination</p>
-                  <button onClick={handleComplete} disabled={!name.trim()}
+                  <button id="btn-login-complete" onClick={handleComplete} disabled={!name.trim()}
                     className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold text-base flex items-center justify-center gap-2 disabled:opacity-50">
                     <ArrowRight className="w-4 h-4" /> Continue
                   </button>

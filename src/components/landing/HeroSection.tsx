@@ -99,7 +99,7 @@ const QuickNominateCard = () => {
           </div>
           <h3 className="font-heading text-xl font-bold text-white mb-1">Hey {user?.name?.split(" ")[0] || "there"}! 👋</h3>
           <p className="text-[13px] text-white/65 mb-5">Ready to nominate your favourite teacher?</p>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
+          <motion.button whileHover={{ scale: 1.02 }} id="btn-hero-nominate-now" whileTap={{ scale: 0.97 }} onClick={() => navigate("/nominate")}
             className="w-full h-12 rounded-xl font-bold text-[15px] text-[#6B1212] flex items-center justify-center gap-2 shadow-lg"
             style={{ background: "#fff" }}>
             <Star className="w-4 h-4" /> Nominate Now <ArrowRight className="w-4 h-4" />
@@ -167,7 +167,7 @@ const QuickNominateCard = () => {
                 placeholder="10-digit number" />
 
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                onClick={handleSend} disabled={loading}
+                id="btn-hero-send-otp" onClick={handleSend} disabled={loading}
                 className="w-full h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 relative overflow-hidden disabled:opacity-60 mt-1"
                 style={{ background: "linear-gradient(135deg, #9B2020, #7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
                 <motion.div animate={{ x: [-200, 400] }} transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 4 }}
@@ -190,7 +190,7 @@ const QuickNominateCard = () => {
                   <p className="text-[13px] font-semibold text-white">Hey {name.split(" ")[0]}!</p>
                   <p className="text-[11px] text-white/55 truncate">OTP sent to +91 {phone}</p>
                 </div>
-                <button onClick={() => { setStep("form"); setOtp(""); }}
+                <button id="btn-hero-otp-back" onClick={() => { setStep("form"); setOtp(""); }}
                   className="text-[11px] font-semibold text-secondary hover:text-secondary/80 flex-shrink-0">Edit</button>
               </div>
 
@@ -208,13 +208,13 @@ const QuickNominateCard = () => {
               </div>
 
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                onClick={handleVerify} disabled={loading || otp.length < 6}
+                id="btn-hero-verify-otp" onClick={handleVerify} disabled={loading || otp.length < 6}
                 className="w-full h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #9B2020, #7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.4)" }}>
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Verify &amp; Continue</>}
               </motion.button>
 
-              <button onClick={handleSend} className="w-full text-center text-[12px] text-white/35 hover:text-secondary transition-colors py-1">
+              <button id="btn-hero-resend-otp" onClick={handleSend} className="w-full text-center text-[12px] text-white/35 hover:text-secondary transition-colors py-1">
                 Didn't receive OTP? Resend
               </button>
             </motion.div>

@@ -26,14 +26,14 @@ const ThankYouPage = () => {
             <div className="bg-card rounded-2xl p-6 shadow-card border border-border/50 mb-6">
               <p className="font-heading font-semibold text-foreground mb-4">Help your teacher get recognized! 🙏</p>
               <a href={`https://wa.me/?text=${shareText}${shareUrl}`} target="_blank" rel="noopener noreferrer">
-                <button className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold flex items-center justify-center gap-2">
+                <button id="btn-thankyou-whatsapp-share" className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold flex items-center justify-center gap-2">
                   <Share2 className="w-4 h-4" /> Share on WhatsApp
                 </button>
               </a>
             </div>
 
             <Link to="/nominate">
-              <button className="w-full h-12 rounded-xl border border-border/50 text-foreground/65 font-medium flex items-center justify-center gap-2 hover:bg-muted transition-all">
+              <button id="btn-thankyou-nominate-another" className="w-full h-12 rounded-xl border border-border/50 text-foreground/65 font-medium flex items-center justify-center gap-2 hover:bg-muted transition-all">
                 Nominate Another Teacher <ArrowRight className="w-4 h-4" />
               </button>
             </Link>

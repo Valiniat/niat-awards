@@ -42,13 +42,13 @@ const VoteConfirmModal = ({ voterId, teacherName, onClose }: { voterId: string; 
         </div>
 
         <div className="flex gap-2">
-          <button onClick={() => {
+          <button id="btn-vote-copy-id" onClick={() => {
             navigator.clipboard.writeText(voterId);
             toast({ title: "Voter ID copied!" });
           }} className="flex-1 h-10 rounded-xl border border-white/15 text-white/60 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-white/5 transition-all">
             <Copy className="w-3.5 h-3.5" /> Copy ID
           </button>
-          <button onClick={onClose} className="flex-1 h-10 rounded-xl font-bold text-sm text-white"
+          <button id="btn-vote-confirm-done" onClick={onClose} className="flex-1 h-10 rounded-xl font-bold text-sm text-white"
             style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)" }}>
             Done
           </button>
@@ -239,7 +239,7 @@ const VotePage = () => {
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search teacher or school..."
               className="w-full pl-10 pr-4 h-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-white/20 transition-all" />
           </div>
-          <button onClick={() => setSortBy(s => s === "votes" ? "recent" : "votes")}
+          <button id="btn-vote-sort-toggle" onClick={() => setSortBy(s => s === "votes" ? "recent" : "votes")}
             className={`flex items-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl border text-xs font-semibold transition-all flex-shrink-0 ${
               sortBy === "votes" ? "bg-secondary/15 border-secondary/30 text-secondary" : "bg-white/5 border-white/10 text-white/50 hover:text-white"
             }`}>
@@ -247,7 +247,7 @@ const VotePage = () => {
             <span className="hidden sm:inline">{sortBy === "votes" ? "By Votes" : "Recent"}</span>
           </button>
           <div className="relative flex-shrink-0" ref={filterRef}>
-            <button onClick={() => setShowFilter(!showFilter)}
+            <button id="btn-vote-filter-toggle" onClick={() => setShowFilter(!showFilter)}
               className="flex items-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-white/50 text-xs font-semibold hover:text-white transition-all">
               <Filter className="w-3.5 h-3.5" />
               <span className="hidden sm:inline max-w-[100px] truncate">{category === "All" ? "Category" : category.replace(" Award", "")}</span>
@@ -395,6 +395,7 @@ const VotePage = () => {
                         <motion.button
                           whileHover={{ scale: (hasVotedThis || hasVotedAnywhere) ? 1 : 1.02 }}
                           whileTap={{ scale: 0.97 }}
+                          id={`btn-vote-cast-${n.id}`}
                           onClick={() => handleVote(n.id, name)}
                           disabled={voting === n.id || hasVotedThis || hasVotedAnywhere}
                           className={`flex-1 h-10 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition-all relative overflow-hidden ${
@@ -414,6 +415,7 @@ const VotePage = () => {
                             : <><ThumbsUp className="w-4 h-4" /> Vote</>}
                         </motion.button>
                         <motion.button
+                          id={`btn-vote-share-${n.id}`}
                           whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
                           onClick={() => {
                             const text = `I voted for ${name} in the NIAT Future-Ready Educator Awards 2026! 🏆\nYou can vote too: ${window.location.href}`;

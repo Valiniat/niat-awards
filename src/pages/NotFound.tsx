@@ -25,7 +25,7 @@ const NotFound = () => {
           <h1 className="font-heading text-2xl sm:text-3xl font-bold text-primary-foreground mb-3">Page not found</h1>
           <p className="text-primary-foreground/50 mb-8 text-base">The page you're looking for doesn't exist or has been moved.</p>
           <Link to="/">
-            <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white font-semibold text-sm ring-1 ring-white/10 hover:from-[#A52222] hover:to-[#851717] transition-all">
+            <button id="btn-404-go-home" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-[#9B2020] to-[#7A1515] text-white font-semibold text-sm ring-1 ring-white/10 hover:from-[#A52222] hover:to-[#851717] transition-all">
               <ArrowLeft className="w-4 h-4" /> Back to Home
             </button>
           </Link>
