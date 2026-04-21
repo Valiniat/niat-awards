@@ -115,14 +115,9 @@ const VotePage = () => {
       return;
     }
 
-    // ── Task 4: Check one-vote-per-person (entire portal, not per teacher) ──
-    if (myVotes.size > 0) {
-      toast({ title: "You have already voted.", description: "Each phone number can only vote once.", variant: "destructive" });
-      return;
-    }
-
+    // Already voted for this teacher
     if (myVotes.has(nominationId)) {
-      toast({ title: "You have already voted.", variant: "destructive" });
+      toast({ title: "You have already voted for this teacher.", variant: "destructive" });
       return;
     }
 
@@ -131,33 +126,26 @@ const VotePage = () => {
     // Generate unique voter ID
     const voterId = generateVoterId();
 
+    // Insert vote — DB unique constraint (nomination_id, voter_phone) handles duplicates
     const { error } = await supabase.from("votes").insert({
       nomination_id: nominationId,
       voter_phone: user.phone,
-      voter_id: voterId,
     });
     setVoting(null);
 
     if (error) {
       if (error.code === "23505") {
+        // Duplicate — already voted for this teacher
         setMyVotes(prev => new Set([...prev, nominationId]));
-        toast({ title: "You have already voted.", variant: "destructive" });
+        toast({ title: "You have already voted for this teacher.", variant: "destructive" });
       } else {
-        // voter_id column might not exist yet — try without it
-        const { error: err2 } = await supabase.from("votes").insert({
-          nomination_id: nominationId,
-          voter_phone: user.phone,
-        });
-        if (err2) {
-          toast({ title: "Vote failed", description: err2.message, variant: "destructive" });
-          return;
-        }
-        setMyVotes(prev => new Set([...prev, nominationId]));
-        setVoteCounts(prev => ({ ...prev, [nominationId]: (prev[nominationId] || 0) + 1 }));
-        setConfirmModal({ voterId, teacherName });
+        toast({ title: "Vote failed", description: error.message, variant: "destructive" });
       }
-    } else {
-      setMyVotes(prev => new Set([...prev, nominationId]));
+      return;
+    }
+
+    // Success
+    setMyVotes(prev => new Set([...prev, nominationId]));
       setVoteCounts(prev => ({ ...prev, [nominationId]: (prev[nominationId] || 0) + 1 }));
       setConfirmModal({ voterId, teacherName });
     }
@@ -272,12 +260,7 @@ const VotePage = () => {
           </div>
         </div>
 
-        {/* Already voted banner */}
-        {hasVotedAnywhere && isAuthenticated && (
-          <div className="bg-secondary/8 border-t border-secondary/20 px-4 py-2 text-center">
-            <p className="text-xs text-secondary font-semibold">✅ You have already cast your vote. Thank you for participating!</p>
-          </div>
-        )}
+
       </div>
 
       {/* Cards */}
@@ -393,25 +376,22 @@ const VotePage = () => {
                       <div className="border-t border-white/[0.06] mb-4" />
                       <div className="flex gap-2">
                         <motion.button
-                          whileHover={{ scale: (hasVotedThis || hasVotedAnywhere) ? 1 : 1.02 }}
+                          whileHover={{ scale: hasVotedThis ? 1 : 1.02 }}
                           whileTap={{ scale: 0.97 }}
                           id={`btn-vote-cast-${n.id}`}
                           onClick={() => handleVote(n.id, name)}
-                          disabled={voting === n.id || hasVotedThis || hasVotedAnywhere}
+                          disabled={voting === n.id || hasVotedThis}
                           className={`flex-1 h-10 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition-all relative overflow-hidden ${
                             hasVotedThis
                               ? "bg-secondary/10 border border-secondary/25 text-secondary cursor-default"
-                              : hasVotedAnywhere
-                              ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
                               : "bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 disabled:opacity-60"
                           }`}>
-                          {!hasVotedThis && !hasVotedAnywhere && (
+                          {!hasVotedThis && (
                             <motion.div animate={{ x: [-200, 300] }} transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 5 }}
                               className="absolute inset-0 w-16 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 pointer-events-none" />
                           )}
                           {voting === n.id ? <Loader2 className="w-4 h-4 animate-spin" />
                             : hasVotedThis ? <><CheckCircle2 className="w-4 h-4" /> Your Vote</>
-                            : hasVotedAnywhere ? "Voted"
                             : <><ThumbsUp className="w-4 h-4" /> Vote</>}
                         </motion.button>
                         <motion.button
