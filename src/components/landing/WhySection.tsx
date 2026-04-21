@@ -34,14 +34,14 @@ const WhySection = () => {
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8">Why This Exists</h2>
           <motion.blockquote initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="max-w-3xl mx-auto relative">
-            <div className="absolute -left-4 -top-4 text-6xl text-secondary/20 font-serif leading-none">"</div>
-            <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-white/80 font-medium italic px-2">
+            className="max-w-3xl mx-auto relative px-10 sm:px-14">
+            <div className="absolute left-0 top-0 text-5xl sm:text-6xl text-secondary/30 font-serif leading-none select-none">"</div>
+            <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-white/80 font-medium italic">
               Every student who walked into NxtWave carried something with them: the belief that they were capable of more.
               They did not arrive with that belief on their own. A teacher gave it to them.
               We are here because of that teacher. It is time they knew.
             </p>
-            <div className="absolute -right-4 -bottom-4 text-6xl text-secondary/20 font-serif leading-none rotate-180">"</div>
+            <div className="absolute right-0 bottom-0 text-5xl sm:text-6xl text-secondary/30 font-serif leading-none rotate-180 select-none">"</div>
           </motion.blockquote>
         </motion.div>
 
