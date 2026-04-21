@@ -146,9 +146,8 @@ const VotePage = () => {
 
     // Success
     setMyVotes(prev => new Set([...prev, nominationId]));
-      setVoteCounts(prev => ({ ...prev, [nominationId]: (prev[nominationId] || 0) + 1 }));
-      setConfirmModal({ voterId, teacherName });
-    }
+    setVoteCounts(prev => ({ ...prev, [nominationId]: (prev[nominationId] || 0) + 1 }));
+    setConfirmModal({ voterId, teacherName });
   };
 
   const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
