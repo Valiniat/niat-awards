@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
@@ -206,7 +207,7 @@ const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: 
           </div>
 
           {/* Story fields */}
-          {form.special_thing !== undefined && (
+          {(form.special_thing !== undefined && form.special_thing !== null) && (
             <div>
               <Label className="text-white/60 text-xs mb-1.5 block">Special Thing About Teacher</Label>
               <Textarea value={form.special_thing || ""} onChange={e => set("special_thing", e.target.value)} rows={3}
@@ -328,7 +329,7 @@ const VotesPanel = ({ votes, nominations }: { votes: any[]; nominations: any[] }
                       {t.category && <span className={`text-[10px] font-semibold ${catColor[t.category] || "text-white/40"}`}>{t.category.replace(" Award","")}</span>}
                     </div>
                     {/* Progress bar */}
-                    <div className="mt-1.5 h-1.5 rounded-full bg-primary-foreground/8 overflow-hidden w-full">
+                    <div className="mt-1.5 h-1.5 rounded-full bg-primary-foreground/10 overflow-hidden w-full">
                       <motion.div initial={{ width: 0 }} animate={{ width: `${Math.round((t.votes / maxVotes) * 100)}%` }}
                         transition={{ duration: 0.8, delay: 0.2 + i * 0.05 }}
                         className="h-full rounded-full bg-gradient-to-r from-secondary to-secondary/60" />
@@ -417,7 +418,7 @@ const VotesPanel = ({ votes, nominations }: { votes: any[]; nominations: any[] }
                     <span className={`text-xs font-semibold ${text}`}>{cat.replace(" Award", "")}</span>
                     <span className="text-xs text-primary-foreground/60">{catVotes} votes ({pct}%)</span>
                   </div>
-                  <div className="h-2 rounded-full bg-primary-foreground/8 overflow-hidden">
+                  <div className="h-2 rounded-full bg-primary-foreground/10 overflow-hidden">
                     <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
                       className={`h-full rounded-full ${color}`} />
@@ -447,7 +448,11 @@ const AdminPage = () => {
   const [typeFilter, setTypeFilter] = useState("All");
   const [editingNom, setEditingNom] = useState<any | null>(null);
 
-  useEffect(() => { if (!isAdminLoggedIn()) navigate("/admin-login"); }, []);
+  useEffect(() => {
+    if (!isAdminLoggedIn()) {
+      navigate("/admin-login");
+    }
+  }, []);
 
   const handleLogout = () => { adminLogout(); navigate("/admin-login"); };
 
@@ -497,7 +502,9 @@ const AdminPage = () => {
     }
   };
 
-  useEffect(() => { if (isAdminLoggedIn()) fetchNominations(); }, []);
+  useEffect(() => {
+    if (isAdminLoggedIn()) fetchNominations();
+  }, []);
 
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id + status);
@@ -521,7 +528,8 @@ const AdminPage = () => {
     const name = (n.teacher_name || n.full_name || "").toLowerCase();
     const school = (n.school_name || "").toLowerCase();
     const studentName = (n.student_name || "").toLowerCase();
-    const matchSearch = name.includes(search.toLowerCase()) || school.includes(search.toLowerCase()) || studentName.includes(search.toLowerCase());
+    const phone = (n.phone || "").toLowerCase();
+    const matchSearch = name.includes(search.toLowerCase()) || school.includes(search.toLowerCase()) || studentName.includes(search.toLowerCase()) || phone.includes(search.toLowerCase());
     const matchCategory = categoryFilter === "All" || n.award_category === categoryFilter;
     const matchStatus = statusFilter === "All" || n.status === statusFilter;
     const matchType = typeFilter === "All" || n.type === typeFilter;
@@ -550,6 +558,7 @@ const AdminPage = () => {
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "votes.csv"; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const exportCSV = () => {
@@ -561,6 +570,7 @@ const AdminPage = () => {
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "nominations.csv"; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   if (!isAdminLoggedIn()) {
@@ -649,7 +659,7 @@ const AdminPage = () => {
           <>
             {/* Shortlisted → voting banner */}
             {shortlisted > 0 && (
-              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-blue-500/20 bg-blue-500/8">
+              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-blue-500/20 bg-blue-500/10">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
                     <CheckCircle2 className="w-4 h-4 text-blue-400" />
