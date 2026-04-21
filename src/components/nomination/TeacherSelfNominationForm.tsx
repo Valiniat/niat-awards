@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,22 @@ const TeacherSelfNominationForm = () => {
     awardCategory: "", impactStory: "", phone: user?.phone || "",
   });
 
-  const set = (key: string, val: string) => setForm((p) => ({ ...p, [key]: val }));
+  const set = (key: string, val: string) => setForm((p) => {
+    const next = { ...p, [key]: val };
+    try { localStorage.setItem("niat_teacher_draft", JSON.stringify(next)); } catch {}
+    return next;
+  });
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const draft = localStorage.getItem("niat_teacher_draft");
+      if (draft) {
+        const d = JSON.parse(draft);
+        setForm(f => ({ ...f, ...d, phone: user?.phone || d.phone, fullName: user?.name || d.fullName }));
+      }
+    } catch {}
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +75,7 @@ const TeacherSelfNominationForm = () => {
         phone: form.phone,
       });
       if (error) throw error;
+      localStorage.removeItem("niat_teacher_draft");
       navigate("/thank-you");
     } catch (err: any) {
       toast({ title: "Submission failed", description: err.message || "Please try again.", variant: "destructive" });

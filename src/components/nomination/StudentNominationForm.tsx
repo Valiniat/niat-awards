@@ -131,6 +131,14 @@ const StudentNominationForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!classGroup) {
+      toast({ title: "Please select your class group", variant: "destructive" });
+      return;
+    }
+    if (!form.studentClass) {
+      toast({ title: "Please select your class", variant: "destructive" });
+      return;
+    }
     if (!form.awardCategory) {
       toast({ title: "Please select an award category", variant: "destructive" });
       return;

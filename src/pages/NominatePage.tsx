@@ -27,15 +27,15 @@ const NominatePage = () => {
     else if (paramType === "student") setNomType("student");
   }, [paramType]);
 
-  // Not logged in → open login dialog right away
+  // Auto-open login if user came via URL with type param (direct intent)
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && paramType) {
       setLoginOpen(true);
-    } else {
-      // User just logged in — close dialog if still open
+    }
+    if (isAuthenticated) {
       setLoginOpen(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, paramType]);
 
   return (
     <div className="min-h-screen bg-background" id="main-content" role="main">

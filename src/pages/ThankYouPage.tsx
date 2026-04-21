@@ -11,7 +11,7 @@ const ThankYouPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col" id="main-content" role="main">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 py-12 pt-[80px]">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 pt-[56px]">
         <div className="w-full max-w-md text-center">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.6 }}>
             <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">

@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const CATEGORIES = ["All", "Student Transformation Award", "Teaching Innovation Award", "Beyond Classroom Impact Award", "Future Readiness Award"];
 
@@ -29,7 +28,6 @@ const VotePage = () => {
   const [sortBy, setSortBy] = useState<"votes" | "recent">("votes");
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const filterRef = useRef<HTMLDivElement>(null);
 
   // FIX: close filter dropdown when clicking outside
@@ -88,11 +86,10 @@ const VotePage = () => {
   const handleVote = async (nominationId: string, teacherName: string) => {
     if (!isAuthenticated || !user?.phone) {
       toast({
-        title: "Login required",
-        description: "Please login to cast your vote.",
+        title: "Login required to vote",
+        description: "Please verify your phone number to cast a vote.",
         variant: "destructive",
       });
-      navigate("/login");
       return;
     }
     if (myVotes.has(nominationId)) {
