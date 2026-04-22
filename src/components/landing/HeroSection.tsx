@@ -230,8 +230,6 @@ const HeroSection = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  // FIX: only fade after 60% scroll, not starting from 0
-  const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0]);
 
   return (
     <>
@@ -245,7 +243,7 @@ const HeroSection = () => {
           <motion.div animate={{ scale: [1.1, 1, 1.1], opacity: [0.12, 0.22, 0.12] }} transition={{ duration: 8, repeat: Infinity }}
             className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-primary/70 rounded-full blur-[150px]" />
           <motion.div animate={{ x: [-20, 20, -20], y: [-10, 10, -10] }} transition={{ duration: 10, repeat: Infinity }}
-            className="absolute top-1/2 left-1/3 w-[400px] h-[400px] bg-secondary/8 rounded-full blur-[100px]" />
+            className="absolute top-1/2 left-1/3 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px]" />
         </motion.div>
 
         {/* Floating particles */}
@@ -259,7 +257,7 @@ const HeroSection = () => {
         </div>
 
         {/* Content — NO opacity fade on scroll for card */}
-        <motion.div style={{ opacity }} className="w-full relative z-10 py-10 sm:py-16 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="w-full relative z-10 py-10 sm:py-16 px-4 sm:px-6 max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
             {/* ── Left ── */}
@@ -347,7 +345,7 @@ const HeroSection = () => {
           </div>
 
 
-        </motion.div>
+        </div>
       </section>
     </>
   );

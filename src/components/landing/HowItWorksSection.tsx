@@ -63,7 +63,7 @@ const HowItWorksSection = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.2 + i * 0.12 }}
-              className="flex gap-5 p-5 rounded-2xl bg-white/[0.02] border border-white/8">
+              className="flex gap-5 p-5 rounded-2xl bg-white/[0.02] border border-white/10">
               <div className="relative flex-shrink-0">
                 <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center`}>
                   <s.icon className={`w-6 h-6 ${s.color}`} />

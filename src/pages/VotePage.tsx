@@ -69,8 +69,6 @@ const VotePage = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [sortBy, setSortBy] = useState<"votes" | "recent">("votes");
   const [confirmModal, setConfirmModal] = useState<{ voterId: string; teacherName: string } | null>(null);
-  const [fetchError, setFetchError] = useState<string | null>(null);
-  const [debugCount, setDebugCount] = useState<number | null>(null);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const filterRef = useRef<HTMLDivElement>(null);
@@ -177,8 +175,6 @@ const VotePage = () => {
   const rankMap: Record<string, number> = {};
   ranked.forEach((n, i) => { rankMap[n.id] = i + 1; });
 
-  const hasVotedAnywhere = myVotes.size > 0;
-
   return (
     <div className="min-h-screen bg-gradient-dark" id="main-content" role="main">
       <Navbar />
@@ -189,18 +185,6 @@ const VotePage = () => {
           teacherName={confirmModal.teacherName}
           onClose={() => setConfirmModal(null)}
         />
-      )}
-
-      {/* Debug error banner */}
-      {fetchError && (
-        <div className="fixed top-[56px] left-0 right-0 z-50 bg-red-500/20 border-b border-red-500/40 px-4 py-2 text-center">
-          <p className="text-xs text-red-300 font-mono">⚠ Fetch error: {fetchError}</p>
-        </div>
-      )}
-      {debugCount !== null && debugCount === 0 && !fetchError && (
-        <div className="fixed top-[56px] left-0 right-0 z-50 bg-amber-500/15 border-b border-amber-500/30 px-4 py-2 text-center">
-          <p className="text-xs text-amber-300">Anon client sees 0 nominations total — RLS SELECT policy missing. Add policy in Supabase dashboard.</p>
-        </div>
       )}
 
       {/* Hero */}

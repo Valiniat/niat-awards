@@ -673,7 +673,7 @@ const AdminPage = () => {
           <>
             {/* Shortlisted → voting banner */}
             {shortlisted === 0 && pending > 0 && (
-              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-amber-500/30 bg-amber-500/8">
+              <div className="flex items-center justify-between p-4 rounded-xl mb-5 border border-amber-500/30 bg-amber-500/10">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
                     <Star className="w-4 h-4 text-amber-400" />

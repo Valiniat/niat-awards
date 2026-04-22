@@ -180,7 +180,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
                 </h2>
                 <p className="text-sm text-muted-foreground mb-4">I am a...</p>
 
-                <div className="flex items-center gap-2.5 bg-green-500/8 border border-green-500/20 rounded-lg px-3.5 py-2.5 mb-5">
+                <div className="flex items-center gap-2.5 bg-green-500/10 border border-green-500/20 rounded-lg px-3.5 py-2.5 mb-5">
                   <div className="w-6 h-6 rounded-full bg-green-500/15 flex items-center justify-center flex-shrink-0">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-500"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>

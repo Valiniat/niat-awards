@@ -37,8 +37,10 @@ const LoginPage = () => {
 
   const handleComplete = () => {
     if (!name.trim()) { toast({ title: "Please enter your name", variant: "destructive" }); return; }
+    // Name already set in verifyOtp — only set here if changed on this step
     setUserName(name.trim());
-    navigate(from, { replace: true });
+    // Small delay so state settles before navigation — prevents blank flash
+    setTimeout(() => navigate(from, { replace: true }), 50);
   };
 
   return (

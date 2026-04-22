@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Share2, ArrowRight } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 
 const ThankYouPage = () => {
+  const navigate = useNavigate();
   const shareText = encodeURIComponent("I just nominated my favourite teacher for NIAT Future-Ready Educator Awards 2026! 🏆 Nominate yours too: ");
   const shareUrl = encodeURIComponent("https://www.niatawards.in");
 
@@ -32,11 +33,10 @@ const ThankYouPage = () => {
               </a>
             </div>
 
-            <Link to="/nominate">
-              <button id="btn-thankyou-nominate-another" className="w-full h-12 rounded-xl border border-border/50 text-foreground/65 font-medium flex items-center justify-center gap-2 hover:bg-muted transition-all">
-                Nominate Another Teacher <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
+            <button id="btn-thankyou-nominate-another" onClick={() => navigate("/nominate")}
+              className="w-full h-12 rounded-xl border border-border/50 text-foreground/65 font-medium flex items-center justify-center gap-2 hover:bg-muted transition-all">
+              Nominate Another Teacher <ArrowRight className="w-4 h-4" />
+            </button>
           </motion.div>
         </div>
       </div>

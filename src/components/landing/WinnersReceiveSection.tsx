@@ -32,7 +32,7 @@ const WinnersReceiveSection = () => {
               animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
               transition={{ delay: 0.2 + i * 0.1, type: "spring", stiffness: 150 }}
               whileHover={{ y: -8, scale: 1.03 }}
-              className="group relative bg-white/[0.03] border border-white/8 rounded-2xl p-5 sm:p-6 text-center overflow-hidden cursor-default">
+              className="group relative bg-white/[0.03] border border-white/10 rounded-2xl p-5 sm:p-6 text-center overflow-hidden cursor-default">
               <div className={`absolute inset-0 ${p.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
               <motion.div whileHover={{ scale: 1.3, rotate: 15 }} transition={{ type: "spring", stiffness: 300 }}
                 className="text-4xl mb-4 relative z-10">{p.value}
