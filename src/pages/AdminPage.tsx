@@ -20,7 +20,7 @@ import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
 const adminSupabase = createClient(
   "https://hxiflxyduamfjuubdilr.supabase.co",
   // Service role key — bypasses RLS, only used in password-protected admin panel
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDg0NDMwOSwiZXhwIjoyMDkwNDIwMzA5fQ.WovhEiNRjLXFbsMCDkFY-F16gQX1E0qMFj4EY5_t__g",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWZseHlkdWFtZmp1dWJkaWxyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDg0NDMwOSwiZXhwIjoyMDkwNDIwMzA5fQ.F8DbB6mVAwdWk0bxr9Jm_imcL03gf895ejefs1qtvtQ",
   { global: { headers: { "x-admin-secret": "niat_admin_2026_secret" } } }
 );
 
