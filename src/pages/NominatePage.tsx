@@ -14,13 +14,14 @@ type NomType = null | "student" | "self";
 const NominatePage = () => {
   const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
-  // Open login immediately if not authenticated — skip the intermediate screen
-  const [loginOpen, setLoginOpen] = useState(!isAuthenticated);
 
   const paramType = searchParams.get("type");
   const [nomType, setNomType] = useState<NomType>(
     paramType === "self" ? "self" : paramType === "student" ? "student" : null
   );
+
+  // Open login immediately if not authenticated
+  const [loginOpen, setLoginOpen] = useState(!isAuthenticated);
 
   // Sync URL param changes
   useEffect(() => {
@@ -151,9 +152,7 @@ const NominatePage = () => {
 
       <LoginDialog
         open={loginOpen}
-        onOpenChange={(open) => {
-          setLoginOpen(open);
-        }}
+        onOpenChange={setLoginOpen}
         defaultRole={nomType === "self" ? "teacher" : "student"}
       />
     </div>

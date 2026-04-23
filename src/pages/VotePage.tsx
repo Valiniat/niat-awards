@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import LoginDialog from "@/components/auth/LoginDialog";
 
 const CATEGORIES = ["All", "Student Transformation Award", "Teaching Innovation Award", "Beyond Classroom Impact Award", "Future Readiness Award"];
 
@@ -69,6 +70,10 @@ const VotePage = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [sortBy, setSortBy] = useState<"votes" | "recent">("votes");
   const [confirmModal, setConfirmModal] = useState<{ voterId: string; teacherName: string } | null>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [pendingVote, setPendingVote] = useState<{ nominationId: string; teacherName: string } | null>(null);
+  // Track if this user has voted for ANY teacher (one-vote-per-user)
+  const [hasVotedAnywhere, setHasVotedAnywhere] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const filterRef = useRef<HTMLDivElement>(null);
@@ -101,7 +106,10 @@ const VotePage = () => {
 
     if (user?.phone) {
       const { data: userVotes } = await supabase.from("votes").select("nomination_id").eq("voter_phone", user.phone);
-      if (userVotes) setMyVotes(new Set(userVotes.map(v => v.nomination_id)));
+      if (userVotes) {
+        setMyVotes(new Set(userVotes.map(v => v.nomination_id)));
+        setHasVotedAnywhere(userVotes.length > 0);
+      }
     }
 
     setLoading(false);
@@ -115,24 +123,22 @@ const VotePage = () => {
     return () => clearInterval(interval);
   }, [user?.phone]);
 
-  const handleVote = async (nominationId: string, teacherName: string) => {
-    if (!isAuthenticated || !user?.phone) {
-      toast({ title: "Login required to vote", description: "Please verify your phone number to cast a vote.", variant: "destructive" });
-      return;
-    }
+  const castVote = async (nominationId: string, teacherName: string) => {
+    if (!user?.phone) return;
 
-    // Already voted for this teacher
-    if (myVotes.has(nominationId)) {
-      toast({ title: "You have already voted for this teacher.", variant: "destructive" });
+    // ONE VOTE PER USER — check if already voted anywhere
+    if (hasVotedAnywhere || myVotes.size > 0) {
+      toast({
+        title: "You have already voted.",
+        description: "Only one vote is allowed per person across all teachers.",
+        variant: "destructive",
+      });
       return;
     }
 
     setVoting(nominationId);
-
-    // Generate unique voter ID
     const voterId = generateVoterId();
 
-    // Insert vote — DB unique constraint (nomination_id, voter_phone) handles duplicates
     const { error } = await supabase.from("votes").insert({
       nomination_id: nominationId,
       voter_phone: user.phone,
@@ -141,9 +147,9 @@ const VotePage = () => {
 
     if (error) {
       if (error.code === "23505") {
-        // Duplicate — already voted for this teacher
+        setHasVotedAnywhere(true);
         setMyVotes(prev => new Set([...prev, nominationId]));
-        toast({ title: "You have already voted for this teacher.", variant: "destructive" });
+        toast({ title: "You have already voted.", description: "Only one vote is allowed per person.", variant: "destructive" });
       } else {
         toast({ title: "Vote failed", description: error.message, variant: "destructive" });
       }
@@ -151,9 +157,20 @@ const VotePage = () => {
     }
 
     // Success
+    setHasVotedAnywhere(true);
     setMyVotes(prev => new Set([...prev, nominationId]));
     setVoteCounts(prev => ({ ...prev, [nominationId]: (prev[nominationId] || 0) + 1 }));
     setConfirmModal({ voterId, teacherName });
+  };
+
+  const handleVote = (nominationId: string, teacherName: string) => {
+    // Not logged in → open login modal, remember which teacher they wanted to vote for
+    if (!isAuthenticated || !user?.phone) {
+      setPendingVote({ nominationId, teacherName });
+      setLoginOpen(true);
+      return;
+    }
+    castVote(nominationId, teacherName);
   };
 
   const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
@@ -178,6 +195,18 @@ const VotePage = () => {
   return (
     <div className="min-h-screen bg-gradient-dark" id="main-content" role="main">
       <Navbar />
+
+      {/* Login modal — opens when unauthenticated user clicks Vote */}
+      <LoginDialog
+        open={loginOpen}
+        onOpenChange={(open) => { setLoginOpen(open); if (!open) setPendingVote(null); }}
+        voteMode={true}
+        pendingVote={pendingVote}
+        onVoteAfterLogin={(nominationId, teacherName) => {
+          setPendingVote(null);
+          castVote(nominationId, teacherName);
+        }}
+      />
 
       {confirmModal && (
         <VoteConfirmModal
@@ -387,18 +416,21 @@ const VotePage = () => {
                           whileTap={{ scale: 0.97 }}
                           id={`btn-vote-cast-${n.id}`}
                           onClick={() => handleVote(n.id, name)}
-                          disabled={voting === n.id || hasVotedThis}
+                          disabled={voting === n.id || hasVotedThis || (hasVotedAnywhere && !hasVotedThis)}
                           className={`flex-1 h-10 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition-all relative overflow-hidden ${
                             hasVotedThis
                               ? "bg-secondary/10 border border-secondary/25 text-secondary cursor-default"
+                              : (hasVotedAnywhere && !hasVotedThis)
+                              ? "bg-white/5 border border-white/10 text-white/25 cursor-not-allowed"
                               : "bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 disabled:opacity-60"
                           }`}>
-                          {!hasVotedThis && (
+                          {!hasVotedThis && !hasVotedAnywhere && (
                             <motion.div animate={{ x: [-200, 300] }} transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 5 }}
                               className="absolute inset-0 w-16 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 pointer-events-none" />
                           )}
                           {voting === n.id ? <Loader2 className="w-4 h-4 animate-spin" />
                             : hasVotedThis ? <><CheckCircle2 className="w-4 h-4" /> Your Vote</>
+                            : (hasVotedAnywhere && !hasVotedThis) ? "Already Voted"
                             : <><ThumbsUp className="w-4 h-4" /> Vote</>}
                         </motion.button>
                         <motion.button

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, ArrowRight, Shield, Users, UserCheck, ChevronLeft } from "lucide-react";
@@ -15,17 +15,27 @@ interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultRole?: "student" | "teacher";
+  // When set — after login complete, cast this vote automatically
+  pendingVote?: { nominationId: string; teacherName: string } | null;
+  onVoteAfterLogin?: (nominationId: string, teacherName: string) => void;
+  // When true — skip role picker, just verify phone
+  voteMode?: boolean;
 }
 
-const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
+const LoginDialog = ({ open, onOpenChange, defaultRole, pendingVote, onVoteAfterLogin, voteMode }: LoginDialogProps) => {
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  // FIX: collect name on the PHONE step so it's available when verifyOtp is called
-  const { sendOtp, verifyOtp, setUserRole, setUserName } = useAuth();
+  const { sendOtp, verifyOtp, setUserRole, user } = useAuth();
   const navigate = useNavigate();
+
+  // Pre-fill phone/name from existing session (auto-fill from cookie/localStorage)
+  useEffect(() => {
+    if (open && user?.phone && !phone) setPhone(user.phone);
+    if (open && user?.name && !name) setName(user.name);
+  }, [open]);
 
   const resetState = () => {
     setStep("phone");
@@ -36,34 +46,33 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
   };
 
   const handleSendOtp = async () => {
-    if (!name.trim()) {
-      toast.error("Please enter your name first");
-      return;
-    }
-    if (phone.length < 10) {
-      toast.error("Please enter a valid 10-digit phone number");
-      return;
-    }
+    if (!voteMode && !name.trim()) { toast.error("Please enter your name first"); return; }
+    if (phone.length < 10) { toast.error("Please enter a valid 10-digit phone number"); return; }
     setLoading(true);
     const result = await sendOtp(phone);
     setLoading(false);
-    if (result.success) {
-      setStep("otp");
-      toast.success("OTP sent! Check your SMS.");
-    } else {
-      toast.error(result.error || "Failed to send OTP. Please try again.");
-    }
+    if (result.success) { setStep("otp"); toast.success("OTP sent! Check your SMS."); }
+    else toast.error(result.error || "Failed to send OTP. Please try again.");
   };
 
   const handleVerifyOtp = async () => {
     if (otp.length < 6) return;
     setLoading(true);
-    // FIX: pass name here — it's collected on the phone step now
-    const success = await verifyOtp(otp, name.trim());
+    const success = await verifyOtp(otp, name.trim() || "User");
     setLoading(false);
     if (success) {
       toast.success("Verified!");
-      setStep("role");
+      if (voteMode) {
+        // Vote mode — skip role picker, close and trigger vote
+        setUserRole(defaultRole || "student");
+        onOpenChange(false);
+        resetState();
+        if (pendingVote && onVoteAfterLogin) {
+          onVoteAfterLogin(pendingVote.nominationId, pendingVote.teacherName);
+        }
+      } else {
+        setStep("role");
+      }
     } else {
       toast.error("Invalid OTP. Please try again.");
       setOtp("");
@@ -71,17 +80,10 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
   };
 
   const handleComplete = (role: "student" | "teacher") => {
-    // FIX: use setUserRole only — name already set atomically in verifyOtp
-    // setUserRole + setUserName sequentially had a React batching bug where
-    // both read stale state and the role update was lost
     setUserRole(role);
     onOpenChange(false);
     resetState();
-    if (role === "student") {
-      navigate("/nominate?type=student");
-    } else {
-      navigate("/nominate?type=self");
-    }
+    navigate(role === "teacher" ? "/nominate?type=self" : "/nominate?type=student");
   };
 
   return (
@@ -94,41 +96,36 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
                 exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3 }}>
                 <div className="flex items-center gap-2 mb-1">
                   <Phone className="w-5 h-5 text-secondary" />
-                  <h2 className="font-heading text-lg font-semibold text-foreground">Login to Continue</h2>
+                  <h2 className="font-heading text-lg font-semibold text-foreground">
+                    {voteMode ? "Login to Vote" : "Login to Continue"}
+                  </h2>
                 </div>
-                <p className="text-sm text-muted-foreground mb-6">Verify your phone number to start your nomination</p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  {voteMode ? "Verify your phone to cast your vote" : "Verify your phone number to start your nomination"}
+                </p>
 
                 <div className="space-y-4">
-                  {/* FIX: collect name on this step so it's ready for verifyOtp */}
-                  <div>
-                    <label className="text-sm text-muted-foreground mb-1.5 block">Your Full Name</label>
-                    <Input
-                      placeholder="e.g. Rahul Sharma"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      autoFocus
-                    />
-                  </div>
+                  {!voteMode && (
+                    <div>
+                      <label className="text-sm text-muted-foreground mb-1.5 block">Your Full Name</label>
+                      <Input placeholder="e.g. Rahul Sharma" value={name}
+                        onChange={(e) => setName(e.target.value)} autoFocus />
+                    </div>
+                  )}
                   <div>
                     <label className="text-sm text-muted-foreground mb-1.5 block">Phone Number</label>
                     <div className="flex gap-2">
                       <div className="flex items-center px-3 rounded-lg bg-muted border border-border text-muted-foreground text-sm">+91</div>
-                      <Input
-                        type="tel"
-                        inputMode="numeric"
-                        placeholder="10-digit number"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        className="text-lg tracking-wider"
-                        onKeyDown={(e) => e.key === "Enter" && handleSendOtp()}
-                      />
+                      <Input type="tel" inputMode="numeric" placeholder="10-digit number"
+                        value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        className="text-lg tracking-wider" autoFocus={voteMode}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendOtp()} />
                     </div>
                   </div>
 
-                  <Button variant="hero" className="w-full py-6 text-base gap-2"
-                    onClick={handleSendOtp} disabled={phone.length < 10 || !name.trim() || loading}>
-                    {loading ? "Sending..." : "Send OTP"}
-                    <ArrowRight className="w-4 h-4" />
+                  <Button id="btn-dialog-send-otp" variant="hero" className="w-full py-6 text-base gap-2"
+                    onClick={handleSendOtp} disabled={phone.length < 10 || (!voteMode && !name.trim()) || loading}>
+                    {loading ? "Sending..." : "Send OTP →"}
                   </Button>
                 </div>
               </motion.div>
@@ -149,19 +146,16 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
 
                 <div className="space-y-6">
                   <div className="flex justify-center">
-                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp} autoFocus>
                       <InputOTPGroup>
-                        {[0, 1, 2, 3, 4, 5].map((i) => (
-                          <InputOTPSlot key={i} index={i} className="w-12 h-14 text-xl" />
-                        ))}
+                        {[0,1,2,3,4,5].map(i => <InputOTPSlot key={i} index={i} className="w-12 h-14 text-xl" />)}
                       </InputOTPGroup>
                     </InputOTP>
                   </div>
 
-                  <Button variant="hero" className="w-full py-6 text-base gap-2"
+                  <Button id="btn-dialog-verify-otp" variant="hero" className="w-full py-6 text-base gap-2"
                     onClick={handleVerifyOtp} disabled={otp.length < 6 || loading}>
-                    {loading ? "Verifying..." : "Verify"}
-                    <ArrowRight className="w-4 h-4" />
+                    {loading ? "Verifying..." : "Verify →"}
                   </Button>
 
                   <button id="btn-dialog-resend-otp" onClick={handleSendOtp}
@@ -176,7 +170,7 @@ const LoginDialog = ({ open, onOpenChange, defaultRole }: LoginDialogProps) => {
               <motion.div key="role" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h2 className="font-heading text-lg font-semibold text-foreground mb-1">
-                  Welcome, {name.split(" ")[0]}! 👋
+                  Welcome, {name.split(" ")[0] || "there"}! 👋
                 </h2>
                 <p className="text-sm text-muted-foreground mb-4">I am a...</p>
 
