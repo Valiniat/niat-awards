@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { isAdminLoggedIn, adminLogout } from "./AdminLoginPage";
+import { supabase as publicSupabase } from "@/integrations/supabase/client";
 
 const adminSupabase = createClient(
   "https://hxiflxyduamfjuubdilr.supabase.co",
@@ -495,9 +496,8 @@ const AdminPage = () => {
         }));
         setVotes(enriched);
       } else {
-        // If admin fetch fails, try with regular supabase (votes are public-readable)
-        const { supabase: publicSupa } = await import("@/integrations/supabase/client");
-        const { data: publicVotes } = await publicSupa
+        // Fallback: try with public supabase (votes are public-readable per RLS)
+        const { data: publicVotes } = await publicSupabase
           .from("votes")
           .select("*")
           .order("created_at", { ascending: false });

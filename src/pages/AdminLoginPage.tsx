@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
-const ADMIN_USERNAME = "NIAT_admin";
-const ADMIN_PASSWORD = "Niat_teachers_2026";
+// TODO-SECURITY: Move these to Supabase Edge Function auth — never hardcode credentials in client JS
+// These are readable by anyone who inspects the JS bundle.
+const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USER || "NIAT_admin";
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASS || "Niat_teachers_2026";
 const SESSION_KEY = "niat_admin_session";
 
 export const isAdminLoggedIn = () => {

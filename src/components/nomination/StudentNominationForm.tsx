@@ -71,7 +71,7 @@ const RatingStars = ({ value, onChange, label }: { value: number; onChange: (v: 
     <div className="flex gap-0.5 sm:gap-1">
       {[1, 2, 3, 4, 5].map((s) => (
         <button key={s} type="button" onClick={() => onChange(s)} className="p-0.5">
-          <Star className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-foreground/60/30"}`} />
+          <Star className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${s <= value ? "text-accent fill-accent" : "text-foreground/30"}`} />
         </button>
       ))}
     </div>
@@ -153,18 +153,19 @@ const StudentNominationForm = () => {
 
     setLoading(true);
     try {
+      // Trim all text fields before insert to prevent whitespace-only entries
       const { error } = await supabase.from("nominations").insert({
         type: "student",
-        student_name: form.studentName,
+        student_name: form.studentName.trim(),
         student_class: form.studentClass,
         class_group: classGroup,
-        school_name: form.schoolName,
-        phone: form.phone,
-        teacher_name: form.teacherName,
+        school_name: form.schoolName.trim(),
+        phone: form.phone.trim(),
+        teacher_name: form.teacherName.trim(),
         award_category: form.awardCategory,
-        special_thing: form.specialThing,
+        special_thing: form.specialThing.trim(),
         subject: form.subject || null,
-        impact_story: form.impactStory || null,
+        impact_story: form.impactStory?.trim() || null,
         board: form.board || null,
         care_rating: form.careRating || null,
         clarity_rating: form.clarityRating || null,

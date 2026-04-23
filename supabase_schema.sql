@@ -97,3 +97,16 @@ create or replace view public.nomination_vote_counts as
 -- ============================================================
 --  DONE — your database is ready!
 -- ============================================================
+
+-- ============================================================
+--  ONE-VOTE-PER-USER MIGRATION
+--  Run this to enforce global one-vote-per-phone at the DB level
+-- ============================================================
+-- DROP the old per-nomination unique constraint first:
+-- ALTER TABLE public.votes DROP CONSTRAINT IF EXISTS votes_nomination_id_voter_phone_key;
+
+-- Add a UNIQUE index on voter_phone alone (one vote ever, any teacher):
+-- CREATE UNIQUE INDEX IF NOT EXISTS idx_votes_voter_phone_unique ON public.votes(voter_phone);
+
+-- Add DB-level index on voter_phone for fast lookups:
+CREATE INDEX IF NOT EXISTS idx_votes_voter_phone ON public.votes(voter_phone);

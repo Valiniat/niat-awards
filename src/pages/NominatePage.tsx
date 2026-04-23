@@ -22,6 +22,7 @@ const NominatePage = () => {
 
   // Open login immediately if not authenticated
   const [loginOpen, setLoginOpen] = useState(!isAuthenticated);
+  const [loginDismissed, setLoginDismissed] = useState(false);
 
   // Sync URL param changes
   useEffect(() => {
@@ -29,11 +30,11 @@ const NominatePage = () => {
     else if (paramType === "student") setNomType("student");
   }, [paramType]);
 
-  // Keep login open when not authenticated; close when auth succeeds
+  // Open on mount if not authed; close when auth succeeds; don't re-open if dismissed
   useEffect(() => {
-    if (!isAuthenticated) setLoginOpen(true);
-    else setLoginOpen(false);
-  }, [isAuthenticated]);
+    if (isAuthenticated) { setLoginOpen(false); setLoginDismissed(false); }
+    else if (!loginDismissed) setLoginOpen(true);
+  }, [isAuthenticated, loginDismissed]);
 
   return (
     <div className="min-h-screen bg-background" id="main-content" role="main">
@@ -152,7 +153,10 @@ const NominatePage = () => {
 
       <LoginDialog
         open={loginOpen}
-        onOpenChange={setLoginOpen}
+        onOpenChange={(open) => {
+          setLoginOpen(open);
+          if (!open && !isAuthenticated) setLoginDismissed(true);
+        }}
         defaultRole={nomType === "self" ? "teacher" : "student"}
       />
     </div>

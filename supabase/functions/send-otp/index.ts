@@ -4,17 +4,21 @@ const FAST2SMS_API_KEY = Deno.env.get("FAST2SMS_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const cors = {
-  "Access-Control-Allow-Origin": "*",
+const ALLOWED_ORIGINS = ["https://www.niatawards.in", "https://niatawards.in"];
+const cors = (origin: string | null) => ({
+  "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin || "") ? origin! : ALLOWED_ORIGINS[0],
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+  "Vary": "Origin",
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  const origin = req.headers.get("origin");
+  const corsHeaders = cors(origin);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const { phone } = await req.json();
     const cleaned = phone.replace(/\D/g, "").slice(-10);
-    if (cleaned.length !== 10) return new Response(JSON.stringify({ error: "Enter a valid 10-digit number" }), { status: 400, headers: cors });
+    if (cleaned.length !== 10) return new Response(JSON.stringify({ error: "Enter a valid 10-digit number" }), { status: 400, headers: corsHeaders });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -57,13 +61,13 @@ serve(async (req) => {
 
     if (!smsData.return) {
       const errMsg = Array.isArray(smsData.message) ? smsData.message.join(", ") : (smsData.message || "SMS failed");
-      return new Response(JSON.stringify({ error: errMsg }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: errMsg }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    return new Response(JSON.stringify({ success: true }), { headers: { ...cors, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   } catch (err) {
     console.error("Error:", err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: cors });
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
   }
 });

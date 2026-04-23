@@ -64,6 +64,7 @@ const VotePage = () => {
   const [voteCounts, setVoteCounts] = useState<Record<string, number>>({});
   const [myVotes, setMyVotes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [voting, setVoting] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -89,12 +90,17 @@ const VotePage = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const { data: noms } = await supabase
+    const { data: noms, error: nomsErr } = await supabase
       .from("nominations").select("*")
       .in("status", ["shortlisted", "winner"])
       .order("created_at", { ascending: false });
 
-    if (!noms) { setLoading(false); return; }
+    if (nomsErr || !noms) {
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
+    setLoadError(false);
     setNominations(noms);
 
     const { data: votes } = await supabase.from("votes").select("nomination_id");
@@ -301,7 +307,18 @@ const VotePage = () => {
 
       {/* Cards */}
       <div className="container px-4 py-8 sm:py-10">
-        {loading ? (
+        {loadError ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center py-24 gap-3 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mb-2">
+              <Users className="w-8 h-8 text-red-400/60" />
+            </div>
+            <p className="text-white font-semibold text-lg">Failed to load</p>
+            <p className="text-white/35 text-sm max-w-xs">Could not fetch shortlisted teachers. Please check your connection and try again.</p>
+            <button onClick={fetchData} className="mt-3 px-5 py-2.5 rounded-xl text-sm font-semibold text-white border border-white/15 hover:bg-white/5 transition-all">
+              ↺ Retry
+            </button>
+          </motion.div>
+        ) : loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
             <Loader2 className="w-8 h-8 text-secondary animate-spin" />
             <p className="text-white/40 text-sm">Loading shortlisted teachers...</p>

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -66,13 +66,13 @@ const TeacherSelfNominationForm = () => {
     try {
       const { error } = await supabase.from("nominations").insert({
         type: "teacher",
-        full_name: form.fullName,
-        school_name: form.school,
-        subject: form.subject,
+        full_name: form.fullName.trim(),
+        school_name: form.school.trim(),
+        subject: form.subject.trim(),
         experience: form.experience,
         award_category: form.awardCategory,
-        impact_story: form.impactStory,
-        phone: form.phone,
+        impact_story: form.impactStory.trim(),
+        phone: form.phone.trim(),
       });
       if (error) throw error;
       localStorage.removeItem("niat_teacher_draft");
@@ -169,22 +169,7 @@ const TeacherSelfNominationForm = () => {
           </AnimatePresence>
         </div>
         <div><Label>Your Impact Story</Label><Textarea className="mt-1.5" value={form.impactStory} onChange={(e) => set("impactStory", e.target.value)} rows={5} placeholder="Describe how you've made a difference in your students' lives..." required /></div>
-        <div>
-          <Label>Supporting Documents (optional)</Label>
-          <label className="mt-1.5 border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors cursor-pointer flex flex-col items-center block">
-            <Upload className="w-8 h-8 text-foreground/60 mb-2" />
-            <p className="text-sm text-foreground/60">Click to upload or drag files here</p>
-            <p className="text-xs text-foreground/45 mt-1">PDF, images up to 10MB</p>
-            <input type="file" accept=".pdf,image/*" className="sr-only"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file && file.size > 10 * 1024 * 1024) {
-                  toast({ title: "File too large", description: "Please upload a file under 10MB.", variant: "destructive" });
-                  e.target.value = "";
-                }
-              }} />
-          </label>
-        </div>
+
         <Button id="btn-teacher-form-submit" type="submit" variant="hero" size="lg" className="w-full h-14 rounded-xl text-base font-bold" disabled={loading}>
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Application"}
         </Button>
