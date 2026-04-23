@@ -14,7 +14,8 @@ type NomType = null | "student" | "self";
 const NominatePage = () => {
   const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
-  const [loginOpen, setLoginOpen] = useState(false);
+  // Open login immediately if not authenticated — skip the intermediate screen
+  const [loginOpen, setLoginOpen] = useState(!isAuthenticated);
 
   const paramType = searchParams.get("type");
   const [nomType, setNomType] = useState<NomType>(
@@ -27,15 +28,11 @@ const NominatePage = () => {
     else if (paramType === "student") setNomType("student");
   }, [paramType]);
 
-  // Auto-open login if user came via URL with type param (direct intent)
+  // Keep login open when not authenticated; close when auth succeeds
   useEffect(() => {
-    if (!isAuthenticated && paramType) {
-      setLoginOpen(true);
-    }
-    if (isAuthenticated) {
-      setLoginOpen(false);
-    }
-  }, [isAuthenticated, paramType]);
+    if (!isAuthenticated) setLoginOpen(true);
+    else setLoginOpen(false);
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-background" id="main-content" role="main">
