@@ -88,8 +88,8 @@ const CustomSelect = ({ value, onChange, options, placeholder, required }: {
         <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 ml-2 text-white/40 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 rounded-lg overflow-auto z-[100] shadow-2xl"
-          style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)", maxHeight: "180px" }}>
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-lg z-[100] shadow-2xl"
+          style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)" }}>
           {options.map(o => (
             <button key={o} type="button"
               onClick={() => { onChange(o); setOpen(false); }}
@@ -265,7 +265,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
                 <AnimatePresence>
                   {roleOpen && (
                     <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                      className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
+                      className="absolute top-full left-0 right-0 mt-1 rounded-xl z-50"
                       style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}>
                       {[
                         { val: "student", label: "🎓 Student / Parent", desc: "Nominate your teacher" },
