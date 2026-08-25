@@ -43,15 +43,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between px-4 sm:px-6" style={{ height: "56px" }}>
 
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+          <Link to="/" className="flex-shrink-0" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <picture>
-            <source srcSet="/niat-logo-tight.webp" type="image/webp" />
-            <img src="/niat-logo-tight.webp" alt="NIAT Awards logo" width="30" height="38" style={{ width: "30px", height: "38px", objectFit: "contain", display: "block", flexShrink: 0 }} fetchPriority="high" />
-          </picture>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "3px" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: "15px", lineHeight: "1", color: "#fff", letterSpacing: "0.04em" }}>NIAT</span>
-              <span style={{ fontWeight: 500, fontSize: "8px", lineHeight: "1", color: "rgba(255,255,255,0.55)", whiteSpace: "nowrap" }}>Nxtwave of Innovation in Advanced Technologies</span>
-            </div>
+              <source srcSet="/nxtwave-logo.webp" type="image/webp" />
+              <img src="/nxtwave-logo.png" alt="NxtWave Institute of Advanced Technologies" width="148" height="36" style={{ width: "148px", height: "36px", objectFit: "contain", display: "block", flexShrink: 0 }} fetchPriority="high" />
+            </picture>
           </Link>
 
           {/* Desktop nav */}

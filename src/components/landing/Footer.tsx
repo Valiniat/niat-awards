@@ -6,15 +6,11 @@ const Footer = () => (
       <div className="flex flex-col gap-8 sm:flex-row sm:justify-between">
         {/* Brand */}
         <div className="max-w-xs">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4">
             <picture>
-              <source srcSet="/niat-logo-tight.webp" type="image/webp" />
-              <img src="/niat-logo-tight.png" alt="NIAT Awards logo" width="28" height="35" loading="lazy" style={{ width: "28px", height: "35px", objectFit: "contain" }} />
+              <source srcSet="/nxtwave-logo.webp" type="image/webp" />
+              <img src="/nxtwave-logo.png" alt="NxtWave Institute of Advanced Technologies" width="160" height="39" loading="lazy" style={{ width: "160px", height: "39px", objectFit: "contain" }} />
             </picture>
-            <div>
-              <p style={{ fontWeight: 800, fontSize: "15px", color: "#fff", lineHeight: 1 }}>NIAT</p>
-              <p style={{ fontSize: "8px", color: "rgba(255,255,255,0.4)", lineHeight: 1, marginTop: "3px" }}>Nxtwave of Innovation in Advanced Technologies</p>
-            </div>
           </div>
           <p className="text-[13px] text-white/35 leading-relaxed">
             Celebrating India's most impactful teachers. Nominating the educators who build futures, not just scores.
