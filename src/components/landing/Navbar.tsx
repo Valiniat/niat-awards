@@ -45,8 +45,8 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <picture>
-              <source srcSet="/nxtwave-logo.webp" type="image/webp" />
-              <img src="/nxtwave-logo.png" alt="NxtWave Institute of Advanced Technologies" width="148" height="36" style={{ width: "148px", height: "36px", objectFit: "contain", display: "block", flexShrink: 0 }} fetchPriority="high" />
+              <source srcSet="/nxtwave-logo-navbar.webp" type="image/webp" />
+              <img src="/nxtwave-logo-navbar.png" alt="NxtWave Institute of Advanced Technologies" width="170" height="44" style={{ width: "170px", height: "44px", objectFit: "contain", display: "block", flexShrink: 0 }} fetchPriority="high" />
             </picture>
           </Link>
 
