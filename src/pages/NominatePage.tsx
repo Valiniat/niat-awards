@@ -7,6 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import InlineNominationForm from "@/components/nomination/InlineNominationForm";
 
+declare function gtag(...args: any[]): void;
+const track = (event: string, params?: Record<string, any>) => { try { gtag("event", event, params); } catch {} };
+
 const NominatePage = () => {
   const { isAuthenticated, user, sendOtp, verifyOtp } = useAuth();
   const { toast } = useToast();
@@ -30,7 +33,7 @@ const NominatePage = () => {
     setLoading(true);
     const result = await sendOtp(phone);
     setLoading(false);
-    if (result.success) setStep("otp");
+    if (result.success) { track("get_otp_clicked"); setStep("otp"); }
     else toast({ title: result.error || "Failed to send OTP", variant: "destructive" });
   };
 
@@ -39,7 +42,7 @@ const NominatePage = () => {
     setLoading(true);
     const ok = await verifyOtp(otp, name.trim());
     setLoading(false);
-    if (ok) setStep("form");
+    if (ok) { track("otp_verified"); setStep("form"); }
     else { toast({ title: "Invalid OTP. Please try again.", variant: "destructive" }); setOtp(""); }
   };
 

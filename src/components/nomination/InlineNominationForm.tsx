@@ -6,6 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+declare function gtag(...args: any[]): void;
+const track = (event: string, params?: Record<string, any>) => { try { gtag("event", event, params); } catch {} };
+
 // ── Shared dropdown — defined outside any form component so it never re-mounts ──
 export const CustomSelect = ({ value, onChange, options, placeholder }: {
   value: string; onChange: (v: string) => void; options: string[]; placeholder: string;
@@ -119,6 +122,7 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
       if (!tf.experience) { toast({ title: "Please enter years of experience", variant: "destructive" }); return; }
       if (!tf.classesTeaching) { toast({ title: "Please select which class you teach", variant: "destructive" }); return; }
     }
+    track("form_step2_opened", { role });
     setFormStep(2);
   };
 
@@ -158,6 +162,7 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
         });
         if (error) throw error;
       }
+      track("nomination_submitted", { role });
       navigate("/thank-you");
     } catch (err: any) {
       toast({ title: err.message || "Submission failed. Please try again.", variant: "destructive" });

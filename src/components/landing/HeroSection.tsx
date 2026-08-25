@@ -3,6 +3,9 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Star, ArrowRight, Calendar, Sparkles, User, Phone, Loader2, CheckCircle2, ChevronDown, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import InlineNominationForm from "@/components/nomination/InlineNominationForm";
+
+declare function gtag(...args: any[]): void;
+const track = (event: string, params?: Record<string, any>) => { try { gtag("event", event, params); } catch {} };
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,7 +89,7 @@ const QuickNominateCard = () => {
     setLoading(true);
     const result = await sendOtp(phone);
     setLoading(false);
-    if (result.success) setStep("otp");
+    if (result.success) { track("get_otp_clicked"); setStep("otp"); }
     else toast({ title: result.error || "Failed to send OTP", variant: "destructive" });
   };
 
@@ -95,12 +98,8 @@ const QuickNominateCard = () => {
     setLoading(true);
     const ok = await verifyOtp(otp, name.trim());
     setLoading(false);
-    if (ok) {
-      setStep("nominate");
-    } else {
-      toast({ title: "Invalid OTP. Please try again.", variant: "destructive" });
-      setOtp("");
-    }
+    if (ok) { track("otp_verified"); setStep("nominate"); }
+    else { toast({ title: "Invalid OTP. Please try again.", variant: "destructive" }); setOtp(""); }
   };
 
   // Show inline nomination form after OTP verified
