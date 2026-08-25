@@ -98,13 +98,13 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
   ];
 
   const iStyle = { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff" };
-  const iCls = "w-full h-12 rounded-xl px-4 text-[14px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all";
+  const iCls = "w-full h-10 rounded-lg px-3 text-[13px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all";
 
   const SelectF = ({ label, value, onChange, options, placeholder, required }: any) => (
     <div>
       {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
       <select value={value} onChange={e => onChange(e.target.value)} required={required}
-        className="w-full h-12 rounded-xl px-4 text-[14px] font-medium focus:outline-none transition-all"
+        className="w-full h-10 rounded-lg px-3 text-[13px] font-medium focus:outline-none transition-all"
         style={{ ...iStyle, color: value ? "#fff" : "rgba(255,255,255,0.35)" }}>
         <option value="" disabled style={{ background: "#1a0505" }}>{placeholder}</option>
         {options.map((o: string) => <option key={o} value={o} style={{ background: "#1a0505", color: "#fff" }}>{o}</option>)}
@@ -115,7 +115,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
     <div>
       {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
       <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} required={required}
-        className="w-full rounded-xl px-4 py-3 text-[14px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all resize-none"
+        className="w-full rounded-lg px-3 py-2 text-[13px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all resize-none"
         style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }} />
     </div>
   );
@@ -186,20 +186,20 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
 
   return (
     <div className="w-full rounded-2xl"
-      style={{ background: "rgba(10,3,3,0.95)", border: "1.5px solid rgba(255,255,255,0.2)", backdropFilter: "blur(28px)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)", maxHeight: "70vh", overflowY: "auto" }}>
-      <div className="h-[3px] w-full sticky top-0 z-10" style={{ background: "linear-gradient(90deg, transparent, #d97706, transparent)" }} />
-      <div className="p-5 sm:p-6">
+      style={{ background: "rgba(10,3,3,0.95)", border: "1.5px solid rgba(255,255,255,0.2)", backdropFilter: "blur(28px)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
+      <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, transparent, #d97706, transparent)" }} />
+      <div className="p-4">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
               style={{ background: "linear-gradient(135deg,#8B1A1A,#6B1212)" }}>
               {userName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2)}
             </div>
             <div>
-              <p className="text-white font-bold text-[14px]">Hey {userName.split(" ")[0]}! 👋</p>
-              <p className="text-white/45 text-[11px]">Step {formStep} of 2 — {formStep === 1 ? "Basic Details" : "Tell Us More"}</p>
+              <p className="text-white font-bold text-[13px]">Hey {userName.split(" ")[0]}! 👋</p>
+              <p className="text-white/45 text-[10px]">Step {formStep} of 2 — {formStep === 1 ? "Basic Details" : "Tell Us More"}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -221,11 +221,11 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
           {/* ── STEP 1 ── */}
           {formStep === 1 && (
             <motion.form key="step1" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}
-              onSubmit={handleStep1Next} className="space-y-3.5">
+              onSubmit={handleStep1Next} className="space-y-2">
 
               {/* Role dropdown */}
               <div className="relative">
-                <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">I am a</label>
+                <label className="block text-[11px] font-semibold text-white/60 mb-1 uppercase tracking-wider">I am a</label>
                 <button type="button" onClick={() => setRoleOpen(!roleOpen)}
                   className="w-full h-12 rounded-xl px-4 flex items-center justify-between text-[14px] font-medium transition-all"
                   style={{ ...iStyle, color: role ? "#fff" : "rgba(255,255,255,0.35)" }}>
@@ -257,21 +257,23 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
 
               {/* Student Step 1 fields */}
               {role === "student" && (
-                <div className="space-y-3">
-                  <Field label="Your Name" icon={User} value={sf.studentName} onChange={(e: any) => setSField("studentName", e.target.value)} placeholder="Your full name" />
+                <div className="space-y-2">
+                  <input style={iStyle} className={iCls} placeholder="Your Full Name" required value={sf.studentName} onChange={e => setSField("studentName", e.target.value)} />
                   <SelectF value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
-                  <input style={iStyle} className={iCls} placeholder="School Name / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
-                  <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
-                  <input style={iStyle} className={iCls} placeholder="Teacher Phone Number (10 digits)" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                  <input style={iStyle} className={iCls} placeholder="School / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
+                    <input style={iStyle} className={iCls} placeholder="Teacher's Phone" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                  </div>
                   <input style={iStyle} className={iCls} placeholder="Teaching Subject" required value={sf.teachingSubject} onChange={e => setSField("teachingSubject", e.target.value)} />
                 </div>
               )}
               {role === "teacher" && (
-                <div className="space-y-3">
-                  <Field label="Full Name" icon={User} value={tf.fullName} onChange={(e: any) => setTField("fullName", e.target.value)} placeholder="Your full name" />
-                  <input style={iStyle} className={iCls} placeholder="School Name or College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
-                  <Field label="Phone Number" prefix="+91" value={tf.phone} onChange={(e: any) => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit number" />
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <input style={iStyle} className={iCls} placeholder="Your Full Name" required value={tf.fullName} onChange={e => setTField("fullName", e.target.value)} />
+                  <input style={iStyle} className={iCls} placeholder="School / College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
+                  <input style={iStyle} className={iCls} placeholder="+91 Phone Number" type="tel" inputMode="numeric" required value={tf.phone} onChange={e => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                  <div className="grid grid-cols-2 gap-2">
                     <input style={iStyle} className={iCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
                     <input style={iStyle} className={iCls} placeholder="Years of Exp." type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
                   </div>
@@ -281,9 +283,9 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
 
               {role && (
                 <button type="submit"
-                  className="w-full h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2"
-                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
-                  Next — Tell Us More <ArrowRight className="w-4 h-4" />
+                  className="w-full h-10 rounded-lg font-bold text-[13px] flex items-center justify-center gap-2 mt-1"
+                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 16px rgba(107,18,18,0.5)" }}>
+                  Next — Tell Us More <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               )}
             </motion.form>
@@ -292,32 +294,32 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
           {/* ── STEP 2 ── */}
           {formStep === 2 && (
             <motion.form key="step2" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
-              onSubmit={handleSubmit} className="space-y-3.5">
+              onSubmit={handleSubmit} className="space-y-2">
 
               {role === "student" && (
-                <div className="space-y-3">
-                  <TA label="What's special about this teacher?" value={sf.specialThing} onChange={(v: string) => setSField("specialThing", v)} placeholder="One special thing about them..." required rows={3} />
-                  <TA label="How have they impacted you?" value={sf.impactStory} onChange={(v: string) => setSField("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." required rows={4} />
+                <div className="space-y-2">
+                  <TA label="What's special about this teacher?" value={sf.specialThing} onChange={(v: string) => setSField("specialThing", v)} placeholder="One special thing about them..." required rows={2} />
+                  <TA label="How have they impacted you?" value={sf.impactStory} onChange={(v: string) => setSField("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." required rows={3} />
                   <input style={iStyle} className={iCls} placeholder="Awards / Recognition (Optional)" value={sf.awardsRecognition} onChange={e => setSField("awardsRecognition", e.target.value)} />
                   <input style={iStyle} className={iCls} placeholder="Teacher's LinkedIn / Social Media (Optional)" value={sf.teacherSocial} onChange={e => setSField("teacherSocial", e.target.value)} />
                 </div>
               )}
               {role === "teacher" && (
-                <div className="space-y-3">
-                  <TA label="Your Impact Story (2–3 sentences)" value={tf.impactStory} onChange={(v: string) => setTField("impactStory", v)} placeholder="How have you made a difference in students' lives..." required rows={5} />
+                <div className="space-y-2">
+                  <TA label="Your Impact Story (2–3 sentences)" value={tf.impactStory} onChange={(v: string) => setTField("impactStory", v)} placeholder="How have you made a difference in students' lives..." required rows={4} />
                 </div>
               )}
 
               <div className="flex gap-2 pt-1">
                 <button type="button" onClick={() => setFormStep(1)}
-                  className="h-12 px-5 rounded-xl font-semibold text-[14px] flex items-center gap-1.5 text-white/60 hover:text-white transition-all"
+                  className="h-10 px-4 rounded-lg font-semibold text-[13px] flex items-center gap-1 text-white/60 hover:text-white transition-all"
                   style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}>
-                  <ChevronDown className="w-4 h-4 rotate-90" /> Back
+                  <ChevronDown className="w-3.5 h-3.5 rotate-90" /> Back
                 </button>
                 <button type="submit" disabled={loading}
-                  className="flex-1 h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 disabled:opacity-60"
-                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Submit Nomination</>}
+                  className="flex-1 h-10 rounded-lg font-bold text-[13px] flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 16px rgba(107,18,18,0.5)" }}>
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle2 className="w-3.5 h-3.5" /> Submit Nomination</>}
                 </button>
               </div>
             </motion.form>
