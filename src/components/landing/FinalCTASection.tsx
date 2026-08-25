@@ -43,8 +43,9 @@ const FinalCTASection = () => {
           </p>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="inline-block">
-            <Link to="/nominate">
-              <button id="btn-cta-nominate" className="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-base sm:text-lg px-10 py-5 rounded-2xl shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-shadow overflow-hidden">
+            <button id="btn-cta-nominate"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary/80 text-white font-semibold text-base sm:text-lg px-10 py-5 rounded-2xl shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-shadow overflow-hidden">
                 <span className="relative z-10">Nominate Now</span>
                 <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }} className="relative z-10">
                   <ArrowRight className="w-5 h-5" />
@@ -52,7 +53,6 @@ const FinalCTASection = () => {
                 <motion.div animate={{ x: [-100, 300] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: "linear" }}
                   className="absolute inset-0 w-24 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12" />
               </button>
-            </Link>
           </motion.div>
 
           <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.8 }}
