@@ -69,17 +69,14 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
   const navigate = useNavigate();
   const [role, setRole] = useState<"" | "student" | "teacher">("");
   const [roleOpen, setRoleOpen] = useState(false);
+  const [formStep, setFormStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
 
-  // Student form state
   const [sf, setSf] = useState({
     studentName: userName, currentEducation: "", schoolName: "",
     teacherName: "", teacherPhone: "", teachingSubject: "",
-    awardCategory: "", specialThing: "", impactStory: "",
-    awardsRecognition: "", teacherSocial: "",
+    specialThing: "", impactStory: "", awardsRecognition: "", teacherSocial: "",
   });
-
-  // Teacher form state
   const [tf, setTf] = useState({
     fullName: userName, school: "", subject: "", experience: "",
     classesTeaching: "", impactStory: "", phone: userPhone,
@@ -94,48 +91,62 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
     "Diploma / ITI", "Undergraduate (B.Tech / B.Com / BA / B.Sc etc.)",
     "Postgraduate", "Other",
   ];
-
   const classesTeaching = [
     "Primary (Class 1–5)", "Middle School (Class 6–8)",
     "High School (Class 9–10)", "Senior Secondary (Class 11–12)",
     "Undergraduate / College", "Postgraduate / College", "All Classes",
   ];
 
-  const awardCategories = [
-    "Student Transformation Award", "Teaching Innovation Award",
-    "Beyond Classroom Impact Award", "Future Readiness Award",
-  ];
+  const iStyle = { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff" };
+  const iCls = "w-full h-12 rounded-xl px-4 text-[14px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all";
 
-  const SelectField = ({ label, value, onChange, options, placeholder, required }: any) => (
+  const SelectF = ({ label, value, onChange, options, placeholder, required }: any) => (
     <div>
-      <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>
+      {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
       <select value={value} onChange={e => onChange(e.target.value)} required={required}
         className="w-full h-12 rounded-xl px-4 text-[14px] font-medium focus:outline-none transition-all"
-        style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: value ? "#fff" : "rgba(255,255,255,0.35)" }}>
+        style={{ ...iStyle, color: value ? "#fff" : "rgba(255,255,255,0.35)" }}>
         <option value="" disabled style={{ background: "#1a0505" }}>{placeholder}</option>
         {options.map((o: string) => <option key={o} value={o} style={{ background: "#1a0505", color: "#fff" }}>{o}</option>)}
       </select>
     </div>
   );
-
-  const TextArea = ({ label, value, onChange, placeholder, required, rows = 3 }: any) => (
+  const TA = ({ label, value, onChange, placeholder, required, rows = 3 }: any) => (
     <div>
-      <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>
+      {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
       <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} required={required}
         className="w-full rounded-xl px-4 py-3 text-[14px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all resize-none"
         style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }} />
     </div>
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1 validation before going to step 2
+  const handleStep1Next = (e: React.FormEvent) => {
     e.preventDefault();
     if (!role) { toast({ title: "Please select Student or Teacher", variant: "destructive" }); return; }
+    if (role === "student") {
+      if (!sf.currentEducation) { toast({ title: "Please select your current education", variant: "destructive" }); return; }
+      if (!sf.schoolName.trim()) { toast({ title: "Please enter school / college name", variant: "destructive" }); return; }
+      if (!sf.teacherName.trim()) { toast({ title: "Please enter the teacher's name", variant: "destructive" }); return; }
+      if (sf.teacherPhone.replace(/\D/g, "").length < 10) { toast({ title: "Please enter a valid teacher phone number", variant: "destructive" }); return; }
+      if (!sf.teachingSubject.trim()) { toast({ title: "Please enter the teaching subject", variant: "destructive" }); return; }
+    } else {
+      if (!tf.school.trim()) { toast({ title: "Please enter school / college name", variant: "destructive" }); return; }
+      if (tf.phone.replace(/\D/g, "").length < 10) { toast({ title: "Please enter a valid phone number", variant: "destructive" }); return; }
+      if (!tf.subject.trim()) { toast({ title: "Please enter your subject", variant: "destructive" }); return; }
+      if (!tf.experience) { toast({ title: "Please enter years of experience", variant: "destructive" }); return; }
+      if (!tf.classesTeaching) { toast({ title: "Please select which class you teach", variant: "destructive" }); return; }
+    }
+    setFormStep(2);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     try {
       if (role === "student") {
-        if (!sf.currentEducation) throw new Error("Please select your current education");
-        if (!sf.awardCategory) throw new Error("Please select an award category");
-        if (sf.teacherPhone.replace(/\D/g, "").length < 10) throw new Error("Please enter a valid teacher phone number");
+        if (!sf.specialThing.trim()) throw new Error("Please fill in what's special about this teacher");
+        if (!sf.impactStory.trim()) throw new Error("Please describe their impact");
         const { error } = await supabase.from("nominations").insert({
           type: "student",
           student_name: sf.studentName.trim(),
@@ -143,7 +154,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
           school_name: sf.schoolName.trim(),
           phone: sf.teacherPhone.trim(),
           teacher_name: sf.teacherName.trim(),
-          award_category: sf.awardCategory,
+          award_category: "General Nomination",
           special_thing: sf.specialThing.trim(),
           subject: sf.teachingSubject.trim() || null,
           impact_story: sf.impactStory.trim() || null,
@@ -151,8 +162,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
         });
         if (error) throw error;
       } else {
-        if (!tf.classesTeaching) throw new Error("Please select which class you are teaching");
-        if (tf.phone.replace(/\D/g, "").length < 10) throw new Error("Please enter a valid phone number");
+        if (!tf.impactStory.trim()) throw new Error("Please share your impact story");
         const { error } = await supabase.from("nominations").insert({
           type: "teacher",
           full_name: tf.fullName.trim(),
@@ -162,6 +172,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
           student_class: tf.classesTeaching,
           impact_story: tf.impactStory.trim(),
           phone: tf.phone.trim(),
+          award_category: "General Nomination",
         });
         if (error) throw error;
       }
@@ -173,22 +184,14 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
     }
   };
 
-  const inputStyle = {
-    background: "rgba(255,255,255,0.1)",
-    border: "1px solid rgba(255,255,255,0.2)",
-    color: "#fff",
-  };
-
-  const inputCls = "w-full h-12 rounded-xl px-4 text-[14px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all";
-
   return (
     <div className="w-full rounded-2xl overflow-hidden"
       style={{ background: "rgba(10,3,3,0.95)", border: "1.5px solid rgba(255,255,255,0.2)", backdropFilter: "blur(28px)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
       <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, transparent, #d97706, transparent)" }} />
-
       <div className="p-5 sm:p-6">
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
               style={{ background: "linear-gradient(135deg,#8B1A1A,#6B1212)" }}>
@@ -196,91 +199,134 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
             </div>
             <div>
               <p className="text-white font-bold text-[14px]">Hey {userName.split(" ")[0]}! 👋</p>
-              <p className="text-white/45 text-[11px]">Fill in the form below to nominate</p>
+              <p className="text-white/45 text-[11px]">Step {formStep} of 2 — {formStep === 1 ? "Basic Details" : "Tell Us More"}</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Step indicator */}
+            <div className="flex gap-1">
+              {[1,2].map(s => (
+                <div key={s} className="h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: formStep === s ? "20px" : "8px", background: formStep >= s ? "#d97706" : "rgba(255,255,255,0.2)" }} />
+              ))}
+            </div>
+            <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all ml-1">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <AnimatePresence mode="wait">
 
-          {/* Role Dropdown */}
-          <div className="relative">
-            <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">I am a</label>
-            <button type="button" onClick={() => setRoleOpen(!roleOpen)}
-              className="w-full h-12 rounded-xl px-4 flex items-center justify-between text-[14px] font-medium transition-all"
-              style={{ ...inputStyle, color: role ? "#fff" : "rgba(255,255,255,0.35)" }}>
-              <span>{role === "student" ? "🎓 Student / Parent" : role === "teacher" ? "👩‍🏫 Teacher (Self-Nomination)" : "Select your role..."}</span>
-              <ChevronDown className={`w-4 h-4 text-white/50 transition-transform ${roleOpen ? "rotate-180" : ""}`} />
-            </button>
-            <AnimatePresence>
-              {roleOpen && (
-                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                  className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
-                  style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}>
-                  {[
-                    { val: "student", label: "🎓 Student / Parent", desc: "Nominate your teacher" },
-                    { val: "teacher", label: "👩‍🏫 Teacher", desc: "Self-nomination" },
-                  ].map(opt => (
-                    <button key={opt.val} type="button"
-                      onClick={() => { setRole(opt.val as any); setRoleOpen(false); }}
-                      className="w-full px-4 py-3.5 flex items-center gap-3 hover:bg-white/5 transition-all text-left border-b border-white/5 last:border-0">
-                      <div>
-                        <p className="text-white font-semibold text-[13px]">{opt.label}</p>
-                        <p className="text-white/40 text-[11px]">{opt.desc}</p>
-                      </div>
-                    </button>
-                  ))}
+          {/* ── STEP 1 ── */}
+          {formStep === 1 && (
+            <motion.form key="step1" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}
+              onSubmit={handleStep1Next} className="space-y-3.5">
+
+              {/* Role dropdown */}
+              <div className="relative">
+                <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">I am a</label>
+                <button type="button" onClick={() => setRoleOpen(!roleOpen)}
+                  className="w-full h-12 rounded-xl px-4 flex items-center justify-between text-[14px] font-medium transition-all"
+                  style={{ ...iStyle, color: role ? "#fff" : "rgba(255,255,255,0.35)" }}>
+                  <span>{role === "student" ? "🎓 Student / Parent" : role === "teacher" ? "👩‍🏫 Teacher (Self-Nomination)" : "Select your role..."}</span>
+                  <ChevronDown className={`w-4 h-4 text-white/50 transition-transform ${roleOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {roleOpen && (
+                    <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                      className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
+                      style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}>
+                      {[
+                        { val: "student", label: "🎓 Student / Parent", desc: "Nominate your teacher" },
+                        { val: "teacher", label: "👩‍🏫 Teacher", desc: "Self-nomination" },
+                      ].map(opt => (
+                        <button key={opt.val} type="button"
+                          onClick={() => { setRole(opt.val as any); setRoleOpen(false); setFormStep(1); }}
+                          className="w-full px-4 py-3.5 flex items-center gap-3 hover:bg-white/5 transition-all text-left border-b border-white/5 last:border-0">
+                          <div>
+                            <p className="text-white font-semibold text-[13px]">{opt.label}</p>
+                            <p className="text-white/40 text-[11px]">{opt.desc}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Student Step 1 fields */}
+              <AnimatePresence mode="wait">
+                {role === "student" && (
+                  <motion.div key="s1" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
+                    <Field label="Your Name" icon={User} value={sf.studentName} onChange={(e: any) => setSField("studentName", e.target.value)} placeholder="Your full name" />
+                    <SelectF value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
+                    <input style={iStyle} className={iCls} placeholder="School Name / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
+                    <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
+                    <input style={iStyle} className={iCls} placeholder="Teacher Phone Number (10 digits)" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                    <input style={iStyle} className={iCls} placeholder="Teaching Subject" required value={sf.teachingSubject} onChange={e => setSField("teachingSubject", e.target.value)} />
+                  </motion.div>
+                )}
+                {role === "teacher" && (
+                  <motion.div key="t1" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
+                    <Field label="Full Name" icon={User} value={tf.fullName} onChange={(e: any) => setTField("fullName", e.target.value)} placeholder="Your full name" />
+                    <input style={iStyle} className={iCls} placeholder="School Name or College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
+                    <Field label="Phone Number" prefix="+91" value={tf.phone} onChange={(e: any) => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit number" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input style={iStyle} className={iCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
+                      <input style={iStyle} className={iCls} placeholder="Years of Exp." type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
+                    </div>
+                    <SelectF value={tf.classesTeaching} onChange={(v: string) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Which Class Are You Teaching?" required />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {role && (
+                <button type="submit"
+                  className="w-full h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2"
+                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
+                  Next — Tell Us More <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+            </motion.form>
+          )}
+
+          {/* ── STEP 2 ── */}
+          {formStep === 2 && (
+            <motion.form key="step2" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
+              onSubmit={handleSubmit} className="space-y-3.5">
+
+              {role === "student" && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+                  <TA label="What's special about this teacher?" value={sf.specialThing} onChange={(v: string) => setSField("specialThing", v)} placeholder="One special thing about them..." required rows={3} />
+                  <TA label="How have they impacted you?" value={sf.impactStory} onChange={(v: string) => setSField("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." required rows={4} />
+                  <input style={iStyle} className={iCls} placeholder="Awards / Recognition (Optional)" value={sf.awardsRecognition} onChange={e => setSField("awardsRecognition", e.target.value)} />
+                  <input style={iStyle} className={iCls} placeholder="Teacher's LinkedIn / Social Media (Optional)" value={sf.teacherSocial} onChange={e => setSField("teacherSocial", e.target.value)} />
                 </motion.div>
               )}
-            </AnimatePresence>
-          </div>
 
-          {/* Student Form */}
-          <AnimatePresence mode="wait">
-            {role === "student" && (
-              <motion.div key="student" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3.5">
-                <Field label="Your Name" icon={User} value={sf.studentName} onChange={(e: any) => setSField("studentName", e.target.value)} placeholder="Your full name" />
-                <SelectField label="Current Education" value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Select your education level" required />
-                <input style={inputStyle} className={inputCls} placeholder="School Name / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
-                <input style={inputStyle} className={inputCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
-                <input style={inputStyle} className={`${inputCls}`} placeholder="Teacher Phone Number (10 digits)" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
-                <input style={inputStyle} className={inputCls} placeholder="Teaching Subject" required value={sf.teachingSubject} onChange={e => setSField("teachingSubject", e.target.value)} />
-                <SelectField label="Award Category" value={sf.awardCategory} onChange={(v: string) => setSField("awardCategory", v)} options={awardCategories} placeholder="Select award category" required />
-                <TextArea label="What's special about this teacher?" value={sf.specialThing} onChange={(v: string) => setSField("specialThing", v)} placeholder="One special thing about them..." required />
-                <TextArea label="How have they impacted you?" value={sf.impactStory} onChange={(v: string) => setSField("impactStory", v)} placeholder="Write 2–3 sentences..." required />
-                <input style={inputStyle} className={inputCls} placeholder="Awards / Recognition (Optional)" value={sf.awardsRecognition} onChange={e => setSField("awardsRecognition", e.target.value)} />
-                <input style={inputStyle} className={inputCls} placeholder="Teacher's LinkedIn / Social Media (Optional)" value={sf.teacherSocial} onChange={e => setSField("teacherSocial", e.target.value)} />
-              </motion.div>
-            )}
+              {role === "teacher" && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+                  <TA label="Your Impact Story (2–3 sentences)" value={tf.impactStory} onChange={(v: string) => setTField("impactStory", v)} placeholder="How have you made a difference in students' lives..." required rows={5} />
+                </motion.div>
+              )}
 
-            {/* Teacher Form */}
-            {role === "teacher" && (
-              <motion.div key="teacher" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3.5">
-                <Field label="Full Name" icon={User} value={tf.fullName} onChange={(e: any) => setTField("fullName", e.target.value)} placeholder="Your full name" />
-                <input style={inputStyle} className={inputCls} placeholder="School Name or College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
-                <Field label="Phone Number" prefix="+91" value={tf.phone} onChange={(e: any) => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit number" />
-                <div className="grid grid-cols-2 gap-3">
-                  <input style={inputStyle} className={inputCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
-                  <input style={inputStyle} className={inputCls} placeholder="Years of Experience" type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
-                </div>
-                <SelectField label="Which Class Are You Teaching?" value={tf.classesTeaching} onChange={(v: string) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Select class level" required />
-                <TextArea label="Your Impact Story (2–3 sentences)" value={tf.impactStory} onChange={(v: string) => setTField("impactStory", v)} placeholder="How have you made a difference in students' lives..." required rows={4} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Submit */}
-          {role && (
-            <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} type="submit" disabled={loading}
-              className="w-full h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 disabled:opacity-60 relative overflow-hidden"
-              style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Submit Nomination</>}
-            </motion.button>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setFormStep(1)}
+                  className="h-12 px-5 rounded-xl font-semibold text-[14px] flex items-center gap-1.5 text-white/60 hover:text-white transition-all"
+                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <ChevronDown className="w-4 h-4 rotate-90" /> Back
+                </button>
+                <button type="submit" disabled={loading}
+                  className="flex-1 h-12 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg,#9B2020,#7A1515)", color: "#fff", boxShadow: "0 4px 20px rgba(107,18,18,0.5)" }}>
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Submit Nomination</>}
+                </button>
+              </div>
+            </motion.form>
           )}
-        </form>
+
+        </AnimatePresence>
       </div>
     </div>
   );
