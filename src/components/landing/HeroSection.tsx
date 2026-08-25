@@ -64,6 +64,46 @@ const Field = ({ label, icon: Icon, prefix, value, onChange, onKeyDown, placehol
 );
 
 // ── Inline Nomination Form (shown after OTP verify) ──
+// Defined outside form so it never re-mounts on parent re-render
+const CustomSelect = ({ value, onChange, options, placeholder, required }: {
+  value: string; onChange: (v: string) => void; options: string[]; placeholder: string; required?: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen(!open)}
+        className="w-full h-10 rounded-lg px-3 flex items-center justify-between text-[13px] font-medium transition-all focus:outline-none"
+        style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: value ? "#fff" : "rgba(255,255,255,0.4)" }}>
+        <span className="truncate">{value || placeholder}</span>
+        <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 ml-2 text-white/40 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-lg overflow-auto z-[100] shadow-2xl"
+          style={{ background: "#1a0505", border: "1px solid rgba(255,255,255,0.15)", maxHeight: "180px" }}>
+          {options.map(o => (
+            <button key={o} type="button"
+              onClick={() => { onChange(o); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-[12px] transition-colors border-b border-white/5 last:border-0"
+              style={{ color: value === o ? "#d97706" : "#fff", background: value === o ? "rgba(217,119,6,0.1)" : "transparent" }}>
+              {o}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: string; userPhone: string; onClose: () => void }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -100,17 +140,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
   const iStyle = { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff" };
   const iCls = "w-full h-10 rounded-lg px-3 text-[13px] font-medium text-white placeholder:text-white/35 focus:outline-none transition-all";
 
-  const SelectF = ({ label, value, onChange, options, placeholder, required }: any) => (
-    <div>
-      {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
-      <select value={value} onChange={e => onChange(e.target.value)} required={required}
-        className="w-full h-10 rounded-lg px-3 text-[13px] font-medium focus:outline-none transition-all"
-        style={{ ...iStyle, color: value ? "#fff" : "rgba(255,255,255,0.35)" }}>
-        <option value="" disabled style={{ background: "#1a0505" }}>{placeholder}</option>
-        {options.map((o: string) => <option key={o} value={o} style={{ background: "#1a0505", color: "#fff" }}>{o}</option>)}
-      </select>
-    </div>
-  );
+  // SelectF replaced by CustomSelect defined outside this component
   const TA = ({ label, value, onChange, placeholder, required, rows = 3 }: any) => (
     <div>
       {label && <label className="block text-[12px] font-semibold text-white/80 mb-1.5 uppercase tracking-wider">{label}</label>}
@@ -259,7 +289,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
               {role === "student" && (
                 <div className="space-y-2">
                   <input style={iStyle} className={iCls} placeholder="Your Full Name" required value={sf.studentName} onChange={e => setSField("studentName", e.target.value)} />
-                  <SelectF value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
+                  <CustomSelect value={sf.currentEducation} onChange={(v) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
                   <input style={iStyle} className={iCls} placeholder="School / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
                   <div className="grid grid-cols-2 gap-2">
                     <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
@@ -277,7 +307,7 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
                     <input style={iStyle} className={iCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
                     <input style={iStyle} className={iCls} placeholder="Years of Exp." type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
                   </div>
-                  <SelectF value={tf.classesTeaching} onChange={(v: string) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Which Class Are You Teaching?" required />
+                  <CustomSelect value={tf.classesTeaching} onChange={(v) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Which Class Are You Teaching?" required />
                 </div>
               )}
 
