@@ -488,9 +488,7 @@ const HeroSection = () => {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
                 className="flex flex-wrap gap-2">
                 {[
-                  { label: "Nominations", date: "Till Sep 3",  color: "rgba(217,119,6,0.15)", border: "rgba(217,119,6,0.35)",   text: "#d97706" },
-                  { label: "Voting Phase", date: "Sep 4–30",   color: "rgba(96,165,250,0.12)", border: "rgba(96,165,250,0.3)",  text: "#60a5fa" },
-                  { label: "Winners",      date: "Oct 1st",    color: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)",  text: "#fbbf24" },
+                  { label: "Nominations", date: "Till Sep 3", color: "rgba(217,119,6,0.15)", border: "rgba(217,119,6,0.35)", text: "#d97706" },
                 ].map(t => (
                   <span key={t.label} className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full"
                     style={{ background: t.color, border: `1px solid ${t.border}`, color: t.text }}>
