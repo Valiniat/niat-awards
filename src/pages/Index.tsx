@@ -5,7 +5,6 @@ import Footer from "@/components/landing/Footer";
 
 // Lazy load below-fold sections — they're not visible on first paint
 const WhySection          = lazy(() => import("@/components/landing/WhySection"));
-const CategoriesSection   = lazy(() => import("@/components/landing/CategoriesSection"));
 const HowItWorksSection   = lazy(() => import("@/components/landing/HowItWorksSection"));
 const WinnersReceiveSection = lazy(() => import("@/components/landing/WinnersReceiveSection"));
 const FinalCTASection     = lazy(() => import("@/components/landing/FinalCTASection"));
@@ -19,7 +18,6 @@ const Index = () => (
       <HeroSection />
       <Suspense fallback={<SectionLoader />}>
         <WhySection />
-        <CategoriesSection />
         <HowItWorksSection />
         <WinnersReceiveSection />
         <FinalCTASection />
