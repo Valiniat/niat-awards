@@ -88,11 +88,11 @@ const Navbar = () => {
                 </button>
               </Link>
             )}
-            <Link to="/nominate">
-              <button id="btn-nav-nominate" className="text-[13px] font-bold px-4 py-2.5 rounded-lg bg-white text-[#6B1212] hover:bg-white/90 transition-all shadow-sm min-h-[44px]">
-                Nominate
-              </button>
-            </Link>
+            <button id="btn-nav-nominate"
+              onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              className="text-[13px] font-bold px-4 py-2.5 rounded-lg bg-white text-[#6B1212] hover:bg-white/90 transition-all shadow-sm min-h-[44px]">
+              Nominate
+            </button>
           </div>
 
           {/* Mobile right */}
@@ -124,11 +124,11 @@ const Navbar = () => {
                   </a>
                 ))}
                 <div className="py-3 flex flex-col gap-2.5">
-                  <Link to="/nominate" onClick={() => setOpen(false)}>
-                    <button id="btn-nav-mobile-nominate" className="w-full text-[15px] font-bold py-3.5 rounded-xl bg-white text-[#6B1212] min-h-[52px]">
-                      Nominate a Teacher
-                    </button>
-                  </Link>
+                  <button id="btn-nav-mobile-nominate"
+                    onClick={() => { setOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    className="w-full text-[15px] font-bold py-3.5 rounded-xl bg-white text-[#6B1212] min-h-[52px]">
+                    Nominate a Teacher
+                  </button>
                   {!isAuthenticated ? (
                     <Link to="/login" onClick={() => setOpen(false)}>
                       <button id="btn-nav-mobile-login" className="w-full text-[15px] font-medium py-3.5 rounded-xl border border-white/20 text-white/80 min-h-[52px]">Login</button>
