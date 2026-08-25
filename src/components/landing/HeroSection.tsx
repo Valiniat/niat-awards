@@ -256,30 +256,28 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
               </div>
 
               {/* Student Step 1 fields */}
-              <AnimatePresence mode="wait">
-                {role === "student" && (
-                  <motion.div key="s1" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
-                    <Field label="Your Name" icon={User} value={sf.studentName} onChange={(e: any) => setSField("studentName", e.target.value)} placeholder="Your full name" />
-                    <SelectF value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
-                    <input style={iStyle} className={iCls} placeholder="School Name / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
-                    <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
-                    <input style={iStyle} className={iCls} placeholder="Teacher Phone Number (10 digits)" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
-                    <input style={iStyle} className={iCls} placeholder="Teaching Subject" required value={sf.teachingSubject} onChange={e => setSField("teachingSubject", e.target.value)} />
-                  </motion.div>
-                )}
-                {role === "teacher" && (
-                  <motion.div key="t1" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
-                    <Field label="Full Name" icon={User} value={tf.fullName} onChange={(e: any) => setTField("fullName", e.target.value)} placeholder="Your full name" />
-                    <input style={iStyle} className={iCls} placeholder="School Name or College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
-                    <Field label="Phone Number" prefix="+91" value={tf.phone} onChange={(e: any) => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit number" />
-                    <div className="grid grid-cols-2 gap-3">
-                      <input style={iStyle} className={iCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
-                      <input style={iStyle} className={iCls} placeholder="Years of Exp." type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
-                    </div>
-                    <SelectF value={tf.classesTeaching} onChange={(v: string) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Which Class Are You Teaching?" required />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {role === "student" && (
+                <div className="space-y-3">
+                  <Field label="Your Name" icon={User} value={sf.studentName} onChange={(e: any) => setSField("studentName", e.target.value)} placeholder="Your full name" />
+                  <SelectF value={sf.currentEducation} onChange={(v: string) => setSField("currentEducation", v)} options={educationOptions} placeholder="Current Education Level" required />
+                  <input style={iStyle} className={iCls} placeholder="School Name / College Name" required value={sf.schoolName} onChange={e => setSField("schoolName", e.target.value)} />
+                  <input style={iStyle} className={iCls} placeholder="Teacher's Name" required value={sf.teacherName} onChange={e => setSField("teacherName", e.target.value)} />
+                  <input style={iStyle} className={iCls} placeholder="Teacher Phone Number (10 digits)" type="tel" inputMode="numeric" required value={sf.teacherPhone} onChange={e => setSField("teacherPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                  <input style={iStyle} className={iCls} placeholder="Teaching Subject" required value={sf.teachingSubject} onChange={e => setSField("teachingSubject", e.target.value)} />
+                </div>
+              )}
+              {role === "teacher" && (
+                <div className="space-y-3">
+                  <Field label="Full Name" icon={User} value={tf.fullName} onChange={(e: any) => setTField("fullName", e.target.value)} placeholder="Your full name" />
+                  <input style={iStyle} className={iCls} placeholder="School Name or College Name" required value={tf.school} onChange={e => setTField("school", e.target.value)} />
+                  <Field label="Phone Number" prefix="+91" value={tf.phone} onChange={(e: any) => setTField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit number" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input style={iStyle} className={iCls} placeholder="Subject" required value={tf.subject} onChange={e => setTField("subject", e.target.value)} />
+                    <input style={iStyle} className={iCls} placeholder="Years of Exp." type="number" min="0" max="50" required value={tf.experience} onChange={e => setTField("experience", e.target.value)} />
+                  </div>
+                  <SelectF value={tf.classesTeaching} onChange={(v: string) => setTField("classesTeaching", v)} options={classesTeaching} placeholder="Which Class Are You Teaching?" required />
+                </div>
+              )}
 
               {role && (
                 <button type="submit"
@@ -297,18 +295,17 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
               onSubmit={handleSubmit} className="space-y-3.5">
 
               {role === "student" && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+                <div className="space-y-3">
                   <TA label="What's special about this teacher?" value={sf.specialThing} onChange={(v: string) => setSField("specialThing", v)} placeholder="One special thing about them..." required rows={3} />
                   <TA label="How have they impacted you?" value={sf.impactStory} onChange={(v: string) => setSField("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." required rows={4} />
                   <input style={iStyle} className={iCls} placeholder="Awards / Recognition (Optional)" value={sf.awardsRecognition} onChange={e => setSField("awardsRecognition", e.target.value)} />
                   <input style={iStyle} className={iCls} placeholder="Teacher's LinkedIn / Social Media (Optional)" value={sf.teacherSocial} onChange={e => setSField("teacherSocial", e.target.value)} />
-                </motion.div>
+                </div>
               )}
-
               {role === "teacher" && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+                <div className="space-y-3">
                   <TA label="Your Impact Story (2–3 sentences)" value={tf.impactStory} onChange={(v: string) => setTField("impactStory", v)} placeholder="How have you made a difference in students' lives..." required rows={5} />
-                </motion.div>
+                </div>
               )}
 
               <div className="flex gap-2 pt-1">
