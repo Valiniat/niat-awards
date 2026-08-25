@@ -185,9 +185,9 @@ const InlineNominationForm = ({ userName, userPhone, onClose }: { userName: stri
   };
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden"
-      style={{ background: "rgba(10,3,3,0.95)", border: "1.5px solid rgba(255,255,255,0.2)", backdropFilter: "blur(28px)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
-      <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, transparent, #d97706, transparent)" }} />
+    <div className="w-full rounded-2xl"
+      style={{ background: "rgba(10,3,3,0.95)", border: "1.5px solid rgba(255,255,255,0.2)", backdropFilter: "blur(28px)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)", maxHeight: "70vh", overflowY: "auto" }}>
+      <div className="h-[3px] w-full sticky top-0 z-10" style={{ background: "linear-gradient(90deg, transparent, #d97706, transparent)" }} />
       <div className="p-5 sm:p-6">
 
         {/* Header */}
@@ -474,10 +474,10 @@ const HeroSection = () => {
 
   return (
     <>
-      <section ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden pt-[56px]"
+      <section ref={sectionRef} className="relative min-h-screen flex items-center pt-[56px]"
         style={{ background: "linear-gradient(135deg, hsl(0,0%,6%), hsl(0,12%,10%))" }}>
 
-        <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
+        <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.32, 0.2] }} transition={{ duration: 6, repeat: Infinity }}
             className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary rounded-full blur-[130px]" />
           <motion.div animate={{ scale: [1.1, 1, 1.1], opacity: [0.12, 0.22, 0.12] }} transition={{ duration: 8, repeat: Infinity }}
@@ -547,7 +547,7 @@ const HeroSection = () => {
             {/* Right */}
             <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col items-center gap-5">
+              className="flex flex-col items-center gap-5 overflow-visible">
 
               <div className="w-full text-center">
                 <p className="text-[11px] uppercase tracking-[0.25em] font-bold mb-4 text-secondary">
