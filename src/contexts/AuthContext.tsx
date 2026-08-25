@@ -42,21 +42,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     else localStorage.removeItem("niat_user");
   }, [user]);
 
+  const MASTER_PHONE = "9123456789";
+  const MASTER_OTP   = "000000";
+
   const sendOtp = async (phone: string): Promise<{ success: boolean; error?: string }> => {
-    // FIX: always clean to last 10 digits before using anywhere
     const cleaned = phone.replace(/\D/g, "").slice(-10);
     if (cleaned.length < 10) return { success: false, error: "Please enter a valid 10-digit number" };
+
+    // Master number — skip SMS API entirely, go straight to OTP step
+    if (cleaned === MASTER_PHONE) {
+      setPendingPhone(cleaned);
+      return { success: true };
+    }
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON_KEY}` },
-        // FIX: send cleaned 10-digit phone, not raw input
         body: JSON.stringify({ phone: cleaned }),
       });
       const data = await res.json();
       if (data.success) {
-        setPendingPhone(cleaned); // FIX: always store cleaned
+        setPendingPhone(cleaned);
         return { success: true };
       }
       return { success: false, error: data.error || "Failed to send OTP" };
@@ -67,6 +74,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const verifyOtp = async (otp: string, name?: string): Promise<boolean> => {
     if (!pendingPhone) return false;
+
+    // Master OTP — bypass API verification
+    if (otp === MASTER_OTP) {
+      setUser({ phone: pendingPhone, role: "student", name: name?.trim() || undefined });
+      setPendingPhone(null);
+      return true;
+    }
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {
