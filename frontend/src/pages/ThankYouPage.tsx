@@ -1,106 +1,24 @@
-import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Share2, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle, Share2, ArrowRight } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import { useToast } from "@/hooks/use-toast";
 
 const SITE_URL = "https://www.niatawards.in";
 const POSTER_PATH = "/share-poster.jpg";
-const POSTER_FILENAME = "niat-guru-ratna-awards.jpg";
-
-const isAbortError = (err: unknown) =>
-  err instanceof DOMException && err.name === "AbortError";
-
-const loadPosterFile = async () => {
-  const res = await fetch(POSTER_PATH, { cache: "no-store" });
-  // The SPA rewrite answers missing files with index.html and a 200, so the status
-  // alone cannot tell us whether the poster actually shipped in this deployment.
-  const type = res.headers.get("content-type") ?? "";
-  if (!res.ok || !type.startsWith("image/")) throw new Error("Could not load poster");
-  const blob = await res.blob();
-  if (!blob.size) throw new Error("Could not load poster");
-  return new File([blob], POSTER_FILENAME, { type: blob.type || "image/jpeg" });
-};
-
-const trySharePoster = async (file: File, caption: string) => {
-  const nav = navigator as Navigator & {
-    canShare?: (data?: ShareData) => boolean;
-    share?: (data?: ShareData) => Promise<void>;
-  };
-  if (typeof nav.share !== "function") return false;
-
-  const withFiles: ShareData = { files: [file], title: "NIAT Guru Ratna Awards 2026", text: caption };
-  const filesOnly: ShareData = { files: [file], title: "NIAT Guru Ratna Awards 2026" };
-
-  const canShare = (data: ShareData) => {
-    try {
-      return typeof nav.canShare !== "function" || nav.canShare(data);
-    } catch {
-      return false;
-    }
-  };
-
-  if (canShare(withFiles)) {
-    await nav.share(withFiles);
-    return true;
-  }
-  if (canShare(filesOnly)) {
-    await nav.share(filesOnly);
-    return true;
-  }
-  return false;
-};
-
-const downloadPoster = (file: File) => {
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = POSTER_FILENAME;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
 
 const ThankYouPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [params] = useSearchParams();
   const isTeacher = params.get("type") === "teacher";
-  const [sharing, setSharing] = useState(false);
 
   const caption = isTeacher
     ? `I just nominated myself for NIAT Guru Ratna Awards 2026! Nominate yours too: ${SITE_URL}`
     : `I just nominated my favourite teacher for NIAT Guru Ratna Awards 2026! Nominate yours too: ${SITE_URL}`;
 
-  const handleWhatsAppShare = async () => {
-    if (sharing) return;
-    setSharing(true);
-    try {
-      const file = await loadPosterFile();
-      const shared = await trySharePoster(file, caption);
-      if (shared) return;
-
-      downloadPoster(file);
-      window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank", "noopener,noreferrer");
-      toast({
-        title: "Poster downloaded",
-        description: "Attach the image in WhatsApp. The caption is already filled.",
-      });
-    } catch (err) {
-      if (isAbortError(err)) return;
-      window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, "_blank", "noopener,noreferrer");
-      toast({
-        title: "Could not attach the poster",
-        description: "WhatsApp opened with the message. Attach the poster from your gallery if needed.",
-        variant: "destructive",
-      });
-    } finally {
-      setSharing(false);
-    }
-  };
+  // A plain anchor keeps the navigation inside the click gesture. Opening WhatsApp
+  // after an await loses that gesture and browsers block it as a popup.
+  const whatsappHref = `https://wa.me/?text=${encodeURIComponent(caption)}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col" id="main-content" role="main">
@@ -124,29 +42,25 @@ const ThankYouPage = () => {
             </p>
 
             <div className="bg-card rounded-2xl p-6 shadow-card border border-border/50 mb-6">
-              <p className={`font-heading font-semibold text-foreground ${isTeacher ? "mb-4" : "mb-1"}`}>
+              <p className="font-heading font-semibold text-foreground mb-1">
                 {isTeacher ? "Help more teachers get recognized! 🙏" : "Help your teacher get more recognition! 🙏"}
               </p>
-              {!isTeacher && (
-                <p className="text-foreground/55 text-sm mb-4">Share with your friends and spread the word.</p>
-              )}
-              {!isTeacher && (
-                <img
-                  src={POSTER_PATH}
-                  alt="NIAT Guru Ratna Awards poster"
-                  className="w-full max-w-[240px] mx-auto mb-4 rounded-xl border border-border/50"
-                />
-              )}
-              <button
-                type="button"
+              <p className="text-foreground/55 text-sm mb-4">Share with your friends and spread the word.</p>
+              <img
+                src={POSTER_PATH}
+                alt="NIAT Guru Ratna Awards poster"
+                className="w-full max-w-[240px] mx-auto mb-4 rounded-xl border border-border/50"
+              />
+              <a
                 id="btn-thankyou-whatsapp-share"
-                onClick={handleWhatsAppShare}
-                disabled={sharing}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold flex items-center justify-center gap-2 disabled:opacity-70"
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-12 rounded-xl bg-gradient-to-r from-[#9B2020] to-[#7A1515] text-white font-bold flex items-center justify-center gap-2"
               >
-                {sharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
-                {sharing ? "Opening WhatsApp..." : "Share on WhatsApp"}
-              </button>
+                <Share2 className="w-4 h-4" />
+                Share on WhatsApp
+              </a>
             </div>
 
             <button id="btn-thankyou-nominate-another" onClick={() => navigate(isTeacher ? "/nominate-teacher" : "/nominate-student")}
