@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, X, CheckCircle2, Loader2, ArrowRight, User } from "lucide-react";
+import { ChevronDown, CheckCircle2, Loader2, ArrowRight, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { createNominationDraft, getNominationDraft, updateNominationDraft, type NominationDraft } from "@/lib/api";
@@ -85,13 +85,12 @@ const FormTextarea = ({
 interface Props {
   userName?: string;
   userPhone?: string;
-  onClose?: () => void;
   embedded?: boolean; // true = no dark card wrapper (used on /nominate page)
   lockedRole: "student" | "teacher";
   draftToken?: string;
 }
 
-const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded = false, lockedRole, draftToken }: Props) => {
+const InlineNominationForm = ({ userName = "", userPhone = "", embedded = false, lockedRole, draftToken }: Props) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -401,15 +400,6 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
                   <CheckCircle2 className="w-2.5 h-2.5" />
                   Verified
                 </span>
-                {onClose && (
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="text-[10px] font-semibold text-secondary hover:text-secondary/80"
-                  >
-                    Edit
-                  </button>
-                )}
               </div>
             ) : (
               <p className="text-white/45 text-[10px]">Step {formStep} of 2 — {formStep === 1 ? "Basic Details" : "Tell Us More"}</p>
@@ -423,11 +413,6 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
                 style={{ width: formStep === s ? "20px" : "8px", background: formStep >= s ? "#d97706" : "rgba(255,255,255,0.2)" }} />
             ))}
           </div>
-          {onClose && (
-            <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all ml-1">
-              <X className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 

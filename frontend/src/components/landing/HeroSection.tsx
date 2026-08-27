@@ -174,7 +174,6 @@ const QuickNominateCard = ({ lockedRole }: { lockedRole: "student" | "teacher" }
         userPhone={user?.phone || phone}
         lockedRole={lockedRole}
         draftToken={draftToken}
-        onClose={() => setStep("form")}
       />
     );
   }
