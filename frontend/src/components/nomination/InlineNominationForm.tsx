@@ -82,6 +82,16 @@ const FormTextarea = ({
   </div>
 );
 
+const ROLE_LABELS: Record<"student" | "teacher", string> = {
+  student: "🎓 Student / Parent",
+  teacher: "👩‍🏫 Teacher (Self-Nomination)",
+};
+
+const ROLE_BY_LABEL: Record<string, "student" | "teacher"> = {
+  [ROLE_LABELS.student]: "student",
+  [ROLE_LABELS.teacher]: "teacher",
+};
+
 interface Props {
   userName?: string;
   userPhone?: string;
@@ -97,7 +107,7 @@ const InlineNominationForm = ({ userName = "", userPhone = "", embedded = false,
 
   const name  = user?.name  || userName;
   const phone = user?.phone || userPhone;
-  const role  = lockedRole;
+  const [role, setRole] = useState<"student" | "teacher">(lockedRole);
 
   const [formStep, setFormStep] = useState<1 | 2>(1);
   const [loading, setLoading]   = useState(false);
@@ -128,6 +138,9 @@ const InlineNominationForm = ({ userName = "", userPhone = "", embedded = false,
   const asText = (value: unknown) => (typeof value === "string" ? value : "");
 
   const applyDraft = (draft: NominationDraft) => {
+    // The saved draft wins over the page default, so a chosen role survives a reload.
+    const draftType = asText(draft.type);
+    if (draftType === "student" || draftType === "teacher") setRole(draftType);
     const teacherName = asText(draft.teacher_name);
     const nominatorPhone = asText(draft.nominator_phone) || phone.replace(/\D/g, "").slice(-10);
     const savedPhone = asText(draft.phone);
@@ -256,6 +269,16 @@ const InlineNominationForm = ({ userName = "", userPhone = "", embedded = false,
     "High School (Class 9–10)", "Senior Secondary (Class 11–12)",
     "Undergraduate / College", "Postgraduate / College", "All Classes",
   ];
+
+  const handleRoleChange = (next: "student" | "teacher") => {
+    if (next === role) return;
+    setRole(next);
+    setFormStep(1);
+    if (!token) return;
+    const session = getDraftSession();
+    if (session?.token === token) saveDraftSession({ ...session, type: next });
+    updateNominationDraft({ draft_token: token, type: next }).catch(() => undefined);
+  };
 
   const handleStep1Next = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -422,16 +445,14 @@ const InlineNominationForm = ({ userName = "", userPhone = "", embedded = false,
           <motion.form key="step1" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}
             onSubmit={handleStep1Next} noValidate className="space-y-2">
 
-            {/* Role — locked to this page */}
             <div>
               <label className="block text-[11px] font-semibold text-white/60 mb-1 uppercase tracking-wider">I am a</label>
-              <div
-                className="w-full h-10 rounded-lg px-3 flex items-center text-[13px] font-medium select-none"
-                style={{ ...iStyle, opacity: 0.85, cursor: "default" }}
-                aria-disabled="true"
-              >
-                <span>{role === "student" ? "🎓 Student / Parent" : "👩‍🏫 Teacher (Self-Nomination)"}</span>
-              </div>
+              <CustomSelect
+                value={ROLE_LABELS[role]}
+                onChange={(label) => handleRoleChange(ROLE_BY_LABEL[label])}
+                options={Object.values(ROLE_LABELS)}
+                placeholder="Select who you are"
+              />
             </div>
 
             {/* Student Step 1 */}

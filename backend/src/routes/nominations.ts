@@ -244,6 +244,29 @@ router.patch("/draft", async (req: Request, res: Response) => {
       return;
     }
 
+    // Switching between student and teacher rewrites the identity fields, since
+    // the same person is the nominee in one case and the nominator in the other.
+    if (typeof body.type === "string" && body.type !== draft.type) {
+      if (!VALID_TYPES.includes(body.type as (typeof VALID_TYPES)[number])) {
+        res.status(400).json({ error: "type must be student or teacher" });
+        return;
+      }
+      const nominatorName = (draft.nominator_name ?? "").trim();
+      draft.type = body.type as (typeof VALID_TYPES)[number];
+      if (draft.type === "teacher") {
+        draft.full_name = nominatorName || draft.full_name;
+        draft.student_name = null;
+        draft.student_class = null;
+        draft.teacher_name = null;
+        draft.phone = cleanPhone(draft.nominator_phone) || draft.phone;
+      } else {
+        draft.student_name = nominatorName || draft.student_name;
+        draft.full_name = null;
+        draft.student_class = null;
+        draft.experience = null;
+      }
+    }
+
     try {
       applyDraftFields(draft, body);
     } catch (err) {
