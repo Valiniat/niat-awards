@@ -88,6 +88,20 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-9BZPGSKKYE');
+      gtag('config', 'AW-16608374468');
+    </script>
+
+    <!-- Event snippet for Page view_Guru_pant conversion page -->
+    <script>
+      // index.html serves every route, so skip the admin panel to keep
+      // internal logins out of the conversion count.
+      if (!window.location.pathname.startsWith('/admin')) {
+        gtag('event', 'conversion', {
+            'send_to': 'AW-16608374468/EtKvCIHcoegcEMTdvu89',
+            'value': 1.0,
+            'currency': 'INR'
+        });
+      }
     </script>
 
     <!-- Meta Pixel Code -->
