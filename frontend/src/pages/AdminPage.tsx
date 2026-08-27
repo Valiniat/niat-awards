@@ -7,7 +7,7 @@ import {
   CheckCircle2, XCircle, Eye, BarChart3, ArrowLeft, Star,
   Loader2, RefreshCw, LogOut, Pencil, X, Save,
   Calendar as CalendarIcon, Copy, ImageOff, Megaphone, Globe2, Target, Shield,
-  Hourglass
+  Hourglass, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ import CampaignsPanel from "@/components/admin/CampaignsPanel";
 import DigitalMarketingPanel from "@/components/admin/DigitalMarketingPanel";
 import AccessManagementPanel from "@/components/admin/AccessManagementPanel";
 import FunnelAnalytics from "@/components/admin/FunnelAnalytics";
+import WhatsAppOpsPanel from "@/components/admin/WhatsAppOpsPanel";
 import {
   allowedAdminTabs,
   firstAllowedTab,
@@ -463,7 +464,7 @@ const EditModal = ({ nomination, onClose, onSave }: { nomination: any; onClose: 
             {nomination.type === "student" ? (
               <>
                 <div>
-                  <Label className="text-white/60 text-xs mb-1.5 block">Teacher's Name</Label>
+                  <Label className="text-white/60 text-xs mb-1.5 block">Teacher Full Name</Label>
                   <Input value={form.teacher_name || ""} onChange={e => set("teacher_name", e.target.value)}
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/25" />
                 </div>
@@ -767,7 +768,7 @@ const AdminPage = () => {
             <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={fetchNominations}>
               <RefreshCw className="w-3.5 h-3.5" /><span className="hidden sm:inline">Refresh</span>
             </Button>
-            {activeTab !== "access" && (
+            {activeTab !== "access" && activeTab !== "whatsapp" && (
               <Button variant="hero-outline" size="sm" className="gap-1.5 text-xs" onClick={exportCSV}>
                 <Download className="w-3.5 h-3.5" /><span className="hidden sm:inline">Export CSV</span>
               </Button>
@@ -786,6 +787,7 @@ const AdminPage = () => {
             { id: "nominations" as const, label: "Nominations", icon: Users },
             { id: "campaigns" as const, label: "Influencer Tracking", icon: Megaphone },
             { id: "digital" as const, label: "Digital Marketing", icon: Target },
+            { id: "whatsapp" as const, label: "WhatsApp", icon: MessageCircle },
             { id: "access" as const, label: "Access", icon: Shield },
           ].filter((tab) => tabs.includes(tab.id)).map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
@@ -808,7 +810,7 @@ const AdminPage = () => {
 
       {/* Content */}
       <div className="container py-6 sm:py-8 px-3 sm:px-4">
-        {loading && activeTab !== "access" ? (
+        {loading && activeTab !== "access" && activeTab !== "whatsapp" ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="w-8 h-8 text-secondary animate-spin" />
             <span className="ml-3 text-primary-foreground/60">Loading...</span>
@@ -1149,6 +1151,8 @@ const AdminPage = () => {
             setViewingTitle(title);
             setViewingNoms(list);
           }} />
+        ) : activeTab === "whatsapp" ? (
+          <WhatsAppOpsPanel />
         ) : null}
       </div>
     </div>

@@ -28,6 +28,7 @@ import {
   landingTokenToDestination,
   slugifyDigitalField,
 } from "../lib/digitalCampaign";
+import whatsappOpsAdminRoutes from "./whatsappOpsAdmin";
 
 const router = Router();
 
@@ -100,6 +101,8 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 router.use(adminAuth);
+
+router.use("/whatsapp-ops", requirePermission("whatsapp"), whatsappOpsAdminRoutes);
 
 router.get("/me", (req: Request, res: Response) => {
   res.json({ user: req.admin });
