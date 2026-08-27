@@ -53,19 +53,21 @@ export const CustomSelect = ({ value, onChange, options, placeholder }: {
 };
 
 const FormTextarea = ({
-  label, value, onChange, placeholder, required, rows = 3,
+  label, value, onChange, placeholder, required, optional, rows = 3,
 }: {
   label?: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   required?: boolean;
+  optional?: boolean;
   rows?: number;
 }) => (
   <div>
     {label && (
       <label className="block text-[11px] font-semibold text-white/60 mb-1 uppercase tracking-wider">
         {label}
+        {optional && <span className="text-white/35 font-normal normal-case"> (optional)</span>}
       </label>
     )}
     <textarea
@@ -320,7 +322,6 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
       if (photoBusy) throw new Error("Please wait for the photo to finish uploading");
       if (role === "student") {
         if (!sf.specialThing.trim()) throw new Error("Please fill in what's special about this teacher");
-        if (!sf.impactStory.trim()) throw new Error("Please describe their impact");
         await updateNominationDraft({
           draft_token: token,
           complete: true,
@@ -493,7 +494,7 @@ const InlineNominationForm = ({ userName = "", userPhone = "", onClose, embedded
             {role === "student" && (
               <div className="space-y-2">
                 <FormTextarea label="What's special about this teacher?" value={sf.specialThing} onChange={(v) => setSF("specialThing", v)} placeholder="One special thing about them..." required rows={2} />
-                <FormTextarea label="How have they impacted you?" value={sf.impactStory} onChange={(v) => setSF("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." required rows={3} />
+                <FormTextarea label="How have they impacted you?" value={sf.impactStory} onChange={(v) => setSF("impactStory", v)} placeholder="Write 2–3 sentences about their impact..." optional rows={3} />
                 <input style={iStyle} className={iCls} placeholder="Awards / Recognition (Optional)" value={sf.awardsRecognition} onChange={e => setSF("awardsRecognition", e.target.value)} />
                 <input style={iStyle} className={iCls} placeholder="Teacher's LinkedIn / Social Media (Optional)" value={sf.teacherSocial} onChange={e => setSF("teacherSocial", e.target.value)} />
                 <TeacherPhotoUpload value={photoUrl} onChange={handlePhotoChange} variant="dark" onBusyChange={setPhotoBusy} />

@@ -105,7 +105,6 @@ const requireCompleteFields = (draft: InstanceType<typeof Nomination>) => {
     if (!draft.teacher_name?.trim()) throw new Error("Please enter the teacher's name");
     if (cleanPhone(draft.phone).length !== 10) throw new Error("Please enter a valid teacher phone number");
     if (!draft.special_thing?.trim()) throw new Error("Please fill in what's special about this teacher");
-    if (!draft.impact_story?.trim()) throw new Error("Please describe their impact");
     return;
   }
   if (!draft.full_name?.trim()) throw new Error("Please enter your name");
