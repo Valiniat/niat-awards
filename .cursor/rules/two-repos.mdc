@@ -1,0 +1,22 @@
+---
+description: Treat frontend and backend as two independent GitHub repos
+alwaysApply: true
+---
+
+# Two-repo layout
+
+This workspace is a local folder with `frontend/` and `backend/`. They are **separate git repositories**. Do not commit or push from the parent `niatawards` folder.
+
+| Local folder | Remote |
+|---|---|
+| `frontend/` | https://github.com/kammari-venkatesh/niatawards-frontend.git |
+| `backend/` | https://github.com/kammari-venkatesh/niatawards-backend.git |
+
+When committing or pushing:
+
+- Frontend changes: run git in `frontend/`
+- Backend changes: run git in `backend/`
+- Never mix both in one commit
+- Never push to `Valiniat/niat-awards` unless asked
+
+Keep `.env` out of git in both repos. Use `.env.example` for placeholders only.
