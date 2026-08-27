@@ -46,11 +46,13 @@ const ThankYouPage = () => {
                 {isTeacher ? "Help more teachers get recognized! 🙏" : "Help your teacher get more recognition! 🙏"}
               </p>
               <p className="text-foreground/55 text-sm mb-4">Share with your friends and spread the word.</p>
-              <img
-                src={POSTER_PATH}
-                alt="NIAT Guru Ratna Awards poster"
-                className="w-full max-w-[240px] mx-auto mb-4 rounded-xl border border-border/50"
-              />
+              {!isTeacher && (
+                <img
+                  src={POSTER_PATH}
+                  alt="NIAT Guru Ratna Awards poster"
+                  className="w-full max-w-[240px] mx-auto mb-4 rounded-xl border border-border/50"
+                />
+              )}
               <a
                 id="btn-thankyou-whatsapp-share"
                 href={whatsappHref}
