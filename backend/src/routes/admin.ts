@@ -371,7 +371,8 @@ router.get(
   requireAnyPermission("nominations", "campaigns", "digital"),
   async (_req: Request, res: Response) => {
   try {
-    const nominations = await Nomination.find({ status: { $ne: "draft" } }).sort({ created_at: -1 });
+    // Drafts included so the panel shows leads that stopped part-way through the form.
+    const nominations = await Nomination.find().sort({ created_at: -1 });
     res.json(nominations.map((n) => n.toJSON()));
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to load nominations";
